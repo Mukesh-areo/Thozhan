@@ -1,0 +1,60 @@
+name: Render Thozhan demo
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - 'video/**'
+      - '.github/workflows/render-demo.yml'
+permissions:
+  contents: write
+concurrency:
+  group: thozhan-demo-main
+  cancel-in-progress: false
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: video/package-lock.json
+      - name: Check app logic
+        working-directory: web
+        run: node test.cjs
+      - name: Install video dependencies
+        working-directory: video
+        run: npm ci
+      - name: Generate app scenes
+        working-directory: video
+        run: npm run scenes
+      - name: Install Chrome Headless Shell
+        working-directory: video
+        run: npx remotion browser ensure
+      - name: Render portrait demo
+        working-directory: video
+        run: npm run render
+      - name: Validate video and create contact sheet
+        run: |
+          ffprobe -v error -show_entries stream=width,height,codec_name -show_entries format=duration -of json media/Thozhan-Demo.mp4
+          ffmpeg -y -i media/Thozhan-Demo.mp4 -vf "fps=1/5,scale=216:384,tile=5x2" -frames:v 1 media/Thozhan-contact-sheet.jpg
+      - name: Upload video artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Thozhan-Android-Demo
+          path: |
+            media/Thozhan-Demo.mp4
+            media/Thozhan-contact-sheet.jpg
+          retention-days: 30
+      - name: Commit rendered media
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add media/Thozhan-Demo.mp4 media/Thozhan-contact-sheet.jpg
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Add rendered Thozhan Android demo video"
+          git push origin HEAD:main

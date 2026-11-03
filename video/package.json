@@ -1,0 +1,21 @@
+{
+  "name": "thozhan-demo-video",
+  "version": "1.0.0",
+  "description": "Portrait Remotion walkthrough of the Thozhan mobility prototype",
+  "scripts": {
+    "studio": "remotion studio index.jsx",
+    "render": "remotion render index.jsx ThozhanDemo ../media/Thozhan-Demo.mp4 --codec=h264 --concurrency=2",
+    "preview": "remotion still index.jsx ThozhanDemo preview.png --frame=180",
+    "scenes": "node generate-scenes.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@remotion/cli": "^4.0.540",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "^4.0.540"
+  }
+}
