@@ -10,7 +10,9 @@ test('Tamil and English catalogues have identical keys', () => {
 
 test('Tamil strings are actually Tamil, not copied English', () => {
   const tamilScript = /[஀-௿]/;
-  const untranslated = Object.entries(CATALOGS.ta).filter(([, v]) => !tamilScript.test(v)).map(([k]) => k);
+  // The language switch is labelled in the language it switches to.
+  const exempt = new Set(['ui.otherLanguage']);
+  const untranslated = Object.entries(CATALOGS.ta).filter(([k, v]) => !exempt.has(k) && !tamilScript.test(v)).map(([k]) => k);
   assert.deepEqual(untranslated, []);
 });
 

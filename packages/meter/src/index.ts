@@ -110,8 +110,9 @@ export function createMeter(config: MeterConfig = AUTO_METER_CONFIG) {
     if (dt <= 0) return reject('clock-skew');
 
     const measured = { x: (fix.lon - origin.lon) * origin.mPerDegLon, y: (fix.lat - origin.lat) * M_PER_DEG_LAT };
-    // Reject physically impossible jumps before they can pull the filter.
-    if (Math.hypot(measured.x - smooth.x, measured.y - smooth.y) - fix.accuracyMeters > maxSpeed * dt) return reject('speed-jump');
+    // Reject physically impossible jumps before they can pull the filter. Compare raw fix to
+    // raw fix: the smoothed position trails a moving vehicle and would flag honest fixes.
+    if (haversineMeters(last, fix) - (last.accuracyMeters + fix.accuracyMeters) > maxSpeed * dt) return reject('speed-jump');
 
     const predicted = variance + dt * config.smoothingMps ** 2;
     const gain = predicted / (predicted + fix.accuracyMeters ** 2);

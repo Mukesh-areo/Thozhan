@@ -42,6 +42,8 @@ export interface Assumption {
   code: string;
   /** True once the authority has confirmed the interpretation in writing. */
   confirmed: boolean;
+  /** Only relevant to trips with this component; omitted = every trip. */
+  appliesWhen?: 'night' | 'ghat' | 'waiting';
 }
 
 export interface TariffRule {
