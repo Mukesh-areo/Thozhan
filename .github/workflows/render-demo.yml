@@ -39,9 +39,10 @@ jobs:
         working-directory: video
         run: npm run render
       - name: Validate video and create contact sheet
+        working-directory: video
         run: |
-          ffprobe -v error -show_entries stream=width,height,codec_name -show_entries format=duration -of json media/Thozhan-Demo.mp4
-          ffmpeg -y -i media/Thozhan-Demo.mp4 -vf "fps=1/5,scale=216:384,tile=5x2" -frames:v 1 media/Thozhan-contact-sheet.jpg
+          npx remotion ffprobe -v error -show_entries stream=width,height,codec_name -show_entries format=duration -of json ../media/Thozhan-Demo.mp4
+          npx remotion ffmpeg -y -i ../media/Thozhan-Demo.mp4 -vf "fps=1/5,scale=216:384,tile=5x2" -frames:v 1 ../media/Thozhan-contact-sheet.jpg
       - name: Upload video artifact
         uses: actions/upload-artifact@v4
         with:
