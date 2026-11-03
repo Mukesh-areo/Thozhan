@@ -1,0 +1,9 @@
+node_modules/
+video/build-check/
+video/preview.png
+.env
+.env.*
+!.env.example
+.openai/
+.DS_Store
+*.log
