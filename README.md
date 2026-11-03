@@ -32,6 +32,25 @@ node test.cjs
 
 The checks cover duplicate requests, trip transitions, wrong OTP rejection, completed trips, once-per-day fee deduplication, persistence and equal-location rejection. They use DOM stubs and do not replace real-browser QA.
 
+## Shared TypeScript packages
+
+The `packages/` workspace holds the foundation for the multi-service platform: auto, bike taxi, cab and parcel. See [system architecture](docs/SYSTEM_ARCHITECTURE.md) and [technology stack](docs/TECH_STACK.md).
+
+| Package | Contents |
+| --- | --- |
+| `@thozhan/tariff` | Fare engine and versioned tariff data. The auto tariff follows G.O. Ms. No. 366 (27 Oct 2026). Bike, cab and parcel rates are labelled `ILLUSTRATIVE`. |
+| `@thozhan/meter` | Virtual auto meter core: GPS filtering, Kalman smoothing, distance and waiting accumulation, tamper flags |
+| `@thozhan/shared` | Service catalogue with legal status and feature flags; ride, meter and delivery state machines |
+| `@thozhan/i18n` | Tamil and English catalogues, ₹ and distance formatting |
+
+Requires Node 22.18+. TypeScript runs directly, with no build step.
+
+```sh
+npm install
+npm run typecheck
+npm test
+```
+
 ## Demo video
 
 The Remotion project in [video](video/) generates a 50-second, 720 × 1280 portrait walkthrough at 24 fps, with English captions and no audio. It renders HTML states generated from the app; it is not a recording from a physical Android phone.
@@ -50,6 +69,9 @@ The [render workflow](.github/workflows/render-demo.yml) runs when video/app sou
 
 ## Project documents
 
+- [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
+- [System architecture: auto, bike, cab, parcel](docs/SYSTEM_ARCHITECTURE.md)
+- [Technology stack](docs/TECH_STACK.md)
 - [Implementation status](docs/IMPLEMENTATION_STATUS.md)
 - [Architecture and implementation approach](docs/ARCHITECTURE.md)
 - [Product roadmap and acceptance gates](docs/ROADMAP.md)
