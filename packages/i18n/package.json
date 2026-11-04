@@ -1,0 +1,13 @@
+{
+  "name": "@thozhan/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@thozhan/tariff": "0.1.0",
+    "@thozhan/shared": "0.1.0"
+  }
+}
