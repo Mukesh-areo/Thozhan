@@ -16,7 +16,8 @@
     "dev:mobile": "npm --workspace @thozhan/mobile run start",
     "dev:admin": "npm --workspace @thozhan/admin run dev",
     "build:admin": "npm --workspace @thozhan/admin run build",
-    "typecheck:apps": "tsc -p apps/mobile --noEmit && tsc -p apps/admin"
+    "typecheck:apps": "tsc -p apps/mobile --noEmit && tsc -p apps/admin",
+    "record:app": "node scripts/record-app.ts"
   },
   "engines": {
     "node": ">=22.18"
@@ -26,6 +27,7 @@
     "@supabase/supabase-js": "^2.118.0",
     "@types/node": "^22.10.0",
     "esbuild": "^0.24.0",
+    "playwright-core": "^1.64.1",
     "prettier": "^3.3.3",
     "typescript": "^5.7.2"
   },

@@ -158,6 +158,21 @@ npm run typecheck && npm run typecheck:apps && npm test
 - the payment webhook;
 - a supabase-js client against the local server.
 
+### Recorded app test
+
+```bash
+npm run record:app
+```
+
+This runs the whole app test in Chrome at phone size, once in English and once in Tamil, with a caption for each step. It starts the backend with fresh data and the Expo web app itself, so stop any copies you already have running first. Each step waits for the screen it expects, so a broken flow stops the run and saves its video with `-FAILED` in the name.
+
+The videos are saved to:
+
+- [media/Thozhan-App-Test-English.mp4](../media/Thozhan-App-Test-English.mp4)
+- [media/Thozhan-App-Test-Tamil.mp4](../media/Thozhan-App-Test-Tamil.mp4)
+
+It needs Google Chrome, and the ffmpeg that comes with `npm ci` in `video/`.
+
 ## 5. Known limits
 
 - The apps check for updates every few seconds rather than using Supabase Realtime. That is simple and reliable for a pilot, but uses more requests.
