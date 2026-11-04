@@ -1,7 +1,6 @@
 // Browser-local demo state. Pure functions only (no DOM), so they are unit tested directly.
 import { calculateFare, getActiveRule, type FareBreakdown, type Terrain } from '@thozhan/tariff';
-import { getCategory, isTerminal, transition, type TripAction, type TripFlow, type TripStatus } from '@thozhan/shared';
-import { estimateRouteMeters } from './places.ts';
+import { estimateRouteMeters, getCategory, isTerminal, transition, type TripAction, type TripFlow, type TripStatus } from '@thozhan/shared';
 
 export const STORAGE_KEY = 'thozhan-v2';
 

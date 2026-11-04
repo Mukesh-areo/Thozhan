@@ -1,0 +1,22 @@
+{
+  "cli": { "version": ">= 16.0.0", "appVersionSource": "local" },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "android": { "buildType": "apk" },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://YOUR-PROJECT.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "YOUR-ANON-KEY",
+        "EXPO_PUBLIC_SHARE_URL": "https://YOUR-ADMIN-HOST/track/"
+      }
+    },
+    "production": {
+      "android": { "buildType": "app-bundle" },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://YOUR-PROJECT.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "YOUR-ANON-KEY",
+        "EXPO_PUBLIC_SHARE_URL": "https://YOUR-ADMIN-HOST/track/"
+      }
+    }
+  }
+}

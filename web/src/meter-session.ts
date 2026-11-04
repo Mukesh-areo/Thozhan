@@ -1,8 +1,8 @@
 // Connects the device-independent meter core to a fix source: the phone's GPS or a
 // demo simulation that replays a Chennai street route ten times faster than real time.
-import { createMeter, meterFare, type GpsFix, type MeterSnapshot } from '@thozhan/meter';
+import { createMeter, meterFare, simulatedFixes, type GpsFix, type MeterSnapshot } from '@thozhan/meter';
 import { getActiveRule, type FareBreakdown, type Terrain } from '@thozhan/tariff';
-import { SIMULATION_ROUTE } from './places.ts';
+import { SIMULATION_ROUTE } from '@thozhan/shared';
 
 export type FixSource = 'gps' | 'simulation';
 
@@ -29,49 +29,8 @@ interface Options {
   onError: (error: GpsError) => void;
 }
 
-/** Seconds of [speed km/h] legs: drive, a signal stop, drive, a long wait, drive. */
-const SIM_PROFILE: [number, number][] = [
-  [150, 28],
-  [75, 0],
-  [180, 32],
-  [140, 0],
-  [240, 26],
-];
+/** The simulation replays the street route ten times faster than real time. */
 const SIM_SPEEDUP = 10;
-
-export function simulatedFixes(startAt: number): GpsFix[] {
-  const segments = SIMULATION_ROUTE.slice(1).map((to, i) => {
-    const from = SIMULATION_ROUTE[i]!;
-    const north = (to[0] - from[0]) * 111195;
-    const east = (to[1] - from[1]) * 111195 * Math.cos((from[0] * Math.PI) / 180);
-    return { from, to, meters: Math.hypot(north, east) };
-  });
-  const total = segments.reduce((n, s) => n + s.meters, 0);
-  const at = (d: number): [number, number] => {
-    let left = Math.min(d, total);
-    for (const s of segments) {
-      if (left <= s.meters) {
-        const f = left / s.meters;
-        return [s.from[0] + (s.to[0] - s.from[0]) * f, s.from[1] + (s.to[1] - s.from[1]) * f];
-      }
-      left -= s.meters;
-    }
-    return SIMULATION_ROUTE.at(-1)!;
-  };
-  let seed = 42;
-  const noise = () => ((seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296 - 0.5) * 8 / 111195;
-  const fixes: GpsFix[] = [];
-  let travelled = 0;
-  let t = 0;
-  for (const [seconds, kmh] of SIM_PROFILE) {
-    for (let i = 0; i < seconds; i++, t++) {
-      const [lat, lon] = at(travelled);
-      fixes.push({ lat: lat + noise(), lon: lon + noise(), accuracyMeters: 6, timestamp: startAt + t * 1000 });
-      travelled += kmh / 3.6;
-    }
-  }
-  return fixes;
-}
 
 export function startMeter(options: Options): MeterSession {
   const meter = createMeter();
@@ -91,7 +50,7 @@ export function startMeter(options: Options): MeterSession {
   };
 
   if (options.source === 'simulation') {
-    const fixes = simulatedFixes(startedAt);
+    const fixes = simulatedFixes(SIMULATION_ROUTE, startedAt);
     let i = 0;
     const timer = setInterval(() => {
       const fix = fixes[i++];
