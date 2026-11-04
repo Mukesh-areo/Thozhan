@@ -4,7 +4,12 @@ Thozhan is a Tamil Nadu mobility application prototype with passenger booking, a
 
 ## What works today
 
-- Select Chennai pickup and destination locations and an illustrative vehicle fare.
+- **Tamil and English** across the whole app. Tamil is the default; switch from the header.
+- **Auto meter for street hails:** phone GPS (or a 10× demo simulation) measures distance and waiting time. It gives a live fare under G.O. Ms. No. 366, an itemised receipt and an overcharge report.
+- **Fare check page for officials:** enter any trip and see the notified-tariff fare with its source and the open interpretations.
+- **Booking for auto, cab and parcel,** with pickup and drop OTPs for parcels. Services are switched on or off from Operations. Bike taxi stays off pending legal clarification.
+
+- Select Chennai pickup and destination landmarks (bilingual names) and see a quote from the shared fare engine.
 - Request or schedule a demo ride; inspect its OTP and driver state.
 - Accept, arrive, validate OTP and complete the ride in the driver workspace.
 - Track illustrative earnings and a ₹10 fee assessed once per eligible India-calendar day.
@@ -23,11 +28,13 @@ python3 -m http.server 8080 --directory web
 
 Open http://localhost:8080 in a browser. For the Android layout, use a narrow browser viewport. No app build or dependencies are required. Google Fonts are optional external styling dependencies; system fonts are the fallback.
 
-Run the existing logic checks:
+The UI source is TypeScript in `web/src/`. It is bundled into the committed `web/app.js`, so serving the folder needs no build. After changing `web/src` or `packages/`, rebuild the bundle and run the checks:
 
 ```sh
-cd web
-node test.cjs
+npm install
+npm run build:web
+npm test
+npm run test:web
 ```
 
 The checks cover duplicate requests, trip transitions, wrong OTP rejection, completed trips, once-per-day fee deduplication, persistence and equal-location rejection. They use DOM stubs and do not replace real-browser QA.

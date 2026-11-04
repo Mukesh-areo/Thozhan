@@ -11,10 +11,10 @@ Snapshot prepared 3 November 2026.
 | Safety | Demo case creation and safety information | Trained response operations, secure evidence, lawful escalation and audited SLA |
 | Operations | Shared local trip state, CSV export and cases | Multi-user backend, granular staff roles and immutable audit logs |
 | Android | Responsive website | Real-device QA, PWA/APK decision, native permissions and store distribution |
-| Fare engine | `packages/tariff`: G.O. 366 auto tariff (base, per km, waiting, night, ghat) with tests; draft bike, cab and parcel rules | Written confirmation of rounding, night scope and ghat base distance; official bike, cab and parcel tariffs; wire into the web prototype |
-| Virtual meter | `packages/meter`: GPS filtering, smoothing, waiting detection, tamper flags, tested on synthetic tracks | Mobile app shell with background GPS; field validation against odometer routes |
-| Multi-service | `packages/shared`: service catalogue and ride, meter and delivery state machines | Backend, dispatch and parcel booking UI |
-| Language | `packages/i18n`: Tamil and English catalogues with key-parity tests | Native Tamil review; apply the catalogues to the UI |
+| Fare engine | `packages/tariff`: G.O. 366 auto tariff (base, per km, waiting, night, ghat) with tests; draft bike, cab and parcel rules | Written confirmation of rounding, night scope and ghat base distance; official bike, cab and parcel tariffs |
+| Virtual meter | `packages/meter`: GPS filtering, smoothing, waiting detection, tamper flags, tested on synthetic tracks | Web meter page works in the foreground with a screen wake lock. Still needed: native app with background GPS, and field validation against odometer routes |
+| Multi-service | `packages/shared`: service catalogue and ride, meter and delivery state machines | Web demo covers auto, cab and parcel flows and Operations service switches. Still needed: backend and real dispatch |
+| Language | `packages/i18n`: Tamil and English catalogues with key-parity tests | Web UI fully bilingual. Still needed: native Tamil review and Tamil voice testing on devices |
 | Video | Remotion source, generated scenes, successful bundle compilation | Successful render and visual QA; MP4 is created by the repository workflow only if it succeeds |
 
 ## Known limits

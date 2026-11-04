@@ -33,8 +33,8 @@ export function formatMoney(paise: number, locale: Locale): string {
   }).format(paise / 100);
 }
 
-export function formatKm(meters: number, locale: Locale): string {
-  return new Intl.NumberFormat(INTL_LOCALE[locale], { maximumFractionDigits: 1 }).format(meters / 1000);
+export function formatKm(meters: number, locale: Locale, digits = 1): string {
+  return new Intl.NumberFormat(INTL_LOCALE[locale], { maximumFractionDigits: digits }).format(meters / 1000);
 }
 
 /** Keys present in one catalogue but not the other. CI fails on any. */

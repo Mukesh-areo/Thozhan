@@ -99,7 +99,8 @@ export function calculateFare(rule: TariffRule, input: FareInput): FareBreakdown
     rule.rounding === 'nearest-rupee' ? Math.round(total / 100) * 100 : rule.rounding === 'ceil-rupee' ? Math.ceil(total / 100) * 100 : total;
   add({ code: 'rounding', amountPaise: rounded - total });
 
-  const assumptions = rule.assumptions.filter((a) => !a.confirmed).map((a) => a.code);
+  const relevant = { night, ghat: terrain === 'ghat', waiting: waitMinutes > 0 };
+  const assumptions = rule.assumptions.filter((a) => !a.confirmed && (!a.appliesWhen || relevant[a.appliesWhen])).map((a) => a.code);
   return {
     ruleId: rule.id,
     ruleVersion: rule.version,

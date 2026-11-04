@@ -65,6 +65,11 @@ test('auto is OFFICIAL but not verified for billing while interpretations are un
   assert.ok(fare.assumptions.includes('rounding-nearest-rupee'));
   assert.equal(fare.verifiedForBilling, false);
 
+  // Only interpretations that affect this trip are listed.
+  assert.deepEqual(fare.assumptions, ['rounding-nearest-rupee', 'night-by-start-time']);
+  const nightGhat = calculateFare(auto, { distanceMeters: km(3), waitingSeconds: 120, startedAt: NIGHT, terrain: 'ghat' });
+  assert.equal(nightGhat.assumptions.length, 5);
+
   const confirmed = { ...auto, assumptions: auto.assumptions.map((a) => ({ ...a, confirmed: true })) };
   assert.equal(calculateFare(confirmed, { distanceMeters: km(3), startedAt: DAY }).verifiedForBilling, true);
 });
@@ -78,12 +83,12 @@ test('rejects invalid input', () => {
 test('cab: ride-time charge and minimum fare top-up', () => {
   const mini = getActiveRule('cab-mini');
   const short = calculateFare(mini, { distanceMeters: km(1), rideSeconds: 180, startedAt: DAY });
-  assert.equal(rupees(short), 100);
-  assert.equal(short.lines.find((l) => l.code === 'minimum_fare_topup')?.amountPaise, 1700);
+  assert.equal(rupees(short), 120);
+  assert.equal(short.lines.find((l) => l.code === 'minimum_fare_topup')?.amountPaise, 1550);
 
   const long = calculateFare(mini, { distanceMeters: km(10), rideSeconds: 1500, startedAt: DAY });
-  // 80 + 8 km × 15 + 25 min × 1 = 225
-  assert.equal(rupees(long), 225);
+  // 100 + 8 km × 20 + 25 min × 1.5 = 297.5 → 298
+  assert.equal(rupees(long), 298);
   assert.equal(long.verifiedForBilling, false);
 });
 
