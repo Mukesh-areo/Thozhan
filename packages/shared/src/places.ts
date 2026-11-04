@@ -1,4 +1,4 @@
-import type { Locale } from '@thozhan/i18n';
+type Locale = 'en' | 'ta';
 
 export interface Place {
   en: string;

@@ -3,21 +3,34 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
-    "test": "node --test \"packages/*/test/*.test.ts\" \"web/test/*.test.ts\"",
+    "test": "node --test \"packages/*/test/*.test.ts\" \"web/test/*.test.ts\" \"supabase/test/*.test.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:web": "cd web && node test.cjs",
-    "build:web": "esbuild web/src/main.ts --bundle --format=iife --target=es2020 --charset=utf8 --outfile=web/app.js"
+    "build:web": "esbuild web/src/main.ts --bundle --format=iife --target=es2020 --charset=utf8 --outfile=web/app.js",
+    "dev:backend": "node supabase/dev/server.ts --bots",
+    "dev:backend:fresh": "node supabase/dev/server.ts --fresh --bots",
+    "dev:mobile": "npm --workspace @thozhan/mobile run start",
+    "dev:admin": "npm --workspace @thozhan/admin run dev",
+    "build:admin": "npm --workspace @thozhan/admin run build",
+    "typecheck:apps": "tsc -p apps/mobile --noEmit && tsc -p apps/admin"
   },
   "engines": {
     "node": ">=22.18"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.15",
+    "@supabase/supabase-js": "^2.118.0",
     "@types/node": "^22.10.0",
     "esbuild": "^0.24.0",
     "prettier": "^3.3.3",
     "typescript": "^5.7.2"
+  },
+  "overrides": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   }
 }

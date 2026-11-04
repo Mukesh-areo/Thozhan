@@ -162,6 +162,8 @@ export function createMeter(config: MeterConfig = AUTO_METER_CONFIG) {
 
 export type Meter = ReturnType<typeof createMeter>;
 
+export { simulatedFixes } from './simulate.ts';
+
 /** Live or final fare for the meter's current reading. */
 export function meterFare(rule: TariffRule, reading: MeterSnapshot, terrain: Terrain = 'plain'): FareBreakdown {
   if (reading.startedAt === null) throw new RangeError('Meter has not received a usable GPS fix');

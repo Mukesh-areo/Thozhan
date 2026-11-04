@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { activeTrip, addCase, cancelActive, createBooking, driverAction, emptyState, parseState, recordMeterTrip, summarize } from '../src/store.ts';
-import { estimateRouteMeters } from '../src/places.ts';
+import { estimateRouteMeters } from '@thozhan/shared';
 
 const NOW = Date.parse('2026-11-03T10:00:00+05:30');
 const rand = () => 0.5;

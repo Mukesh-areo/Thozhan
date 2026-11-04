@@ -1,8 +1,7 @@
 import { formatKm, formatMoney, pickLocale, t, type Locale } from '@thozhan/i18n';
-import { CATEGORIES, availableActions, getCategory, type Category, type TripAction } from '@thozhan/shared';
+import { CATEGORIES, PLACES, availableActions, estimateRouteMeters, getCategory, placeName, type Category, type TripAction } from '@thozhan/shared';
 import { TARIFF_RULES, calculateFare, getActiveRule, type FareBreakdown, type Terrain } from '@thozhan/tariff';
 import { startMeter, type FixSource, type MeterReading, type MeterSession } from './meter-session.ts';
-import { PLACES, estimateRouteMeters, placeName } from './places.ts';
 import {
   STORAGE_KEY,
   activeTrip,

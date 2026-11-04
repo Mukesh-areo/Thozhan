@@ -1,6 +1,33 @@
 # Thozhan
 
-Thozhan is a Tamil Nadu mobility application prototype with passenger booking, a driver workspace and an operations dashboard. It is a browser-based demonstration, not a native Android APK or a licensed transport service.
+Thozhan is a Tamil Nadu mobility application with passenger booking, a driver workspace, a GPS auto meter and an operations dashboard. It is not a licensed transport service.
+
+## MVP: mobile app, admin dashboard and backend
+
+- **Backend:** Supabase. Schema, security rules and edge functions are in [supabase](supabase/).
+- **Mobile app:** one Expo Android app with passenger, driver and street-meter modes, in [apps/mobile](apps/mobile/).
+- **Admin dashboard:** for operations staff, with a read-only view for the Transport Department, in [apps/admin](apps/admin/).
+
+All three run on one computer with no accounts needed:
+
+```sh
+npm install
+npm run dev:backend   # local Supabase stand-in with demo drivers, port 54321
+npm run dev:admin     # http://localhost:5173
+npm run dev:mobile    # scan the QR code with Expo Go, or press w for the browser
+```
+
+Sign in with any number and OTP 123456. See [Running the Thozhan MVP](docs/MOBILE_MVP.md) for:
+
+- test accounts and a five-minute demo;
+- running on an Android phone and building the APK;
+- moving to a real Supabase project.
+
+The plan is in [MVP plan](docs/MVP_PLAN.md).
+
+## Browser prototype
+
+The original browser-only prototype is in `web/`. It keeps its data in the browser and needs no backend.
 
 ## What works today
 
@@ -76,6 +103,8 @@ The [render workflow](.github/workflows/render-demo.yml) runs when video/app sou
 
 ## Project documents
 
+- [Running the MVP](docs/MOBILE_MVP.md)
+- [MVP plan](docs/MVP_PLAN.md)
 - [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
 - [System architecture: auto, bike, cab, parcel](docs/SYSTEM_ARCHITECTURE.md)
 - [Technology stack](docs/TECH_STACK.md)

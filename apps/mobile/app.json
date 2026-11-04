@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "Thozhan",
+    "slug": "thozhan",
+    "scheme": "thozhan",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "android": {
+      "package": "in.thozhan.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "CAMERA"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "in.thozhan.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Thozhan uses your location to run the fare meter and to share driver location during trips, even with the screen off.",
+          "locationWhenInUsePermission": "Thozhan uses your location to find nearby autos and run the fare meter.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Thozhan uses the camera to photograph your licence and vehicle documents."
+        }
+      ]
+    ]
+  }
+}

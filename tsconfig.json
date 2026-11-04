@@ -16,13 +16,20 @@
     ],
     "lib": [
       "ES2022",
-      "DOM"
+      "DOM",
+      "DOM.Iterable"
     ]
   },
   "include": [
     "packages/*/src/**/*.ts",
     "packages/*/test/**/*.ts",
     "web/src/**/*.ts",
-    "web/test/**/*.ts"
+    "web/test/**/*.ts",
+    "supabase/dev/**/*.ts",
+    "supabase/test/**/*.ts",
+    "supabase/functions/**/handler.ts",
+    "supabase/functions/_shared/http.ts",
+    "supabase/functions/_shared/fare.ts",
+    "supabase/functions/registry.ts"
   ]
 }

@@ -306,7 +306,273 @@
     "ui.verify.official": "Notified auto rates — G.O. Ms. No. 366 (2026)",
     "ui.verify.note": "The same fare engine runs in the meter, the booking flow and this page.",
     "ui.unit.km": "km",
-    "ui.unit.min": "min"
+    "ui.unit.min": "min",
+    "m.continue": "Continue",
+    "m.cancel": "Cancel",
+    "m.back": "Back",
+    "m.retry": "Try again",
+    "m.loading": "Loading…",
+    "m.close": "Close",
+    "m.yes": "Yes",
+    "m.no": "No",
+    "m.signOut": "Sign out",
+    "m.devBackend": "Local test server",
+    "m.login.title": "Sign in with your phone",
+    "m.login.phone": "Mobile number",
+    "m.login.sendOtp": "Send OTP",
+    "m.login.otp": "Enter the 6-digit OTP sent to {phone}",
+    "m.login.verify": "Verify and continue",
+    "m.login.change": "Change number",
+    "m.login.devHint": "Test server: the OTP is 123456.",
+    "m.login.terms": "By continuing you agree to share your location during trips.",
+    "m.welcome.title": "Welcome to Thozhan",
+    "m.welcome.name": "Your name",
+    "m.welcome.how": "How will you use Thozhan?",
+    "m.welcome.ride": "I need a ride or a parcel",
+    "m.welcome.drive": "I drive an auto",
+    "m.tab.book": "Book",
+    "m.tab.meter": "Meter",
+    "m.tab.trips": "Trips",
+    "m.tab.account": "Account",
+    "m.tab.drive": "Drive",
+    "m.tab.earnings": "Earnings",
+    "m.book.title": "Where to?",
+    "m.book.pickup": "Pickup",
+    "m.book.drop": "Drop",
+    "m.book.choosePlace": "Choose a place",
+    "m.book.myLocation": "My current location",
+    "m.book.search": "Search places",
+    "m.book.service": "Choose a service",
+    "m.book.approx": "About {km} km",
+    "m.book.estimateNote": "Final fare is worked out from the actual distance and waiting time, under the Government tariff.",
+    "m.book.confirm": "Book {service}",
+    "m.book.payDriver": "Pay the driver in cash or UPI at the end of the trip.",
+    "m.book.receiverName": "Receiver's name",
+    "m.book.receiverPhone": "Receiver's mobile number",
+    "m.book.weight": "Weight (kg)",
+    "m.book.item": "What are you sending?",
+    "m.book.restricted": "Not allowed: cash, hazardous goods, liquor, prescription medicines, animals.",
+    "m.book.samePlace": "Pickup and drop must be different.",
+    "m.trip.searching": "Finding an auto near you…",
+    "m.trip.searchingNote": "Nearby drivers are seeing your request.",
+    "m.trip.onTheWay": "{name} is on the way",
+    "m.trip.arrived": "{name} has arrived",
+    "m.trip.otpHint": "Tell this OTP to the driver to start the trip.",
+    "m.trip.dropOtpHint": "Share this OTP with the receiver. The driver needs it to complete the delivery.",
+    "m.trip.cancel": "Cancel trip",
+    "m.trip.cancelConfirm": "Cancel this trip?",
+    "m.trip.sos": "SOS",
+    "m.trip.sosConfirm": "Send an emergency alert with your location to Thozhan operations?",
+    "m.trip.sosSent": "Alert sent. Operations will call you. For police, ambulance or fire, call 112.",
+    "m.trip.call112": "Call 112",
+    "m.trip.share": "Share trip",
+    "m.trip.shareText": "I'm on a Thozhan trip {code} in {vehicle}. Follow it live: {url}",
+    "m.trip.noDriver": "No driver accepted. Please try again.",
+    "m.trip.cancelled": "Trip cancelled",
+    "m.receipt.title": "Receipt",
+    "m.receipt.distance": "Distance",
+    "m.receipt.waiting": "Waiting",
+    "m.receipt.asked": "Did the driver ask for more?",
+    "m.receipt.askedAmount": "Amount asked (₹)",
+    "m.receipt.report": "Report overcharge",
+    "m.receipt.reported": "Report sent to operations. Thank you.",
+    "m.receipt.offline": "Saved on this phone. It will upload when you are online.",
+    "m.receipt.complain": "Report a problem",
+    "m.receipt.complainPlaceholder": "Describe what happened",
+    "m.receipt.complainSent": "Complaint sent.",
+    "m.meter.sub": "Got an auto on the street? Run the Government fare meter on your phone.",
+    "m.meter.vehicle": "Auto number (optional)",
+    "m.meter.source": "Location source",
+    "m.meter.gps": "Phone GPS",
+    "m.meter.demo": "Demo route",
+    "m.meter.start": "Start meter",
+    "m.meter.stop": "Stop and get receipt",
+    "m.meter.running": "Meter running",
+    "m.meter.waitingGps": "Waiting for GPS…",
+    "m.meter.background": "Keeps running with the screen off.",
+    "m.meter.foregroundOnly": "Keep this screen open: background location is not available in this build.",
+    "m.meter.pending": "{n} meter trips waiting to upload",
+    "m.meter.sync": "Upload now",
+    "m.meter.voice": "Announce the fare aloud",
+    "m.meter.speak": "Fare {amount}",
+    "m.trips.title": "Your trips",
+    "m.trips.empty": "No trips yet.",
+    "m.trips.meter": "Street hail (meter)",
+    "m.account.language": "Language",
+    "m.account.driveMode": "Switch to driver mode",
+    "m.account.rideMode": "Switch to passenger mode",
+    "m.account.becomeDriver": "Drive with Thozhan",
+    "m.account.driverStatus": "Driver application: {status}",
+    "m.reg.title": "Driver registration",
+    "m.reg.sub": "Upload your documents. Operations will check them before you can go online.",
+    "m.reg.vehicleNumber": "Auto registration number",
+    "m.reg.licenceNumber": "Driving licence number",
+    "m.reg.doc.licence": "Driving licence",
+    "m.reg.doc.rc": "Registration certificate (RC)",
+    "m.reg.doc.permit": "Auto permit",
+    "m.reg.doc.insurance": "Insurance",
+    "m.reg.camera": "Take photo",
+    "m.reg.gallery": "Choose file",
+    "m.reg.uploaded": "Uploaded",
+    "m.reg.submit": "Submit for review",
+    "m.reg.status.pending": "Under review",
+    "m.reg.status.approved": "Approved",
+    "m.reg.status.rejected": "Needs changes",
+    "m.reg.status.suspended": "Suspended",
+    "m.reg.pendingBody": "We will let you know once you are approved, usually within one working day.",
+    "m.reg.note": "Note from operations: {note}",
+    "m.drive.goOnline": "Go online",
+    "m.drive.goOffline": "Go offline",
+    "m.drive.online": "You are online",
+    "m.drive.offline": "You are offline",
+    "m.drive.waiting": "Waiting for ride requests nearby.",
+    "m.drive.newRequest": "New request",
+    "m.drive.toPickup": "{km} km to pickup",
+    "m.drive.tripKm": "Trip about {km} km",
+    "m.drive.accept": "Accept",
+    "m.drive.decline": "Decline",
+    "m.drive.expires": "{s} s",
+    "m.drive.navigate": "Navigate",
+    "m.drive.otp": "OTP from the passenger",
+    "m.drive.dropOtp": "OTP from the receiver",
+    "m.drive.today": "Today: {trips} trips · {amount}",
+    "m.drive.fee": "Day fee due: {amount}",
+    "m.drive.rider": "Passenger",
+    "m.drive.receiver": "Receiver",
+    "m.drive.demoLocation": "No GPS here, so a demo location at Chennai Central is used.",
+    "m.earn.title": "Earnings and day fee",
+    "m.earn.plan": "₹10 per active day, charged after your first completed trip of the day. No commission.",
+    "m.earn.balance": "Fee due",
+    "m.earn.pay": "Pay {amount} by UPI",
+    "m.earn.paid": "Nothing due. Thank you!",
+    "m.earn.days": "Last 14 days",
+    "m.earn.dayLine": "{trips} trips · {amount}",
+    "m.earn.entries": "Fee ledger",
+    "m.earn.kind.fee": "Day fee",
+    "m.earn.kind.payment": "Payment",
+    "m.earn.kind.waiver": "Waiver",
+    "m.earn.blocked": "Ten unpaid days block going online. Pay to continue.",
+    "m.earn.refresh": "Refresh",
+    "meter.flag.no-gps-track": "No usable GPS track: billed by the route estimate",
+    "m.error.not_signed_in": "Please sign in again.",
+    "m.error.no_profile": "Please sign in again.",
+    "m.error.forbidden": "You don't have access to this.",
+    "m.error.service_off": "This service is not available right now.",
+    "m.error.active_trip": "You already have a trip in progress.",
+    "m.error.bad_location": "Choose valid pickup and drop places.",
+    "m.error.receiver_required": "Enter the receiver's name and mobile number.",
+    "m.error.bad_weight": "Weight must be between 0.1 and 50 kg.",
+    "m.error.not_found": "Not found.",
+    "m.error.not_a_driver": "Register as a driver first.",
+    "m.error.not_approved": "Your driver account is not approved yet.",
+    "m.error.fees_due": "Ten days of fees are unpaid. Pay to go online.",
+    "m.error.finish_trip_first": "Finish your current trip first.",
+    "m.error.offer_gone": "This request is no longer available.",
+    "m.error.already_taken": "Another driver accepted this request.",
+    "m.error.invalid_action": "That action is not possible.",
+    "m.error.wrong_state": "The trip has moved on. Refreshing.",
+    "m.error.not_allowed": "You can't do that on this trip.",
+    "m.error.wrong_otp": "That OTP is not correct.",
+    "m.error.not_overcharged": "The amount asked must be more than the fare.",
+    "m.error.bad_vehicle_number": "Enter a Tamil Nadu number such as TN 09 AB 1234.",
+    "m.error.bad_licence_number": "Enter your full licence number.",
+    "m.error.documents_missing": "Upload all four documents.",
+    "m.error.name_required": "Add your name first.",
+    "m.error.already_approved": "You are already approved.",
+    "m.error.nothing_due": "Nothing is due.",
+    "m.error.payments_not_configured": "Online payment is not set up yet. Pay at the Thozhan desk.",
+    "m.error.payment_provider_error": "The payment service did not respond. Try again.",
+    "m.error.network": "Can't reach Thozhan. Check your internet connection.",
+    "m.error.bad_request": "Something was missing. Try again.",
+    "m.error.server_error": "Something went wrong on our side. Try again.",
+    "m.error.otp_expired": "Wrong or expired OTP.",
+    "m.error.validation_failed": "Enter a valid 10-digit mobile number.",
+    "m.error.location_denied": "Location permission is needed.",
+    "m.error.note_required": "Add a note.",
+    "a.title": "Thozhan operations",
+    "a.gov.title": "Thozhan · Transport Department view",
+    "a.login.title": "Staff sign-in",
+    "a.login.notStaff": "This number is not registered as Thozhan staff.",
+    "a.nav.overview": "Overview",
+    "a.nav.drivers": "Drivers",
+    "a.nav.trips": "Trips",
+    "a.nav.incidents": "SOS and complaints",
+    "a.nav.compliance": "Fare compliance",
+    "a.nav.services": "Services",
+    "a.nav.fees": "Day fees",
+    "a.nav.farecheck": "Fare check",
+    "a.count.driversOnline": "Drivers online",
+    "a.count.driversPending": "Drivers to review",
+    "a.count.tripsOpen": "Trips in progress",
+    "a.count.tripsToday": "Trips today",
+    "a.count.completedToday": "Completed today",
+    "a.count.incidentsOpen": "Open cases",
+    "a.count.feesOutstanding": "Fees outstanding",
+    "a.sosBanner": "{n} open SOS alerts",
+    "a.liveMap": "Live map",
+    "a.openTrips": "Trips in progress",
+    "a.none": "Nothing here.",
+    "a.col.code": "Trip",
+    "a.col.route": "Route",
+    "a.col.service": "Service",
+    "a.col.status": "Status",
+    "a.col.driver": "Driver",
+    "a.col.rider": "Passenger",
+    "a.col.fare": "Fare",
+    "a.col.when": "When",
+    "a.col.flags": "Flags",
+    "a.drivers.pending": "To review",
+    "a.drivers.all": "All drivers",
+    "a.drivers.docs": "Documents",
+    "a.drivers.view": "View",
+    "a.drivers.approve": "Approve",
+    "a.drivers.reject": "Ask for changes",
+    "a.drivers.suspend": "Suspend",
+    "a.drivers.reinstate": "Reinstate",
+    "a.drivers.notePrompt": "Reason (the driver will see this):",
+    "a.drivers.trips": "{n} trips",
+    "a.drivers.checklist": "Check: name matches the licence, licence class covers autos (TRANS or LMV-TR), RC and permit match the vehicle number, insurance is valid.",
+    "a.trips.all": "All",
+    "a.trips.export": "Export CSV",
+    "a.inc.resolve": "Resolve",
+    "a.inc.resolvePrompt": "What was done?",
+    "a.inc.open": "Open",
+    "a.inc.resolved": "Resolved",
+    "a.inc.kind.sos": "SOS",
+    "a.inc.kind.overcharge": "Overcharge",
+    "a.inc.kind.complaint": "Complaint",
+    "a.inc.asked": "Asked {asked}, meter {fare}",
+    "a.inc.location": "Location",
+    "a.comp.period": "Period",
+    "a.comp.days": "{n} days",
+    "a.comp.note": "Aggregates only. No names, phone numbers or trip details are shown.",
+    "a.comp.trips": "Trips",
+    "a.comp.completed": "Completed",
+    "a.comp.cancelled": "Cancelled",
+    "a.comp.noDriver": "No driver found",
+    "a.comp.avgFare": "Average fare",
+    "a.comp.avgKm": "Average distance",
+    "a.comp.overcharge": "Overcharge reports",
+    "a.comp.avgAbove": "Average asked above the meter",
+    "a.comp.sos": "SOS alerts",
+    "a.comp.complaints": "Complaints",
+    "a.comp.meterFlags": "Meter quality flags",
+    "a.comp.daily": "Trips per day",
+    "a.comp.drivers": "Approved drivers: {approved} · awaiting review: {pending}",
+    "a.svc.note": "Switch a service on only after the required government approval.",
+    "a.fees.record": "Record cash payment",
+    "a.fees.amountPrompt": "Amount received in ₹:",
+    "a.fees.refPrompt": "Receipt number or note:",
+    "a.fees.balance": "Due",
+    "a.track.title": "Live trip",
+    "a.track.expired": "This link has expired or the trip has ended.",
+    "a.refresh": "Refresh",
+    "a.signOut": "Sign out",
+    "a.flow.ride": "Rides",
+    "a.flow.delivery": "Parcels",
+    "a.flow.meter": "Street meter",
+    "m.trip.otpTitle": "Trip OTP",
+    "m.trip.linkCopied": "Tracking link copied. Paste it to family or friends."
   };
 
   // packages/i18n/locales/ta.json
@@ -615,7 +881,273 @@
     "ui.verify.official": "அறிவிக்கப்பட்ட ஆட்டோ கட்டணம் — அரசாணை (நிலை) எண் 366 (2026)",
     "ui.verify.note": "இதே கட்டணக் கணக்கீடு மீட்டரிலும், முன்பதிவிலும், இந்தப் பக்கத்திலும் இயங்குகிறது.",
     "ui.unit.km": "கி.மீ.",
-    "ui.unit.min": "நிமி."
+    "ui.unit.min": "நிமி.",
+    "m.continue": "தொடரவும்",
+    "m.cancel": "ரத்து செய்",
+    "m.back": "பின்செல்",
+    "m.retry": "மீண்டும் முயலவும்",
+    "m.loading": "ஏற்றுகிறது…",
+    "m.close": "மூடு",
+    "m.yes": "ஆம்",
+    "m.no": "இல்லை",
+    "m.signOut": "வெளியேறு",
+    "m.devBackend": "உள்ளூர் சோதனை சேவையகம்",
+    "m.login.title": "உங்கள் தொலைபேசி எண்ணுடன் உள்நுழையவும்",
+    "m.login.phone": "கைபேசி எண்",
+    "m.login.sendOtp": "OTP அனுப்பு",
+    "m.login.otp": "{phone} எண்ணுக்கு அனுப்பிய 6 இலக்க OTP-ஐ உள்ளிடவும்",
+    "m.login.verify": "சரிபார்த்துத் தொடரவும்",
+    "m.login.change": "எண்ணை மாற்று",
+    "m.login.devHint": "சோதனை சேவையகம்: OTP 123456.",
+    "m.login.terms": "தொடர்வதன் மூலம் பயணத்தின்போது உங்கள் இருப்பிடத்தைப் பகிர ஒப்புக்கொள்கிறீர்கள்.",
+    "m.welcome.title": "தோழனுக்கு வரவேற்கிறோம்",
+    "m.welcome.name": "உங்கள் பெயர்",
+    "m.welcome.how": "தோழனை எப்படிப் பயன்படுத்துவீர்கள்?",
+    "m.welcome.ride": "எனக்குப் பயணம் அல்லது பார்சல் வேண்டும்",
+    "m.welcome.drive": "நான் ஆட்டோ ஓட்டுகிறேன்",
+    "m.tab.book": "முன்பதிவு",
+    "m.tab.meter": "மீட்டர்",
+    "m.tab.trips": "பயணங்கள்",
+    "m.tab.account": "கணக்கு",
+    "m.tab.drive": "ஓட்டு",
+    "m.tab.earnings": "வருமானம்",
+    "m.book.title": "எங்கே செல்ல வேண்டும்?",
+    "m.book.pickup": "ஏறும் இடம்",
+    "m.book.drop": "இறங்கும் இடம்",
+    "m.book.choosePlace": "இடத்தைத் தேர்ந்தெடுக்கவும்",
+    "m.book.myLocation": "எனது தற்போதைய இடம்",
+    "m.book.search": "இடங்களைத் தேடு",
+    "m.book.service": "சேவையைத் தேர்ந்தெடுக்கவும்",
+    "m.book.approx": "சுமார் {km} கி.மீ.",
+    "m.book.estimateNote": "இறுதிக் கட்டணம் உண்மையான தூரம் மற்றும் காத்திருப்பு நேரத்தைக் கொண்டு அரசு கட்டண விதிப்படி கணக்கிடப்படும்.",
+    "m.book.confirm": "{service} முன்பதிவு செய்",
+    "m.book.payDriver": "பயண முடிவில் ஓட்டுநருக்கு ரொக்கம் அல்லது UPI மூலம் செலுத்தவும்.",
+    "m.book.receiverName": "பெறுநர் பெயர்",
+    "m.book.receiverPhone": "பெறுநர் கைபேசி எண்",
+    "m.book.weight": "எடை (கி.கி.)",
+    "m.book.item": "என்ன அனுப்புகிறீர்கள்?",
+    "m.book.restricted": "அனுமதி இல்லை: பணம், அபாயகரமான பொருட்கள், மதுபானம், மருந்துச்சீட்டு மருந்துகள், விலங்குகள்.",
+    "m.book.samePlace": "ஏறும் இடமும் இறங்கும் இடமும் வேறாக இருக்க வேண்டும்.",
+    "m.trip.searching": "உங்கள் அருகில் ஆட்டோ தேடுகிறோம்…",
+    "m.trip.searchingNote": "அருகிலுள்ள ஓட்டுநர்கள் உங்கள் கோரிக்கையைப் பார்க்கிறார்கள்.",
+    "m.trip.onTheWay": "{name} வந்துகொண்டிருக்கிறார்",
+    "m.trip.arrived": "{name} வந்துவிட்டார்",
+    "m.trip.otpHint": "பயணத்தைத் தொடங்க இந்த OTP-ஐ ஓட்டுநரிடம் சொல்லவும்.",
+    "m.trip.dropOtpHint": "இந்த OTP-ஐ பெறுநரிடம் பகிரவும். டெலிவரியை முடிக்க ஓட்டுநருக்கு இது தேவை.",
+    "m.trip.cancel": "பயணத்தை ரத்து செய்",
+    "m.trip.cancelConfirm": "இந்தப் பயணத்தை ரத்து செய்யவா?",
+    "m.trip.sos": "அவசர உதவி",
+    "m.trip.sosConfirm": "உங்கள் இருப்பிடத்துடன் தோழன் செயல்பாட்டுக் குழுவுக்கு அவசர எச்சரிக்கை அனுப்பவா?",
+    "m.trip.sosSent": "எச்சரிக்கை அனுப்பப்பட்டது. செயல்பாட்டுக் குழு உங்களை அழைக்கும். காவல், ஆம்புலன்ஸ், தீயணைப்புக்கு 112 அழைக்கவும்.",
+    "m.trip.call112": "112 அழை",
+    "m.trip.share": "பயணத்தைப் பகிர்",
+    "m.trip.shareText": "நான் தோழன் பயணம் {code}-இல் {vehicle} வாகனத்தில் உள்ளேன். நேரலையில் பாருங்கள்: {url}",
+    "m.trip.noDriver": "எந்த ஓட்டுநரும் ஏற்கவில்லை. மீண்டும் முயலவும்.",
+    "m.trip.cancelled": "பயணம் ரத்து செய்யப்பட்டது",
+    "m.receipt.title": "ரசீது",
+    "m.receipt.distance": "தூரம்",
+    "m.receipt.waiting": "காத்திருப்பு",
+    "m.receipt.asked": "ஓட்டுநர் கூடுதலாகக் கேட்டாரா?",
+    "m.receipt.askedAmount": "கேட்ட தொகை (₹)",
+    "m.receipt.report": "அதிகக் கட்டணம் புகாரளி",
+    "m.receipt.reported": "புகார் செயல்பாட்டுக் குழுவுக்கு அனுப்பப்பட்டது. நன்றி.",
+    "m.receipt.offline": "இந்த கைபேசியில் சேமிக்கப்பட்டது. இணையம் கிடைக்கும்போது பதிவேற்றப்படும்.",
+    "m.receipt.complain": "சிக்கலைப் புகாரளி",
+    "m.receipt.complainPlaceholder": "என்ன நடந்தது என்பதை விவரிக்கவும்",
+    "m.receipt.complainSent": "புகார் அனுப்பப்பட்டது.",
+    "m.meter.sub": "சாலையில் ஆட்டோ பிடித்தீர்களா? அரசு கட்டண மீட்டரை உங்கள் கைபேசியில் இயக்குங்கள்.",
+    "m.meter.vehicle": "ஆட்டோ எண் (விருப்பத்தேர்வு)",
+    "m.meter.source": "இருப்பிட ஆதாரம்",
+    "m.meter.gps": "கைபேசி GPS",
+    "m.meter.demo": "மாதிரி வழி",
+    "m.meter.start": "மீட்டரைத் தொடங்கு",
+    "m.meter.stop": "நிறுத்தி ரசீது பெறு",
+    "m.meter.running": "மீட்டர் இயங்குகிறது",
+    "m.meter.waitingGps": "GPS-க்காகக் காத்திருக்கிறது…",
+    "m.meter.background": "திரை அணைந்தாலும் இயங்கும்.",
+    "m.meter.foregroundOnly": "இந்தத் திரையைத் திறந்தே வைக்கவும்: இந்தப் பதிப்பில் பின்னணி இருப்பிடம் கிடைக்கவில்லை.",
+    "m.meter.pending": "{n} மீட்டர் பயணங்கள் பதிவேற்றக் காத்திருக்கின்றன",
+    "m.meter.sync": "இப்போது பதிவேற்று",
+    "m.meter.voice": "கட்டணத்தை உரக்க அறிவி",
+    "m.meter.speak": "கட்டணம் {amount}",
+    "m.trips.title": "உங்கள் பயணங்கள்",
+    "m.trips.empty": "இன்னும் பயணங்கள் இல்லை.",
+    "m.trips.meter": "சாலையில் பிடித்த ஆட்டோ (மீட்டர்)",
+    "m.account.language": "மொழி",
+    "m.account.driveMode": "ஓட்டுநர் பயன்முறைக்கு மாறு",
+    "m.account.rideMode": "பயணி பயன்முறைக்கு மாறு",
+    "m.account.becomeDriver": "தோழனுடன் ஓட்டுங்கள்",
+    "m.account.driverStatus": "ஓட்டுநர் விண்ணப்பம்: {status}",
+    "m.reg.title": "ஓட்டுநர் பதிவு",
+    "m.reg.sub": "உங்கள் ஆவணங்களைப் பதிவேற்றவும். ஆன்லைனுக்குச் செல்லும் முன் செயல்பாட்டுக் குழு சரிபார்க்கும்.",
+    "m.reg.vehicleNumber": "ஆட்டோ பதிவு எண்",
+    "m.reg.licenceNumber": "ஓட்டுநர் உரிம எண்",
+    "m.reg.doc.licence": "ஓட்டுநர் உரிமம்",
+    "m.reg.doc.rc": "பதிவுச் சான்றிதழ் (RC)",
+    "m.reg.doc.permit": "ஆட்டோ அனுமதி",
+    "m.reg.doc.insurance": "காப்பீடு",
+    "m.reg.camera": "புகைப்படம் எடு",
+    "m.reg.gallery": "கோப்பைத் தேர்ந்தெடு",
+    "m.reg.uploaded": "பதிவேற்றப்பட்டது",
+    "m.reg.submit": "சரிபார்ப்புக்குச் சமர்ப்பி",
+    "m.reg.status.pending": "சரிபார்ப்பில் உள்ளது",
+    "m.reg.status.approved": "அங்கீகரிக்கப்பட்டது",
+    "m.reg.status.rejected": "மாற்றங்கள் தேவை",
+    "m.reg.status.suspended": "இடைநிறுத்தப்பட்டது",
+    "m.reg.pendingBody": "அங்கீகரிக்கப்பட்டதும் தெரிவிப்போம், பொதுவாக ஒரு வேலை நாளுக்குள்.",
+    "m.reg.note": "செயல்பாட்டுக் குழுவின் குறிப்பு: {note}",
+    "m.drive.goOnline": "ஆன்லைனுக்குச் செல்",
+    "m.drive.goOffline": "ஆஃப்லைனுக்குச் செல்",
+    "m.drive.online": "நீங்கள் ஆன்லைனில் உள்ளீர்கள்",
+    "m.drive.offline": "நீங்கள் ஆஃப்லைனில் உள்ளீர்கள்",
+    "m.drive.waiting": "அருகில் பயணக் கோரிக்கைகளுக்காகக் காத்திருக்கிறது.",
+    "m.drive.newRequest": "புதிய கோரிக்கை",
+    "m.drive.toPickup": "ஏறும் இடத்துக்கு {km} கி.மீ.",
+    "m.drive.tripKm": "பயணம் சுமார் {km} கி.மீ.",
+    "m.drive.accept": "ஏற்றுக்கொள்",
+    "m.drive.decline": "நிராகரி",
+    "m.drive.expires": "{s} வி.",
+    "m.drive.navigate": "வழிகாட்டு",
+    "m.drive.otp": "பயணியிடமிருந்து OTP",
+    "m.drive.dropOtp": "பெறுநரிடமிருந்து OTP",
+    "m.drive.today": "இன்று: {trips} பயணங்கள் · {amount}",
+    "m.drive.fee": "செலுத்த வேண்டிய நாள் கட்டணம்: {amount}",
+    "m.drive.rider": "பயணி",
+    "m.drive.receiver": "பெறுநர்",
+    "m.drive.demoLocation": "இங்கு GPS இல்லை, எனவே சென்னை சென்ட்ரலில் மாதிரி இருப்பிடம் பயன்படுத்தப்படுகிறது.",
+    "m.earn.title": "வருமானம் மற்றும் நாள் கட்டணம்",
+    "m.earn.plan": "செயல்பட்ட ஒவ்வொரு நாளுக்கும் ₹10, அன்றைய முதல் பயணம் முடிந்த பிறகு. கமிஷன் இல்லை.",
+    "m.earn.balance": "செலுத்த வேண்டிய கட்டணம்",
+    "m.earn.pay": "{amount} UPI மூலம் செலுத்து",
+    "m.earn.paid": "செலுத்த எதுவும் இல்லை. நன்றி!",
+    "m.earn.days": "கடந்த 14 நாட்கள்",
+    "m.earn.dayLine": "{trips} பயணங்கள் · {amount}",
+    "m.earn.entries": "கட்டணக் கணக்கேடு",
+    "m.earn.kind.fee": "நாள் கட்டணம்",
+    "m.earn.kind.payment": "செலுத்தியது",
+    "m.earn.kind.waiver": "தள்ளுபடி",
+    "m.earn.blocked": "பத்து நாட்கள் செலுத்தாவிட்டால் ஆன்லைனுக்குச் செல்ல முடியாது. தொடர செலுத்தவும்.",
+    "m.earn.refresh": "புதுப்பி",
+    "meter.flag.no-gps-track": "பயன்படுத்தக்கூடிய GPS பதிவு இல்லை: வழி மதிப்பீட்டின்படி கட்டணம்",
+    "m.error.not_signed_in": "மீண்டும் உள்நுழையவும்.",
+    "m.error.no_profile": "மீண்டும் உள்நுழையவும்.",
+    "m.error.forbidden": "இதற்கு உங்களுக்கு அனுமதி இல்லை.",
+    "m.error.service_off": "இந்தச் சேவை இப்போது கிடைக்கவில்லை.",
+    "m.error.active_trip": "உங்களுக்கு ஏற்கனவே ஒரு பயணம் நடந்துகொண்டிருக்கிறது.",
+    "m.error.bad_location": "சரியான ஏறும் மற்றும் இறங்கும் இடங்களைத் தேர்ந்தெடுக்கவும்.",
+    "m.error.receiver_required": "பெறுநரின் பெயர் மற்றும் கைபேசி எண்ணை உள்ளிடவும்.",
+    "m.error.bad_weight": "எடை 0.1 முதல் 50 கி.கி.க்குள் இருக்க வேண்டும்.",
+    "m.error.not_found": "கண்டுபிடிக்க முடியவில்லை.",
+    "m.error.not_a_driver": "முதலில் ஓட்டுநராகப் பதிவு செய்யவும்.",
+    "m.error.not_approved": "உங்கள் ஓட்டுநர் கணக்கு இன்னும் அங்கீகரிக்கப்படவில்லை.",
+    "m.error.fees_due": "பத்து நாள் கட்டணம் செலுத்தப்படவில்லை. ஆன்லைனுக்குச் செல்ல செலுத்தவும்.",
+    "m.error.finish_trip_first": "முதலில் தற்போதைய பயணத்தை முடிக்கவும்.",
+    "m.error.offer_gone": "இந்தக் கோரிக்கை இப்போது கிடைக்கவில்லை.",
+    "m.error.already_taken": "வேறொரு ஓட்டுநர் இந்தக் கோரிக்கையை ஏற்றுவிட்டார்.",
+    "m.error.invalid_action": "அந்தச் செயல் சாத்தியமில்லை.",
+    "m.error.wrong_state": "பயண நிலை மாறிவிட்டது. புதுப்பிக்கிறது.",
+    "m.error.not_allowed": "இந்தப் பயணத்தில் அதைச் செய்ய முடியாது.",
+    "m.error.wrong_otp": "அந்த OTP சரியானது அல்ல.",
+    "m.error.not_overcharged": "கேட்ட தொகை கட்டணத்தை விட அதிகமாக இருக்க வேண்டும்.",
+    "m.error.bad_vehicle_number": "TN 09 AB 1234 போன்ற தமிழ்நாடு எண்ணை உள்ளிடவும்.",
+    "m.error.bad_licence_number": "உங்கள் முழு உரிம எண்ணை உள்ளிடவும்.",
+    "m.error.documents_missing": "நான்கு ஆவணங்களையும் பதிவேற்றவும்.",
+    "m.error.name_required": "முதலில் உங்கள் பெயரைச் சேர்க்கவும்.",
+    "m.error.already_approved": "நீங்கள் ஏற்கனவே அங்கீகரிக்கப்பட்டுள்ளீர்கள்.",
+    "m.error.nothing_due": "செலுத்த எதுவும் இல்லை.",
+    "m.error.payments_not_configured": "இணையவழிக் கட்டணம் இன்னும் அமைக்கப்படவில்லை. தோழன் அலுவலகத்தில் செலுத்தவும்.",
+    "m.error.payment_provider_error": "கட்டணச் சேவை பதிலளிக்கவில்லை. மீண்டும் முயலவும்.",
+    "m.error.network": "தோழனை அணுக முடியவில்லை. இணைய இணைப்பைச் சரிபார்க்கவும்.",
+    "m.error.bad_request": "ஏதோ விடுபட்டுள்ளது. மீண்டும் முயலவும்.",
+    "m.error.server_error": "எங்கள் பக்கம் ஏதோ தவறு நடந்தது. மீண்டும் முயலவும்.",
+    "m.error.otp_expired": "தவறான அல்லது காலாவதியான OTP.",
+    "m.error.validation_failed": "சரியான 10 இலக்க கைபேசி எண்ணை உள்ளிடவும்.",
+    "m.error.location_denied": "இருப்பிட அனுமதி தேவை.",
+    "m.error.note_required": "குறிப்பைச் சேர்க்கவும்.",
+    "a.title": "தோழன் செயல்பாடுகள்",
+    "a.gov.title": "தோழன் · போக்குவரத்துத் துறைப் பார்வை",
+    "a.login.title": "பணியாளர் உள்நுழைவு",
+    "a.login.notStaff": "இந்த எண் தோழன் பணியாளராகப் பதிவு செய்யப்படவில்லை.",
+    "a.nav.overview": "மேலோட்டம்",
+    "a.nav.drivers": "ஓட்டுநர்கள்",
+    "a.nav.trips": "பயணங்கள்",
+    "a.nav.incidents": "அவசர உதவி மற்றும் புகார்கள்",
+    "a.nav.compliance": "கட்டண இணக்கம்",
+    "a.nav.services": "சேவைகள்",
+    "a.nav.fees": "நாள் கட்டணங்கள்",
+    "a.nav.farecheck": "கட்டணச் சரிபார்ப்பு",
+    "a.count.driversOnline": "ஆன்லைன் ஓட்டுநர்கள்",
+    "a.count.driversPending": "சரிபார்க்க வேண்டிய ஓட்டுநர்கள்",
+    "a.count.tripsOpen": "நடைபெறும் பயணங்கள்",
+    "a.count.tripsToday": "இன்றைய பயணங்கள்",
+    "a.count.completedToday": "இன்று முடிந்தவை",
+    "a.count.incidentsOpen": "திறந்த புகார்கள்",
+    "a.count.feesOutstanding": "நிலுவைக் கட்டணம்",
+    "a.sosBanner": "{n} திறந்த அவசர எச்சரிக்கைகள்",
+    "a.liveMap": "நேரலை வரைபடம்",
+    "a.openTrips": "நடைபெறும் பயணங்கள்",
+    "a.none": "இங்கு எதுவும் இல்லை.",
+    "a.col.code": "பயணம்",
+    "a.col.route": "வழி",
+    "a.col.service": "சேவை",
+    "a.col.status": "நிலை",
+    "a.col.driver": "ஓட்டுநர்",
+    "a.col.rider": "பயணி",
+    "a.col.fare": "கட்டணம்",
+    "a.col.when": "நேரம்",
+    "a.col.flags": "குறிப்புகள்",
+    "a.drivers.pending": "சரிபார்க்க",
+    "a.drivers.all": "அனைத்து ஓட்டுநர்களும்",
+    "a.drivers.docs": "ஆவணங்கள்",
+    "a.drivers.view": "பார்",
+    "a.drivers.approve": "அங்கீகரி",
+    "a.drivers.reject": "மாற்றங்களைக் கேள்",
+    "a.drivers.suspend": "இடைநிறுத்து",
+    "a.drivers.reinstate": "மீண்டும் அனுமதி",
+    "a.drivers.notePrompt": "காரணம் (ஓட்டுநர் இதைப் பார்ப்பார்):",
+    "a.drivers.trips": "{n} பயணங்கள்",
+    "a.drivers.checklist": "சரிபார்க்கவும்: பெயர் உரிமத்துடன் பொருந்துகிறது, உரிம வகை ஆட்டோவுக்குப் பொருந்தும் (TRANS அல்லது LMV-TR), RC மற்றும் அனுமதி வாகன எண்ணுடன் பொருந்துகின்றன, காப்பீடு செல்லுபடியாகிறது.",
+    "a.trips.all": "அனைத்தும்",
+    "a.trips.export": "CSV பதிவிறக்கு",
+    "a.inc.resolve": "தீர்வு செய்",
+    "a.inc.resolvePrompt": "என்ன நடவடிக்கை எடுக்கப்பட்டது?",
+    "a.inc.open": "திறந்தவை",
+    "a.inc.resolved": "தீர்க்கப்பட்டவை",
+    "a.inc.kind.sos": "அவசர உதவி",
+    "a.inc.kind.overcharge": "அதிகக் கட்டணம்",
+    "a.inc.kind.complaint": "புகார்",
+    "a.inc.asked": "கேட்டது {asked}, மீட்டர் {fare}",
+    "a.inc.location": "இருப்பிடம்",
+    "a.comp.period": "காலம்",
+    "a.comp.days": "{n} நாட்கள்",
+    "a.comp.note": "மொத்த எண்ணிக்கை மட்டும். பெயர்கள், தொலைபேசி எண்கள் அல்லது பயண விவரங்கள் காட்டப்படவில்லை.",
+    "a.comp.trips": "பயணங்கள்",
+    "a.comp.completed": "முடிந்தவை",
+    "a.comp.cancelled": "ரத்தானவை",
+    "a.comp.noDriver": "ஓட்டுநர் கிடைக்கவில்லை",
+    "a.comp.avgFare": "சராசரிக் கட்டணம்",
+    "a.comp.avgKm": "சராசரி தூரம்",
+    "a.comp.overcharge": "அதிகக் கட்டணப் புகார்கள்",
+    "a.comp.avgAbove": "மீட்டரை விட சராசரியாகக் கேட்கப்பட்ட கூடுதல்",
+    "a.comp.sos": "அவசர எச்சரிக்கைகள்",
+    "a.comp.complaints": "புகார்கள்",
+    "a.comp.meterFlags": "மீட்டர் தரக் குறிப்புகள்",
+    "a.comp.daily": "நாள்தோறும் பயணங்கள்",
+    "a.comp.drivers": "அங்கீகரிக்கப்பட்ட ஓட்டுநர்கள்: {approved} · சரிபார்ப்பில்: {pending}",
+    "a.svc.note": "தேவையான அரசு ஒப்புதலுக்குப் பிறகே சேவையை இயக்கவும்.",
+    "a.fees.record": "ரொக்கக் கட்டணத்தைப் பதிவு செய்",
+    "a.fees.amountPrompt": "பெற்ற தொகை ₹:",
+    "a.fees.refPrompt": "ரசீது எண் அல்லது குறிப்பு:",
+    "a.fees.balance": "நிலுவை",
+    "a.track.title": "நேரலைப் பயணம்",
+    "a.track.expired": "இந்த இணைப்பு காலாவதியானது அல்லது பயணம் முடிந்துவிட்டது.",
+    "a.refresh": "புதுப்பி",
+    "a.signOut": "வெளியேறு",
+    "a.flow.ride": "சவாரிகள்",
+    "a.flow.delivery": "பார்சல்கள்",
+    "a.flow.meter": "தெரு மீட்டர்",
+    "m.trip.otpTitle": "பயண OTP",
+    "m.trip.linkCopied": "கண்காணிப்பு இணைப்பு நகலெடுக்கப்பட்டது. குடும்பத்தினர் அல்லது நண்பர்களுக்கு அனுப்புங்கள்."
   };
 
   // packages/i18n/src/index.ts
@@ -764,6 +1296,35 @@
     return Object.entries(MACHINES[flow].transitions).filter(([, t2]) => t2.from.includes(status) && t2.by.includes(actor)).map(([action]) => action);
   }
   var isTerminal = (flow, status) => MACHINES[flow].terminal.includes(status);
+
+  // packages/shared/src/places.ts
+  var PLACES = [
+    { en: "Chennai Central", ta: "சென்னை சென்ட்ரல்", lat: 13.0837, lon: 80.2707 },
+    { en: "Marina Beach", ta: "மெரினா கடற்கரை", lat: 13.05, lon: 80.2824 },
+    { en: "T. Nagar", ta: "தி. நகர்", lat: 13.0418, lon: 80.2341 },
+    { en: "Anna Nagar", ta: "அண்ணா நகர்", lat: 13.085, lon: 80.2101 },
+    { en: "Guindy Metro", ta: "கிண்டி மெட்ரோ", lat: 13.0098, lon: 80.2121 },
+    { en: "Adyar", ta: "அடையாறு", lat: 13.0012, lon: 80.2565 },
+    { en: "Chennai Airport", ta: "சென்னை விமான நிலையம்", lat: 12.9941, lon: 80.1709 }
+  ];
+  var placeName = (index, locale2) => index === null ? "—" : PLACES[index]?.[locale2] ?? "—";
+  function estimateRouteMeters(from, to) {
+    const a = PLACES[from];
+    const b = PLACES[to];
+    const km2 = Math.hypot((a.lat - b.lat) * 111.195, (a.lon - b.lon) * 108.3);
+    return Math.round(km2 * 1.25 * 1e3);
+  }
+  var SIMULATION_ROUTE = [
+    [13.0827, 80.2752],
+    [13.0806, 80.2685],
+    [13.0789, 80.2612],
+    [13.0763, 80.2548],
+    [13.0732, 80.2489],
+    [13.0688, 80.2441],
+    [13.0636, 80.2405],
+    [13.0589, 80.2378],
+    [13.0544, 80.2341]
+  ];
 
   // packages/tariff/src/engine.ts
   var IST_OFFSET_MINUTES = 330;
@@ -1173,6 +1734,48 @@ ${problems.join("\n")}`);
     return rule;
   }
 
+  // packages/meter/src/simulate.ts
+  var SIM_PROFILE = [
+    [150, 28],
+    [75, 0],
+    [180, 32],
+    [140, 0],
+    [240, 26]
+  ];
+  function simulatedFixes(route, startAt) {
+    const segments = route.slice(1).map((to, i) => {
+      const from = route[i];
+      const north = (to[0] - from[0]) * 111195;
+      const east = (to[1] - from[1]) * 111195 * Math.cos(from[0] * Math.PI / 180);
+      return { from, to, meters: Math.hypot(north, east) };
+    });
+    const total = segments.reduce((n, s) => n + s.meters, 0);
+    const at = (d) => {
+      let left = Math.min(d, total);
+      for (const s of segments) {
+        if (left <= s.meters) {
+          const f = left / s.meters;
+          return [s.from[0] + (s.to[0] - s.from[0]) * f, s.from[1] + (s.to[1] - s.from[1]) * f];
+        }
+        left -= s.meters;
+      }
+      return [...route.at(-1)];
+    };
+    let seed = 42;
+    const noise = () => ((seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296 - 0.5) * 8 / 111195;
+    const fixes = [];
+    let travelled = 0;
+    let t2 = 0;
+    for (const [seconds, kmh] of SIM_PROFILE) {
+      for (let i = 0; i < seconds; i++, t2++) {
+        const [lat, lon] = at(travelled);
+        fixes.push({ lat: lat + noise(), lon: lon + noise(), accuracyMeters: 6, timestamp: startAt + t2 * 1e3 });
+        travelled += kmh / 3.6;
+      }
+    }
+    return fixes;
+  }
+
   // packages/meter/src/index.ts
   var AUTO_METER_CONFIG = Object.freeze({
     maxAccuracyMeters: 25,
@@ -1280,77 +1883,8 @@ ${problems.join("\n")}`);
     });
   }
 
-  // web/src/places.ts
-  var PLACES = [
-    { en: "Chennai Central", ta: "சென்னை சென்ட்ரல்", lat: 13.0837, lon: 80.2707 },
-    { en: "Marina Beach", ta: "மெரினா கடற்கரை", lat: 13.05, lon: 80.2824 },
-    { en: "T. Nagar", ta: "தி. நகர்", lat: 13.0418, lon: 80.2341 },
-    { en: "Anna Nagar", ta: "அண்ணா நகர்", lat: 13.085, lon: 80.2101 },
-    { en: "Guindy Metro", ta: "கிண்டி மெட்ரோ", lat: 13.0098, lon: 80.2121 },
-    { en: "Adyar", ta: "அடையாறு", lat: 13.0012, lon: 80.2565 },
-    { en: "Chennai Airport", ta: "சென்னை விமான நிலையம்", lat: 12.9941, lon: 80.1709 }
-  ];
-  var placeName = (index, locale2) => index === null ? "—" : PLACES[index]?.[locale2] ?? "—";
-  function estimateRouteMeters(from, to) {
-    const a = PLACES[from];
-    const b = PLACES[to];
-    const km2 = Math.hypot((a.lat - b.lat) * 111.195, (a.lon - b.lon) * 108.3);
-    return Math.round(km2 * 1.25 * 1e3);
-  }
-  var SIMULATION_ROUTE = [
-    [13.0827, 80.2752],
-    [13.0806, 80.2685],
-    [13.0789, 80.2612],
-    [13.0763, 80.2548],
-    [13.0732, 80.2489],
-    [13.0688, 80.2441],
-    [13.0636, 80.2405],
-    [13.0589, 80.2378],
-    [13.0544, 80.2341]
-  ];
-
   // web/src/meter-session.ts
-  var SIM_PROFILE = [
-    [150, 28],
-    [75, 0],
-    [180, 32],
-    [140, 0],
-    [240, 26]
-  ];
   var SIM_SPEEDUP = 10;
-  function simulatedFixes(startAt) {
-    const segments = SIMULATION_ROUTE.slice(1).map((to, i) => {
-      const from = SIMULATION_ROUTE[i];
-      const north = (to[0] - from[0]) * 111195;
-      const east = (to[1] - from[1]) * 111195 * Math.cos(from[0] * Math.PI / 180);
-      return { from, to, meters: Math.hypot(north, east) };
-    });
-    const total = segments.reduce((n, s) => n + s.meters, 0);
-    const at = (d) => {
-      let left = Math.min(d, total);
-      for (const s of segments) {
-        if (left <= s.meters) {
-          const f = left / s.meters;
-          return [s.from[0] + (s.to[0] - s.from[0]) * f, s.from[1] + (s.to[1] - s.from[1]) * f];
-        }
-        left -= s.meters;
-      }
-      return SIMULATION_ROUTE.at(-1);
-    };
-    let seed = 42;
-    const noise = () => ((seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296 - 0.5) * 8 / 111195;
-    const fixes = [];
-    let travelled = 0;
-    let t2 = 0;
-    for (const [seconds, kmh] of SIM_PROFILE) {
-      for (let i = 0; i < seconds; i++, t2++) {
-        const [lat, lon] = at(travelled);
-        fixes.push({ lat: lat + noise(), lon: lon + noise(), accuracyMeters: 6, timestamp: startAt + t2 * 1e3 });
-        travelled += kmh / 3.6;
-      }
-    }
-    return fixes;
-  }
   function startMeter(options) {
     const meter2 = createMeter();
     const startedAt = Date.now();
@@ -1368,7 +1902,7 @@ ${problems.join("\n")}`);
       options.onUpdate(read());
     };
     if (options.source === "simulation") {
-      const fixes = simulatedFixes(startedAt);
+      const fixes = simulatedFixes(SIMULATION_ROUTE, startedAt);
       let i = 0;
       const timer = setInterval(() => {
         const fix = fixes[i++];
