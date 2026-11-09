@@ -147,7 +147,8 @@ interface Driver {
   reviewNote: string | null;
   online: boolean;
   trips: number;
-  balancePaise: number;
+  /** Null for reviewers, who do not see fees. */
+  balancePaise: number | null;
 }
 
 async function openDocument(path: string) {
@@ -193,7 +194,8 @@ export function Drivers() {
               {d.vehicleNumber} · {d.licenceNumber} · {d.phone}
             </p>
             <p className="muted small">
-              {t('a.drivers.trips', { n: d.trips })} · {t('a.fees.balance')} {money(d.balancePaise)}
+              {t('a.drivers.trips', { n: d.trips })}
+              {d.balancePaise != null ? ` · ${t('a.fees.balance')} ${money(d.balancePaise)}` : ''}
               {d.online ? ' · 🟢' : ''}
             </p>
             {d.reviewNote ? <p className="small">“{d.reviewNote}”</p> : null}
@@ -371,13 +373,15 @@ export function Incidents() {
 
 // ---------------------------------------------------------------- fees
 
+type FeeDriver = Driver & { balancePaise: number };
+
 export function Fees() {
   const { t, money } = useI18n();
-  const [list, error, reload] = usePoll(() => rpc<Driver[]>('admin_drivers', { p_status: null }), 15000);
+  const [list, error, reload] = usePoll(() => rpc<FeeDriver[]>('admin_drivers', { p_status: null }), 15000);
   const [busy, act] = useAction(reload);
   const owing = (list ?? []).filter((d) => d.balancePaise > 0).sort((a, b) => b.balancePaise - a.balancePaise);
 
-  function record(d: Driver) {
+  function record(d: FeeDriver) {
     const rupees = Number(prompt(t('a.fees.amountPrompt'), String(d.balancePaise / 100)));
     if (!(rupees > 0)) return;
     const ref = prompt(t('a.fees.refPrompt'));
@@ -554,6 +558,264 @@ export function Compliance() {
             ))}
           </div>
         </>
+      ) : null}
+    </>
+  );
+}
+
+// ---------------------------------------------------------------- audit log
+
+interface AuditEntry {
+  id: number;
+  at: string;
+  action: string;
+  target: string | null;
+  targetName: string | null;
+  detail: Record<string, unknown> | null;
+  actor: { id: string; name: string | null; phone: string | null } | null;
+}
+
+interface AuditLog {
+  actions: string[];
+  total: number;
+  entries: AuditEntry[];
+}
+
+const AUDIT_PAGE_SIZE = 500;
+const AUDIT_EXPORT_LIMIT = 10000;
+
+export function Audit() {
+  const { t, money, locale, err } = useI18n();
+  const [action, setAction] = useState('');
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
+  const [exporting, setExporting] = useState(false);
+  const filters = { p_action: action || null, p_from: from || null, p_to: to || null };
+  const [log, error] = usePoll(() => rpc<AuditLog>('admin_audit_log', { ...filters, p_limit: AUDIT_PAGE_SIZE }), 30000, [action, from, to]);
+
+  const actionName = (code: string) => {
+    const key = `a.audit.action.${code}`;
+    const name = t(key);
+    return name === key ? code : name;
+  };
+  const roleName = (role: unknown) => t(`a.staff.role.${role ?? 'none'}`);
+  const who = (r: AuditEntry) => (r.actor ? r.actor.name || r.actor.phone || r.actor.id : t('a.audit.system'));
+  const target = (r: AuditEntry) => r.targetName ?? (r.action.startsWith('flag.') ? t(`category.${r.target}`) : r.target) ?? '—';
+  function detail(r: AuditEntry) {
+    const d = r.detail ?? {};
+    if (r.action === 'staff.role') return `${roleName(d.from)} → ${roleName(d.to)}`;
+    if (r.action === 'flag.set') return t(d.enabled ? 'a.audit.on' : 'a.audit.off');
+    if (r.action === 'ledger.payment') return `${money(Number(d.amount))} · ${d.ref}`;
+    if (r.action === 'payment.amount_mismatch') return money(Number(d.paid));
+    return Object.values(d)
+      .filter((v) => v != null)
+      .join(' · ');
+  }
+
+  // The export covers everything the filters match, not only the rows on screen.
+  async function exportCsv() {
+    setExporting(true);
+    try {
+      const all = await rpc<AuditLog>('admin_audit_log', { ...filters, p_limit: AUDIT_EXPORT_LIMIT });
+      downloadCsv(`thozhan-audit-${new Date().toISOString().slice(0, 10)}.csv`, [
+        ['at', 'actor_id', 'actor_name', 'actor_phone', 'action', 'target', 'target_name', 'detail'],
+        ...all.entries.map((r) => [
+          r.at,
+          r.actor?.id ?? '',
+          r.actor?.name ?? '',
+          r.actor?.phone ?? '',
+          r.action,
+          r.target,
+          r.targetName,
+          r.detail ? JSON.stringify(r.detail) : '',
+        ]),
+      ]);
+    } catch (e) {
+      alert(err(e));
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  return (
+    <>
+      <div className="row-between">
+        <h1>{t('a.nav.audit')}</h1>
+        <button className="secondary" onClick={exportCsv} disabled={exporting || !log?.total}>
+          {t('a.trips.export')}
+        </button>
+      </div>
+      <p className="muted">{t('a.audit.note')}</p>
+      <div className="filters">
+        <label>
+          {t('a.audit.filterAction')}
+          <select value={action} onChange={(e) => setAction(e.target.value)}>
+            <option value="">{t('a.audit.allActions')}</option>
+            {log?.actions.map((a) => (
+              <option key={a} value={a}>
+                {actionName(a)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          {t('a.audit.from')}
+          <input type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} />
+        </label>
+        <label>
+          {t('a.audit.to')}
+          <input type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} />
+        </label>
+        {action || from || to ? (
+          <button className="ghost" onClick={() => (setAction(''), setFrom(''), setTo(''))}>
+            {t('a.audit.clear')}
+          </button>
+        ) : null}
+      </div>
+      <Err text={error} />
+      {log && !log.entries.length ? <p className="muted">{t('a.none')}</p> : null}
+      {log?.entries.length ? (
+        <>
+          <p className="muted small">{t('a.audit.count', { shown: log.entries.length, total: log.total })}</p>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{t('a.col.when')}</th>
+                  <th>{t('a.audit.col.who')}</th>
+                  <th>{t('a.audit.col.action')}</th>
+                  <th>{t('a.audit.col.target')}</th>
+                  <th>{t('a.audit.col.detail')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {log.entries.map((r) => (
+                  <tr key={r.id}>
+                    <td className="nowrap">{when(r.at, locale)}</td>
+                    <td>
+                      {who(r)} {r.actor?.name && r.actor.phone ? <span className="muted mono">{r.actor.phone}</span> : null}
+                    </td>
+                    <td>
+                      <span className="badge">{actionName(r.action)}</span>
+                    </td>
+                    <td>{target(r)}</td>
+                    <td>{detail(r)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : null}
+    </>
+  );
+}
+
+// ---------------------------------------------------------------- staff roles
+
+export type StaffRole = 'admin' | 'support' | 'reviewer' | 'gov';
+const STAFF_ROLES: StaffRole[] = ['admin', 'support', 'reviewer', 'gov'];
+
+interface StaffMember {
+  id: string;
+  name: string | null;
+  phone: string;
+  role: StaffRole;
+  self: boolean;
+}
+
+export function Staff() {
+  const { t } = useI18n();
+  const [staff, error, reload] = usePoll(() => rpc<StaffMember[]>('admin_staff'), 30000);
+  const [busy, act] = useAction(reload);
+  const [phone, setPhone] = useState('');
+  const [role, setRole] = useState<StaffRole>('support');
+  const roleName = (r: StaffRole) => t(`a.staff.role.${r}`);
+
+  function assign(e: React.FormEvent) {
+    e.preventDefault();
+    act(async () => {
+      const person = await rpc<{ id: string; name: string | null; phone: string }>('admin_find_person', { p_phone: phone });
+      if (!confirm(t('a.staff.confirmAssign', { name: person.name || '—', phone: person.phone, role: roleName(role) }))) return;
+      await rpc('admin_set_staff_role', { p_user: person.id, p_role: role });
+      setPhone('');
+    });
+  }
+  function change(m: StaffMember, next: StaffRole) {
+    if (next !== m.role && confirm(t('a.staff.confirmChange', { name: m.name || m.phone, role: roleName(next) }))) {
+      act(() => rpc('admin_set_staff_role', { p_user: m.id, p_role: next }));
+    }
+  }
+  function remove(m: StaffMember) {
+    if (confirm(t('a.staff.confirmRemove', { name: m.name || m.phone }))) {
+      act(() => rpc('admin_set_staff_role', { p_user: m.id, p_role: null }));
+    }
+  }
+
+  return (
+    <>
+      <h1>{t('a.nav.staff')}</h1>
+      <p className="muted">{t('a.staff.note')}</p>
+      <form className="filters" onSubmit={assign}>
+        <label>
+          {t('a.staff.phone')}
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} inputMode="tel" placeholder="90000 00001" required />
+        </label>
+        <label>
+          {t('a.staff.role')}
+          <select value={role} onChange={(e) => setRole(e.target.value as StaffRole)}>
+            {STAFF_ROLES.map((r) => (
+              <option key={r} value={r}>
+                {roleName(r)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button disabled={busy}>{t('a.staff.assign')}</button>
+      </form>
+      <p className="muted small">{t('a.staff.signInFirst')}</p>
+      <Err text={error} />
+      {staff ? (
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{t('a.staff.name')}</th>
+                <th>{t('a.staff.phone')}</th>
+                <th>{t('a.staff.role')}</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {staff.map((m) => (
+                <tr key={m.id}>
+                  <td>
+                    {m.name || '—'} {m.self ? <span className="badge">{t('a.staff.you')}</span> : null}
+                  </td>
+                  <td className="mono">{m.phone}</td>
+                  <td>
+                    <select aria-label={t('a.staff.role')} value={m.role} disabled={busy || m.self} onChange={(e) => change(m, e.target.value as StaffRole)}>
+                      {STAFF_ROLES.map((r) => (
+                        <option key={r} value={r}>
+                          {roleName(r)}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    {m.self ? (
+                      <small className="muted">{t('a.staff.ownAdmin')}</small>
+                    ) : (
+                      <button className="ghost" disabled={busy} onClick={() => remove(m)}>
+                        {t('a.staff.remove')}
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : null}
     </>
   );

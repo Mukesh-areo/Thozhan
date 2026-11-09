@@ -205,6 +205,17 @@ label {
   box-shadow: 0 1px 2px #0002;
 }
 
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin: 8px 0 12px;
+}
+.filters label {
+  width: 200px;
+}
+
 /* shell */
 .shell {
   display: grid;

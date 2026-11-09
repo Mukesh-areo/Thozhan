@@ -68,8 +68,11 @@ export function usePoll<T>(fn: () => Promise<T>, ms: number, deps: unknown[] = [
   return [data, error, () => setTick((n) => n + 1)];
 }
 
+/** Spreadsheets run text starting with these as formulas, and names and notes are free text. */
+const neutralize = (c: string | number | null) => (typeof c === 'string' && /^[=+\-@\t\r]/.test(c) ? `'${c}` : c);
+
 export function downloadCsv(name: string, rows: (string | number | null)[][]) {
-  const csv = rows.map((r) => r.map((c) => `"${String(c ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+  const csv = rows.map((r) => r.map((c) => `"${String(neutralize(c) ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
   const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
   const a = Object.assign(document.createElement('a'), { href: url, download: name });
   a.click();

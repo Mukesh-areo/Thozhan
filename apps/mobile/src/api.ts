@@ -82,7 +82,7 @@ export interface Me {
   phone: string;
   name: string | null;
   locale: 'ta' | 'en';
-  staffRole: 'admin' | 'gov' | null;
+  staffRole: 'admin' | 'gov' | 'support' | 'reviewer' | null;
   driver: {
     status: 'pending' | 'approved' | 'rejected' | 'suspended';
     vehicle: string;
