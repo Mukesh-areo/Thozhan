@@ -487,7 +487,7 @@ async function trip() {
   await driver.notSee(t('trip.action.complete'));
   await rider.see(t('m.trip.arrived', { name: 'Ravi Trips' }));
 
-  step('the right OTP starts it; the driver moves for 25 s');
+  step('the right OTP starts it; the driver moves for 30 s');
   await driver.fill(0, otp);
   await driver.tap(t('trip.action.start'));
   await driver.see(t('trip.action.complete'));

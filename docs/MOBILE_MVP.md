@@ -164,7 +164,7 @@ npm run typecheck && npm run typecheck:apps && npm test
 npm run test:e2e
 ```
 
-This runs the flows that need more than one person through the real apps in Chrome, with a separate browser for each passenger, driver and admin and no demo bots: driver onboarding and approval, a full trip, a parcel delivery, SOS, staff roles, and the error cases. It takes about five minutes. It starts the backend with fresh data, Expo and the admin dashboard itself, on ports 54321, 8081 and 5173, and stops if any of those is already in use. Set `E2E_EXPO_PORT` to run Expo on another port. To run only some areas, name them:
+This runs the flows that need more than one person through the real apps in Chrome, with a separate browser for each passenger, driver and admin and no demo bots: driver onboarding and approval, a full trip, a parcel delivery, SOS, staff roles, and the error cases. It takes about four minutes. It starts the backend with fresh data, Expo and the admin dashboard itself, on ports 54321, 8081 and 5173, and stops if any of those is already in use. Set `E2E_EXPO_PORT` to run Expo on another port. To run only some areas, name them:
 
 ```bash
 node scripts/e2e.ts trip parcel
