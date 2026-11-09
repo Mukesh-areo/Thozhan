@@ -99,7 +99,7 @@ npm run render
 
 Output: `media/Thozhan-Demo.mp4`.
 
-The [render workflow](.github/workflows/render-demo.yml) runs when video/app sources change, uploads an artifact and commits the resulting MP4 and preview contact sheet when successful. View [workflow runs](https://github.com/Mukesh-areo/Thozhan/actions/workflows/render-demo.yml). The local environment could compile the composition but could not launch Chromium, so a successful workflow and visual review are needed before calling the video verified.
+The [render workflow](.github/workflows/render-demo.yml) runs when video/app sources change, uploads an artifact and commits the resulting MP4 and a preview frame when successful. View [workflow runs](https://github.com/Mukesh-areo/Thozhan/actions/workflows/render-demo.yml). The local environment could compile the composition but could not launch Chromium, so a successful workflow and visual review are needed before calling the video verified.
 
 ## Project documents
 
