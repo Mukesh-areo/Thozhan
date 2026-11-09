@@ -1,5 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { rpc, supabase, type Me } from '../src/api';
@@ -55,10 +55,7 @@ export default function DriverRegister() {
     }
   }
 
-  if (driver?.status === 'approved') {
-    router.replace('/drive');
-    return null;
-  }
+  if (driver?.status === 'approved') return <Redirect href="/drive" />;
 
   return (
     <Screen>
