@@ -14,3 +14,6 @@ supabase/.dev-storage/
 apps/admin/dist/
 apps/mobile/dist/
 apps/mobile/.expo/
+
+# browser test screenshots and server logs
+test-results/

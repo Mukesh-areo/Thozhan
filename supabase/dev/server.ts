@@ -10,7 +10,7 @@
 // The apps use the official supabase-js client against it; pointing them at a hosted Supabase
 // project needs only a different URL and anon key.
 //
-// Usage: node supabase/dev/server.ts [--fresh] [--bots] [--port 54321]
+// Usage: node supabase/dev/server.ts [--fresh] [--bots] [--port 54321] [--seed extra.sql]
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import { createServer } from 'node:http';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -431,6 +431,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     rmSync(storageDir, { recursive: true, force: true });
   }
   const db = await createDatabase({ dataDir, seed: true });
+  // --seed FILE runs extra SQL at startup; the browser tests use it for fixtures with --fresh.
+  if (args.includes('--seed')) await db.pg.exec(readFileSync(args[args.indexOf('--seed') + 1]!, 'utf8'));
   const host = lanAddress();
   const publicUrl = `http://${host}:${port}`;
   const app = createApp(db, { storageDir, publicUrl });
