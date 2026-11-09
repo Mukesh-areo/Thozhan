@@ -119,7 +119,7 @@ The local server stands in for Supabase but is not Supabase. These steps have no
    update profiles set staff_role = 'admin' where phone = '91XXXXXXXXXX';
    ```
 
-4. **Edge functions:** set the secrets, then deploy the functions. The functions import the shared packages through `supabase/functions/deno.json`.
+4. **Edge functions:** set the secrets, then deploy the functions. Each function imports the shared packages through its own `supabase/functions/<name>/deno.json`, which the Supabase CLI finds by itself. The CLI does not read a `deno.json` placed directly in `supabase/functions/`. Deploy from the repository root so the CLI can upload `packages/`.
 
    ```bash
    npx supabase secrets set RAZORPAY_KEY_ID=… RAZORPAY_KEY_SECRET=… RAZORPAY_WEBHOOK_SECRET=…
@@ -144,6 +144,12 @@ The local server stands in for Supabase but is not Supabase. These steps have no
 
 ```bash
 npm run typecheck && npm run typecheck:apps && npm test
+```
+
+To run the edge functions on Deno, install [Deno](https://docs.deno.com/runtime/getting_started/installation/) and run the command below. It serves all four functions and calls them over HTTP, with a fake standing in for Supabase's auth and database endpoints. Set `DENO_BIN` if `deno` is not on your `PATH`.
+
+```bash
+npm run test:deno
 ```
 
 `npm test` includes the backend tests in `supabase/test`. They run the real migrations in an in-memory Postgres (PGlite) and cover:
