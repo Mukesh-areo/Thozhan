@@ -173,11 +173,77 @@ The videos are saved to:
 
 It needs Google Chrome, and the ffmpeg that comes with `npm ci` in `video/`.
 
-## 5. Known limits
+## 5. Pilot configuration
+
+The apps have defaults that work on one computer. A pilot build needs the settings below. Anything named `EXPO_PUBLIC_…` or `VITE_…` is compiled into the app and can be read by anyone who has it, so never put a private key in one.
+
+### Mobile app
+
+Set these under `env` for the profile you build in `apps/mobile/eas.json`. For a local run, set them in the shell before `npm run dev:mobile`.
+
+| Variable | What it does | Default |
+| --- | --- | --- |
+| `EXPO_PUBLIC_SUPABASE_URL` | Address of the Supabase project | Local dev backend on port 54321 |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | The project's public anon key | Local dev key |
+| `EXPO_PUBLIC_SHARE_URL` | Start of shared trip links; the admin dashboard's `/track/` page | Local dashboard on port 5173 |
+| `EXPO_PUBLIC_MAP_TILE_URL` | Map tile address, such as `https://tiles.example.com/{z}/{x}/{y}.png`. **Required for a pilot** | OpenStreetMap's public server |
+| `EXPO_PUBLIC_MAP_ATTRIBUTION` | Credit shown on the map, as your tile provider requires. May contain HTML links | `© OpenStreetMap` |
+
+### Admin dashboard
+
+Set these in the environment of the `npm run build:admin` command, or in your static host's build settings.
+
+| Variable | What it does | Default |
+| --- | --- | --- |
+| `VITE_SUPABASE_URL` | Address of the Supabase project | Local dev backend on port 54321 |
+| `VITE_SUPABASE_ANON_KEY` | The project's public anon key | Local dev key |
+| `VITE_MAP_TILE_URL` | Map tile address. **Required for a pilot** | OpenStreetMap's public server |
+| `VITE_MAP_ATTRIBUTION` | Credit shown on the map | `© OpenStreetMap` |
+
+### Edge functions
+
+| Secret | What it does | Where it is set |
+| --- | --- | --- |
+| `SUPABASE_URL` | Address of the project, used by the functions | Supplied by Supabase |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server key the functions use to call internal database functions. Never put it in an app | Supplied by Supabase |
+| `RAZORPAY_KEY_ID` | Razorpay account key for day-fee payment links | `npx supabase secrets set` |
+| `RAZORPAY_KEY_SECRET` | Razorpay secret for the same | `npx supabase secrets set` |
+| `RAZORPAY_WEBHOOK_SECRET` | Checks that payment webhooks really came from Razorpay; must match the Razorpay dashboard | `npx supabase secrets set` |
+| `THOZHAN_DEV` | Turns on the test payment page. Set only by the local server. **Never set it on a live project** | Local server only |
+| `THOZHAN_PUBLIC_URL` | Address used for the test payment page | Local server only |
+
+### Local dev backend only
+
+| Variable | What it does | Default |
+| --- | --- | --- |
+| `DEV_JWT_SECRET` | Signs local sign-in tokens. The apps' built-in dev anon key stops working if you change it | A fixed local value |
+| `DEV_OTP` | The OTP that every number accepts | `123456` |
+| `RAZORPAY_WEBHOOK_SECRET` | Signs the test payment page's webhook | A fixed local value |
+
+### Set outside the code
+
+| Setting | Where |
+| --- | --- |
+| SMS provider with DLT registration for phone sign-in | Supabase: *Authentication → Providers → Phone* |
+| Razorpay webhook for `payment_link.paid` | Razorpay dashboard |
+| Staff roles | `update profiles set staff_role = …` in the SQL editor |
+
+### Reading error reports
+
+Both apps send uncaught errors and unhandled promise rejections to the `client_errors` table. Reports wait on the device while it is offline or signed out, and are sent later. OTPs, phone numbers, coordinates, tokens and ids are removed on the device and again on the server. Each user can store 60 reports an hour.
+
+There is no dashboard page yet. To read the newest reports, call `admin_client_errors` as an admin, or use the SQL editor:
+
+```sql
+select created_at, app, kind, screen, code, app_version, platform, message from client_errors order by created_at desc limit 100;
+```
+
+## 6. Known limits
 
 - The apps check for updates every few seconds rather than using Supabase Realtime. That is simple and reliable for a pilot, but uses more requests.
 - Places are a fixed list of Chennai landmarks plus "my current location". There is no address search yet.
-- Maps use OpenStreetMap's public tiles, which are for light use only. A pilot needs its own tile provider.
+- Maps use OpenStreetMap's public tiles until `EXPO_PUBLIC_MAP_TILE_URL` and `VITE_MAP_TILE_URL` are set; those tiles are not allowed for production load. The mobile map also loads Leaflet from unpkg.com, so it needs that site to be reachable.
+- Error reports need a signed-in user, so a crash before sign-in is sent only after a later sign-in on that device, and visitors to the public tracking page never send theirs. Old reports are not deleted automatically.
 - Bike, cab and other parcel services are built but switched off in **Services** until approval. Their fares are illustrative.
 - The auto fare follows G.O. Ms. No. 366. Three interpretations are marked on every receipt until the department confirms them, so receipts say "reference fare only".
 - Tamil text needs review by a native speaker before the pilot.
