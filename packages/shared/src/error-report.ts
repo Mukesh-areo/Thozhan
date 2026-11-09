@@ -46,7 +46,7 @@ const REPEAT_WINDOW_MS = 60_000;
 const RETRY_MIN_MS = 30_000;
 const RETRY_MAX_MS = 5 * 60_000;
 
-// Keep in step with scrub_client_text in supabase/migrations/20261109000001_client_errors.sql;
+// Keep in step with scrub_client_text in supabase/migrations/20261109000003_client_errors.sql;
 // supabase/test/client-errors.test.ts checks that both give the same result.
 const SCRUBS: readonly [RegExp, string][] = [
   [/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)?/g, '[token]'],
