@@ -40,6 +40,12 @@ export default function Drive() {
     }
   }, POLL.driver);
 
+  // Operations can suspend a driver at any time; the layout then shows why. A trip in
+  // progress is finished first, so the passenger is never left stranded.
+  usePoll(async () => {
+    if (!trip) await refresh();
+  }, 10000);
+
   // Location heartbeat while online: every fix on board (the server bills from this track),
   // every few seconds otherwise.
   const onBoardRef = useRef(onBoard);
