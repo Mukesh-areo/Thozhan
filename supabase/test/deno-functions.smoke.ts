@@ -228,7 +228,8 @@ describe('edge functions on Deno', { concurrency: false }, () => {
 
     it('needs a valid bearer token', async () => {
       const payload = JSON.stringify({ tripId, action: 'complete' });
-      for (const headers of [{}, { authorization: 'Bearer bad-token' }]) {
+      const unsigned: Record<string, string>[] = [{}, { authorization: 'Bearer bad-token' }];
+      for (const headers of unsigned) {
         const { status, body } = await call(urls.finish!, { headers, body: payload });
         assert.equal(status, 401);
         assert.deepEqual(body, { error: 'not_signed_in' });
