@@ -24,7 +24,7 @@ export const reporter = createErrorReporter({
   send: rpcSender({
     app: 'mobile',
     appVersion: Constants.expoConfig?.version ?? null,
-    platform: Platform.Version === undefined ? Platform.OS : `${Platform.OS} ${Platform.Version}`,
+    platform: Platform.OS === 'web' ? 'web' : `${Platform.OS} ${Platform.Version}`,
     hasSession: async () => !!(await supabase.auth.getSession()).data.session,
     rpc: (args) => supabase.rpc('report_client_error', args),
   }),
