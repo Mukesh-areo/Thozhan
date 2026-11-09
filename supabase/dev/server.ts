@@ -207,9 +207,10 @@ export function createApp(db: Database, options: AppOptions) {
 
   // Storage: only the private driver-documents bucket, with the same rules as the SQL policies.
   const objectPath = (bucket: string, key: string) => join(options.storageDir, bucket, ...key.split('/'));
-  const isAdmin = async (id: string) => !!(await db.pg.query(`select 1 from profiles where id = $1 and staff_role = 'admin'`, [id])).rows.length;
   async function canRead(id: string | null, key: string) {
-    return !!id && (key.split('/')[0] === id || (await isAdmin(id)));
+    if (!id) return false;
+    if (key.split('/')[0] === id) return true;
+    return db.rpc<boolean>('can_read_driver_documents', {}, { role: 'authenticated', claims: { sub: id, role: 'authenticated' } });
   }
   function serveFile(bucket: string, key: string) {
     const file = objectPath(bucket, key);

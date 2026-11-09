@@ -38,7 +38,7 @@ npm run dev:mobile
 | Admin dashboard | http://localhost:5173 |
 | Mobile app in a browser | press `w` in the Expo terminal, or open http://localhost:8081 |
 
-`dev:backend` keeps its data in `supabase/.dev-data` between runs. To start again from the seed data, run `npm run dev:backend:fresh`.
+`dev:backend` keeps its data in `supabase/.dev-data` between runs. To start again from the seed data, run `npm run dev:backend:fresh`. Migrations apply only to a fresh local database, so run it after pulling a new migration.
 
 ### Test accounts
 
@@ -48,6 +48,8 @@ Every number uses the OTP **123456**. Type the 10-digit number; the app adds +91
 | --- | --- |
 | 90000 00001 | Admin (all dashboard pages) |
 | 90000 00002 | Transport Department (fare compliance and fare check only) |
+| 90000 00003 | Support (trips and incidents) |
+| 90000 00004 | Driver reviewer (driver review and documents) |
 | 90000 00011 | Murugan K, approved auto driver, TN 09 AB 4821 |
 | 90000 00012 | Selvi R, approved auto driver |
 | Any other number | A new passenger, who can also apply to drive |
@@ -113,11 +115,13 @@ The local server stands in for Supabase but is not Supabase. These steps have no
 
    `supabase/seed.sql` holds the demo staff and drivers. Load it only into a test project.
 2. **Phone sign-in:** in *Authentication → Providers → Phone*, connect an SMS provider with DLT registration (MSG91 or Twilio). Until then, add test numbers with fixed OTPs on the same page.
-3. **Staff accounts:** after a staff member signs in once, set their role in the SQL editor:
+3. **Staff accounts:** after the first admin signs in once, set their role in the SQL editor:
 
    ```sql
    update profiles set staff_role = 'admin' where phone = '91XXXXXXXXXX';
    ```
+
+   That admin assigns every other role on the dashboard's **Staff roles** page, which records each change in the audit log.
 
 4. **Edge functions:** set the secrets, then deploy the functions. Each function imports the shared packages through its own `supabase/functions/<name>/deno.json`, which the Supabase CLI finds by itself. The CLI does not read a `deno.json` placed directly in `supabase/functions/`. Deploy from the repository root so the CLI can upload `packages/`.
 
