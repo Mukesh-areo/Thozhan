@@ -17,7 +17,8 @@
     "dev:admin": "npm --workspace @thozhan/admin run dev",
     "build:admin": "npm --workspace @thozhan/admin run build",
     "typecheck:apps": "tsc -p apps/mobile --noEmit && tsc -p apps/admin",
-    "record:app": "node scripts/record-app.ts"
+    "record:app": "node scripts/record-app.ts",
+    "test:e2e": "node scripts/e2e.ts"
   },
   "engines": {
     "node": ">=22.18"
