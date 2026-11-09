@@ -1,10 +1,42 @@
 # Thozhan
 
-Thozhan is a Tamil Nadu mobility application prototype with passenger booking, a driver workspace and an operations dashboard. It is a browser-based demonstration, not a native Android APK or a licensed transport service.
+Thozhan is a Tamil Nadu mobility application with passenger booking, a driver workspace, a GPS auto meter and an operations dashboard. It is not a licensed transport service.
+
+## MVP: mobile app, admin dashboard and backend
+
+- **Backend:** Supabase. Schema, security rules and edge functions are in [supabase](supabase/).
+- **Mobile app:** one Expo Android app with passenger, driver and street-meter modes, in [apps/mobile](apps/mobile/).
+- **Admin dashboard:** for operations staff, with a read-only view for the Transport Department, in [apps/admin](apps/admin/).
+
+All three run on one computer with no accounts needed:
+
+```sh
+npm install
+npm run dev:backend   # local Supabase stand-in with demo drivers, port 54321
+npm run dev:admin     # http://localhost:5173
+npm run dev:mobile    # scan the QR code with Expo Go, or press w for the browser
+```
+
+Sign in with any number and OTP 123456. See [Running the Thozhan MVP](docs/MOBILE_MVP.md) for:
+
+- test accounts and a five-minute demo;
+- running on an Android phone and building the APK;
+- moving to a real Supabase project.
+
+The plan is in [MVP plan](docs/MVP_PLAN.md).
+
+## Browser prototype
+
+The original browser-only prototype is in `web/`. It keeps its data in the browser and needs no backend.
 
 ## What works today
 
-- Select Chennai pickup and destination locations and an illustrative vehicle fare.
+- **Tamil and English** across the whole app. Tamil is the default; switch from the header.
+- **Auto meter for street hails:** phone GPS (or a 10× demo simulation) measures distance and waiting time. It gives a live fare under G.O. Ms. No. 366, an itemised receipt and an overcharge report.
+- **Fare check page for officials:** enter any trip and see the notified-tariff fare with its source and the open interpretations.
+- **Booking for auto, cab and parcel,** with pickup and drop OTPs for parcels. Services are switched on or off from Operations. Bike taxi stays off pending legal clarification.
+
+- Select Chennai pickup and destination landmarks (bilingual names) and see a quote from the shared fare engine.
 - Request or schedule a demo ride; inspect its OTP and driver state.
 - Accept, arrive, validate OTP and complete the ride in the driver workspace.
 - Track illustrative earnings and a ₹10 fee assessed once per eligible India-calendar day.
@@ -23,11 +55,13 @@ python3 -m http.server 8080 --directory web
 
 Open http://localhost:8080 in a browser. For the Android layout, use a narrow browser viewport. No app build or dependencies are required. Google Fonts are optional external styling dependencies; system fonts are the fallback.
 
-Run the existing logic checks:
+The UI source is TypeScript in `web/src/`. It is bundled into the committed `web/app.js`, so serving the folder needs no build. After changing `web/src` or `packages/`, rebuild the bundle and run the checks:
 
 ```sh
-cd web
-node test.cjs
+npm install
+npm run build:web
+npm test
+npm run test:web
 ```
 
 The checks cover duplicate requests, trip transitions, wrong OTP rejection, completed trips, once-per-day fee deduplication, persistence and equal-location rejection. They use DOM stubs and do not replace real-browser QA.
@@ -69,6 +103,8 @@ The [render workflow](.github/workflows/render-demo.yml) runs when video/app sou
 
 ## Project documents
 
+- [Running the MVP](docs/MOBILE_MVP.md)
+- [MVP plan](docs/MVP_PLAN.md)
 - [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
 - [System architecture: auto, bike, cab, parcel](docs/SYSTEM_ARCHITECTURE.md)
 - [Technology stack](docs/TECH_STACK.md)

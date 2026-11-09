@@ -6,7 +6,12 @@
     "studio": "remotion studio index.jsx",
     "render": "remotion render index.jsx ThozhanDemo ../media/Thozhan-Demo.mp4 --codec=h264 --concurrency=2",
     "preview": "remotion still index.jsx ThozhanDemo preview.png --frame=180",
-    "scenes": "node generate-scenes.cjs"
+    "scenes": "node generate-scenes.cjs",
+    "screens": "node capture-screens.cjs",
+    "narration": "powershell -NoProfile -ExecutionPolicy Bypass -File tts-windows.ps1 && node measure-narration.cjs",
+    "studio:explainer": "remotion studio index.jsx",
+    "render:explainer": "remotion render index.jsx ThozhanExplainer ../media/Thozhan-Explainer.mp4 --codec=h264 --crf=20 --concurrency=4",
+    "still:explainer": "remotion still index.jsx ThozhanExplainer explainer-still.png"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +22,9 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "remotion": "^4.0.540"
+  },
+  "devDependencies": {
+    "@remotion/google-fonts": "^4.0.540",
+    "puppeteer-core": "^23.10.4"
   }
 }

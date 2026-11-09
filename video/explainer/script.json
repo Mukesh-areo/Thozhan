@@ -1,0 +1,269 @@
+[
+  {
+    "id": "01-title",
+    "kind": "title",
+    "title": "Thozhan",
+    "titleTa": "தோழன் — உங்கள் நகரம், உங்கள் பயணம்",
+    "subtitle": "Fair, transparent rides for Tamil Nadu",
+    "narration": "Vanakkam. This is Thozhan, a mobility platform built for Tamil Nadu. In five minutes we will show how it works, how it earns revenue, and what it offers the government, the public and drivers."
+  },
+  {
+    "id": "02-problem",
+    "kind": "bullets",
+    "title": "The problem today",
+    "titleTa": "இன்றைய சிக்கல்",
+    "bullets": [
+      "Street-hail auto fares are often negotiated, not metered",
+      "Commission-based apps take a share of every fare from drivers",
+      "Little public data on whether notified fares are followed",
+      "Most ride apps are designed English first"
+    ],
+    "narration": "Today, street-hail auto fares are often negotiated. Commission apps take a share of every fare from drivers. Officials have little data on whether notified fares are followed. And most apps are English first."
+  },
+  {
+    "id": "03-solution",
+    "kind": "services",
+    "title": "One platform, four services",
+    "titleTa": "ஒரே தளம், நான்கு சேவைகள்",
+    "services": [
+      ["🛺", "Auto", "Government tariff", "ஆட்டோ"],
+      ["🏍️", "Bike taxi", "After legal approval", "பைக் டாக்ஸி"],
+      ["🚗", "Cab", "Mini · Sedan · SUV", "கேப்"],
+      ["📦", "Parcel", "Bike or auto delivery", "பார்சல்"]
+    ],
+    "narration": "Thozhan brings autos, bike taxis, cabs and parcel delivery onto one platform, with one fare engine and one safety system. Each service switches on only after its legal approval. Bike taxis stay off until the state confirms the rules."
+  },
+  {
+    "id": "04-tariff",
+    "kind": "tariff",
+    "title": "Fares come straight from the Government Order",
+    "titleTa": "அரசாணைப்படி கட்டணம்",
+    "narration": "Every auto fare comes straight from Government Order three sixty six of October twenty twenty six. Fifty rupees for the first one point eight kilometres, twenty five rupees per additional kilometre, one rupee per waiting minute, one and a half times at night, and separate ghat road rates. The tariff is stored as data, so a revision needs no new code."
+  },
+  {
+    "id": "05-tamil",
+    "kind": "compare",
+    "title": "Tamil first, English always",
+    "titleTa": "முதலில் தமிழ், எப்போதும் ஆங்கிலம்",
+    "screens": ["book-ta", "book-en"],
+    "narration": "The whole app works in Tamil and English. Tamil is the default, and one tap switches language. Every screen and receipt is translated."
+  },
+  {
+    "id": "06-book",
+    "kind": "screen",
+    "step": "Step 1",
+    "title": "Choose pickup, drop and vehicle",
+    "titleTa": "ஏறும் இடம், இறங்கும் இடம், வாகனம்",
+    "screen": "book-en",
+    "frame": "desktop",
+    "narration": "Step one. The passenger picks a pickup and destination, here Chennai Central to T. Nagar. Every vehicle shows its fare upfront. The auto is marked government tariff. Cab fares are labelled illustrative, and the bike taxi shows it awaits permission.",
+    "focus": [0.42, 0.62, 1.45]
+  },
+  {
+    "id": "07-fare",
+    "kind": "screen",
+    "step": "Step 2",
+    "title": "An itemised fare, with its legal source",
+    "titleTa": "விரிவான கட்டணம், சட்ட ஆதாரத்துடன்",
+    "screen": "fare-details",
+    "frame": "desktop",
+    "narration": "Step two. Fare details show exactly how the price is built, and quote the Government Order. Where the order is silent, such as on rounding, the app says so openly.",
+    "focus": [0.5, 0.5, 1.5]
+  },
+  {
+    "id": "08-requested",
+    "kind": "screen",
+    "step": "Step 3",
+    "title": "Request sent, with a secure start OTP",
+    "titleTa": "பாதுகாப்பான தொடக்க OTP",
+    "screen": "requested",
+    "frame": "desktop",
+    "narration": "Step three. The passenger books, and receives a four digit start code. The trip cannot begin until the driver enters it. Trip sharing and safety help are one tap away.",
+    "focus": [0.4, 0.55, 1.4]
+  },
+  {
+    "id": "09-driver-accept",
+    "kind": "screen",
+    "step": "Step 4",
+    "title": "The driver accepts the request",
+    "titleTa": "ஓட்டுநர் ஏற்றுக்கொள்கிறார்",
+    "screen": "driver-request",
+    "frame": "desktop",
+    "narration": "Step four. The driver sees the route, distance and full fare before accepting. No hidden deductions.",
+    "focus": [0.42, 0.45, 1.4]
+  },
+  {
+    "id": "10-driver-otp",
+    "kind": "screen",
+    "step": "Step 5",
+    "title": "Start only with the passenger's OTP",
+    "titleTa": "பயணியின் OTP உடன் மட்டுமே தொடக்கம்",
+    "screen": "driver-otp",
+    "frame": "desktop",
+    "narration": "Step five. At pickup, the driver enters the passenger's code. Only then does the trip start. A wrong code is rejected.",
+    "focus": [0.42, 0.45, 1.4]
+  },
+  {
+    "id": "11-earnings",
+    "kind": "screen",
+    "step": "Step 6",
+    "title": "Trip complete: earnings and a ₹10 day fee",
+    "titleTa": "பயணம் முடிந்தது: வருமானமும் ₹10 நாள் கட்டணமும்",
+    "screen": "driver-earnings",
+    "frame": "desktop",
+    "narration": "Step six. When the trip ends, earnings update at once. There is zero commission. Just a ten rupee fee, once a day, only after the first completed trip.",
+    "focus": [0.45, 0.2, 1.3]
+  },
+  {
+    "id": "12-meter-intro",
+    "kind": "screen",
+    "step": "New",
+    "title": "The virtual auto meter for street hails",
+    "titleTa": "சாலையில் பிடிக்கும் ஆட்டோவுக்கு மெய்நிகர் மீட்டர்",
+    "screen": "meter-start",
+    "frame": "phone",
+    "narration": "Now, a feature built for Tamil Nadu: the virtual auto meter. A passenger who stops an auto on the street opens the meter, optionally enters the registration number, and presses start."
+  },
+  {
+    "id": "13-meter-running",
+    "kind": "screen",
+    "step": "Meter",
+    "title": "Live fare from GPS, under the Government Order",
+    "titleTa": "GPS மூலம் நேரடிக் கட்டணம்",
+    "screen": "meter-running",
+    "frame": "phone",
+    "narration": "GPS measures distance and waiting time, and the live fare follows the same government tariff, with optional Tamil voice. Bad GPS readings are filtered, and fake locations are flagged."
+  },
+  {
+    "id": "14-meter-receipt",
+    "kind": "screen",
+    "step": "Meter",
+    "title": "Receipt, and one-tap overcharge report",
+    "titleTa": "ரசீது மற்றும் அதிகக் கட்டணப் புகார்",
+    "screen": "meter-receipt",
+    "frame": "phone",
+    "narration": "At the end, the passenger gets an itemised Tamil receipt. If the driver asks for more, one tap reports it, with the metered fare as evidence."
+  },
+  {
+    "id": "15-parcel",
+    "kind": "screen",
+    "step": "Parcel",
+    "title": "Send a parcel by bike or auto",
+    "titleTa": "பைக் அல்லது ஆட்டோவில் பார்சல்",
+    "screen": "parcel-book",
+    "frame": "desktop",
+    "narration": "Thozhan also delivers parcels by bike or auto, with weight limits and restricted items shown clearly, and the price upfront.",
+    "focus": [0.42, 0.6, 1.4]
+  },
+  {
+    "id": "16-parcel-otp",
+    "kind": "screen",
+    "step": "Parcel",
+    "title": "Two OTPs: one at pickup, one at delivery",
+    "titleTa": "இரண்டு OTP: எடுக்கும்போதும் ஒப்படைக்கும்போதும்",
+    "screen": "parcel-otps",
+    "frame": "desktop",
+    "narration": "Each parcel has two codes: the sender's for pickup, and the receiver's for delivery. One cannot replace the other.",
+    "focus": [0.42, 0.6, 1.4]
+  },
+  {
+    "id": "17-ops",
+    "kind": "screen",
+    "step": "Operations",
+    "title": "Fare compliance and service switches",
+    "titleTa": "கட்டண இணக்கம் மற்றும் சேவை இயக்கிகள்",
+    "screen": "ops-compliance",
+    "frame": "desktop",
+    "narration": "The operations console shows every journey, and fare compliance in aggregate: meter trips, overcharge reports, and how far asked fares exceeded the meter. No personal data needed. Services switch on or off by approval status.",
+    "focus": [0.3, 0.15, 1.3]
+  },
+  {
+    "id": "18-verify",
+    "kind": "screen",
+    "step": "For officials",
+    "title": "Fare check: verify any trip in seconds",
+    "titleTa": "கட்டணச் சரிபார்ப்பு",
+    "screen": "verify-day",
+    "frame": "desktop",
+    "narration": "For officials, the fare check page shows the official fare for any trip, line by line. Five kilometres with six minutes of waiting by day is one hundred thirty six rupees. The same engine runs everywhere, so what officials verify is what passengers pay.",
+    "focus": [0.42, 0.65, 1.4]
+  },
+  {
+    "id": "19-revenue",
+    "kind": "revenue",
+    "title": "Revenue model: ₹10 per active day, zero commission",
+    "titleTa": "வருவாய் மாதிரி: செயல்படும் நாளுக்கு ₹10, கமிஷன் இல்லை",
+    "narration": "The revenue model. No percentage of fares. Each driver pays ten rupees on a day they complete a trip. An illustrative driver earning twelve hundred rupees would lose two hundred forty to a twenty percent commission. With Thozhan, just ten."
+  },
+  {
+    "id": "20-scale",
+    "kind": "scale",
+    "title": "How the ₹10 model scales",
+    "titleTa": "₹10 மாதிரியின் வளர்ச்சி",
+    "narration": "At twenty five paid days a month, two thousand drivers bring five lakh rupees a month, and twenty thousand bring fifty lakh. With illustrative costs, break even is about nineteen hundred drivers. These gross figures will be validated in the pilot. Parcels and corporate accounts can add more."
+  },
+  {
+    "id": "21-gov",
+    "kind": "benefits",
+    "audience": "Government",
+    "title": "Benefits for the government",
+    "titleTa": "அரசுக்கான நன்மைகள்",
+    "bullets": [
+      "Notified tariffs applied automatically, updated as data",
+      "Aggregate fare-compliance data, without personal data",
+      "Overcharge complaints with GPS evidence",
+      "A digital meter for every auto, including street hails",
+      "Services enabled only after approval"
+    ],
+    "narration": "For the government: notified tariffs applied automatically, aggregate compliance data without personal data, overcharge complaints with GPS evidence, a digital meter for every auto, and no service without approval."
+  },
+  {
+    "id": "22-public",
+    "kind": "benefits",
+    "audience": "Public",
+    "title": "Benefits for the public",
+    "titleTa": "பொதுமக்களுக்கான நன்மைகள்",
+    "bullets": [
+      "The government fare, shown upfront",
+      "No more bargaining on the street",
+      "Tamil-first app with itemised receipts",
+      "Trip OTP, trip sharing and SOS",
+      "Rides and parcels in one app"
+    ],
+    "narration": "For the public: the government fare upfront, no bargaining, a Tamil-first app with receipts, trip codes, sharing and S O S, and rides and parcels in one app."
+  },
+  {
+    "id": "23-drivers",
+    "kind": "benefits",
+    "audience": "Drivers",
+    "title": "Benefits for drivers",
+    "titleTa": "ஓட்டுநர்களுக்கான நன்மைகள்",
+    "bullets": [
+      "Zero commission: keep the fare you earn",
+      "₹10 only on days you earn; nothing on idle days",
+      "Full fare visible before accepting",
+      "Trusted meter reduces fare disputes",
+      "Transparent daily ledger"
+    ],
+    "narration": "For drivers: zero commission, a ten rupee fee only on earning days, the full fare before accepting, fewer fare disputes, and a transparent daily ledger."
+  },
+  {
+    "id": "24-roadmap",
+    "kind": "roadmap",
+    "title": "Where we are, and what comes next",
+    "titleTa": "தற்போதைய நிலையும் அடுத்த படிகளும்",
+    "narration": "Where we stand: this is a working demonstration on a tested fare engine and meter. Next, the secure backend and Android apps, and road testing the meter. Then a controlled Chennai pilot with fifty to one hundred fifty verified drivers, with results published openly."
+  },
+  {
+    "id": "25-closing",
+    "kind": "closing",
+    "title": "Our request",
+    "titleTa": "எங்கள் கோரிக்கை",
+    "bullets": [
+      "Nominate a nodal officer",
+      "Clarify aggregator, bike-taxi and cab tariff rules",
+      "Permit a bounded Chennai auto pilot"
+    ],
+    "narration": "We request a nodal officer, clarity on aggregator, bike taxi and cab tariff rules, and permission for a bounded Chennai pilot. Thozhan means friend. A friend to every passenger, every driver, and every city in Tamil Nadu. Nandri."
+  }
+]

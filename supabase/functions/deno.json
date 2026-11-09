@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "@thozhan/tariff": "../../packages/tariff/src/index.ts",
+    "@thozhan/meter": "../../packages/meter/src/index.ts",
+    "@thozhan/shared": "../../packages/shared/src/index.ts"
+  }
+}

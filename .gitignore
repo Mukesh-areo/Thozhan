@@ -7,3 +7,10 @@ video/preview.png
 .openai/
 .DS_Store
 *.log
+
+# local dev backend state
+supabase/.dev-data/
+supabase/.dev-storage/
+apps/admin/dist/
+apps/mobile/dist/
+apps/mobile/.expo/
