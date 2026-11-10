@@ -30,3 +30,9 @@ insert into ledger (driver_id, day, kind, amount_paise, ref)
 select '00000000-0000-4000-a000-000000000023'::uuid, ist_day() - g, 'fee', 1000, 'e2e-' || g from generate_series(1, 10) g;
 insert into ledger (driver_id, day, kind, amount_paise, ref)
 select '00000000-0000-4000-a000-000000000024'::uuid, ist_day() - g, 'fee', 1000, 'e2e-' || g from generate_series(1, 9) g;
+
+-- The vehicle drivers in supabase/seed.sql read Tamil; the vehicle test reads English.
+update profiles set locale = 'en' where id in (
+  '00000000-0000-4000-a000-000000000013', '00000000-0000-4000-a000-000000000014', '00000000-0000-4000-a000-000000000015',
+  '00000000-0000-4000-a000-000000000016', '00000000-0000-4000-a000-000000000017'
+);

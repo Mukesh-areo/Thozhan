@@ -30,3 +30,31 @@ on conflict do nothing;
 
 -- Parcel by auto is part of the MVP; switch it on for demos.
 update service_flags set enabled = true where category = 'parcel-auto';
+
+-- One demo driver for every other vehicle, and every service on, so each can be tried locally.
+-- A real project leaves these services off until an admin switches them on under Services.
+insert into auth.users (id, phone) values
+  ('00000000-0000-4000-a000-000000000013', '919000000013'),
+  ('00000000-0000-4000-a000-000000000014', '919000000014'),
+  ('00000000-0000-4000-a000-000000000015', '919000000015'),
+  ('00000000-0000-4000-a000-000000000016', '919000000016'),
+  ('00000000-0000-4000-a000-000000000017', '919000000017')
+on conflict do nothing;
+
+insert into profiles (id, phone, name, locale, staff_role) values
+  ('00000000-0000-4000-a000-000000000013', '919000000013', 'Karthik B', 'ta', null),
+  ('00000000-0000-4000-a000-000000000014', '919000000014', 'Revathi S', 'ta', null),
+  ('00000000-0000-4000-a000-000000000015', '919000000015', 'Anand M', 'ta', null),
+  ('00000000-0000-4000-a000-000000000016', '919000000016', 'Joseph P', 'ta', null),
+  ('00000000-0000-4000-a000-000000000017', '919000000017', 'Farook A', 'ta', null)
+on conflict do nothing;
+
+insert into drivers (id, status, vehicle, vehicle_number, licence_number, documents, reviewed_at) values
+  ('00000000-0000-4000-a000-000000000013', 'approved', 'bike', 'TN 09 BK 3301', 'TN0920200011111', '{"licence":"demo","rc":"demo","permit":"demo","insurance":"demo"}', now()),
+  ('00000000-0000-4000-a000-000000000014', 'approved', 'scooter', 'TN 10 SC 7742', 'TN1020210022222', '{"licence":"demo","rc":"demo","permit":"demo","insurance":"demo"}', now()),
+  ('00000000-0000-4000-a000-000000000015', 'approved', 'cab-mini', 'TN 22 CM 5120', 'TN2220170033333', '{"licence":"demo","rc":"demo","permit":"demo","insurance":"demo"}', now()),
+  ('00000000-0000-4000-a000-000000000016', 'approved', 'cab-sedan', 'TN 01 CS 8008', 'TN0120160044444', '{"licence":"demo","rc":"demo","permit":"demo","insurance":"demo"}', now()),
+  ('00000000-0000-4000-a000-000000000017', 'approved', 'cab-suv', 'TN 04 SV 6161', 'TN0420150055555', '{"licence":"demo","rc":"demo","permit":"demo","insurance":"demo"}', now())
+on conflict do nothing;
+
+update service_flags set enabled = true;

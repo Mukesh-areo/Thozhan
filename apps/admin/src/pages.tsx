@@ -141,6 +141,7 @@ interface Driver {
   name: string | null;
   phone: string;
   status: 'pending' | 'approved' | 'rejected' | 'suspended';
+  vehicle: string;
   vehicleNumber: string;
   licenceNumber: string;
   documents: Record<string, string>;
@@ -191,7 +192,7 @@ export function Drivers() {
               <span className={`badge d-${d.status}`}>{t(`m.reg.status.${d.status}`)}</span>
             </div>
             <p className="mono">
-              {d.vehicleNumber} · {d.licenceNumber} · {d.phone}
+              {t(`category.${d.vehicle}`)} · {d.vehicleNumber} · {d.licenceNumber} · {d.phone}
             </p>
             <p className="muted small">
               {t('a.drivers.trips', { n: d.trips })}

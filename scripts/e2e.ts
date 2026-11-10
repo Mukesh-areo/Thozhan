@@ -1,8 +1,8 @@
 // Browser tests for the flows that need more than one person: a separate Chrome context each
 // for the passenger, the driver and the admin, against the local backend with no demo bots.
 //
-//   npm run test:e2e                         # all six areas
-//   node scripts/e2e.ts trip parcel          # some of them: onboarding trip parcel sos roles errors
+//   npm run test:e2e                         # all eight areas
+//   node scripts/e2e.ts trip parcel          # some of them: onboarding trip parcel sos roles errors vehicles screens
 //   HEADED=1 VERBOSE=1 npm run test:e2e      # watch it, and stream server output
 //
 // It starts and stops its own servers on 54321, 8081 and 5173 (E2E_EXPO_PORT moves Expo), and
@@ -10,7 +10,7 @@
 // test-results/e2e, next to the server logs. Needs Google Chrome.
 import assert from 'node:assert/strict';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
-import { createWriteStream, mkdirSync, readFileSync, rmSync } from 'node:fs';
+import { createWriteStream, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { connect } from 'node:net';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -41,6 +41,7 @@ const PEOPLE = {
   sosRider: '9811100004',
   notStaff: '9811100005',
   noDriverRider: '9811100006',
+  vehicleRider: '9811100007',
 };
 /** Chennai Central, the default pickup in the app. */
 const CENTRAL = { latitude: 13.0837, longitude: 80.2707 };
@@ -202,6 +203,7 @@ class Person {
 
 let browser: Browser;
 let people: Person[] = [];
+let realMapTiles = false;
 
 async function person(who: string, geolocation = CENTRAL) {
   const context = await browser.newContext({
@@ -211,8 +213,8 @@ async function person(who: string, geolocation = CENTRAL) {
     locale: 'en-IN',
     timezoneId: 'Asia/Kolkata',
   });
-  // Map tiles are public and rate-limited; nothing here needs the picture.
-  await context.route('https://tile.openstreetmap.org/**', (route) => route.abort());
+  // Map tiles are public and rate-limited; only the screen tour needs the picture.
+  if (!realMapTiles) await context.route('https://tile.openstreetmap.org/**', (route) => route.abort());
   const page = await context.newPage();
   page.setDefaultTimeout(30_000);
   const p = new Person(who, context, page);
@@ -279,7 +281,8 @@ const newRequest = new RegExp(escapeRegex(t('m.drive.newRequest')) + '$');
 const bookButton = (service: string) => new RegExp('^' + escapeRegex(t('m.book.confirm', { service: t(service) })));
 
 async function chooseDrop(rider: Person, place = 'Marina Beach') {
-  await rider.tap(t('m.book.choosePlace'));
+  await rider.tap(t('m.book.title'));
+  await rider.see(t('m.book.myLocation'));
   await rider.tap(place);
   await rider.see(place);
   // The book button stays off until the first state poll has answered.
@@ -533,14 +536,17 @@ async function parcel() {
   const rider = await newPassenger('Lakshmi', PEOPLE.parcelRider);
 
   step('receiver details are required');
-  await rider.tap(t('category.parcel-auto'));
-  await chooseDrop(rider, 'T. Nagar');
-  await rider.tap(bookButton('category.parcel-auto'));
+  await rider.tap(t('m.tab.parcel'));
+  await rider.tap(t('m.parcel.dropSearch'));
+  await rider.tap('T. Nagar');
+  await rider.tap(t('m.parcel.continue'));
   await rider.see(t('m.error.receiver_required'));
   await rider.fill(0, 'Asha Receiver');
   await rider.fill(1, '9876543210');
   await rider.fill(2, '3');
   await rider.fill(3, 'Documents');
+  await rider.tap(t('m.parcel.continue'));
+  await pause(1500);
   await rider.tap(bookButton('category.parcel-auto'));
   await rider.see(t('m.trip.searching'));
   await rider.see('Asha Receiver');
@@ -698,13 +704,281 @@ async function errors() {
   await rider.notSee(t('m.trip.searching'));
 
   step('the passenger can book again and cancel');
-  await rider.tap(bookButton('category.auto'));
-  await rider.see(t('m.trip.searching'));
+  await bookAuto(rider);
   const confirmCancel = rider.expectDialog(t('m.trip.cancelConfirm'));
   await rider.tap(t('m.trip.cancel'));
   await confirmCancel;
   await rider.see(t('m.trip.cancelled'), 15_000);
   await rider.see(t('m.book.title'));
+}
+
+// ---------------------------------------------------------------- every vehicle
+
+const RIDE_VEHICLES = [
+  { id: 'bike', phone: '9000000013', name: 'Karthik B', plate: 'TN 09 BK 3301' },
+  { id: 'scooter', phone: '9000000014', name: 'Revathi S', plate: 'TN 10 SC 7742' },
+  { id: 'cab-mini', phone: '9000000015', name: 'Anand M' },
+  { id: 'cab-sedan', phone: '9000000016', name: 'Joseph P' },
+  { id: 'cab-suv', phone: '9000000017', name: 'Farook A' },
+];
+
+async function vehicles() {
+  const drivers = new Map<string, Person>();
+  for (const v of RIDE_VEHICLES) {
+    const d = await approvedDriver(v.name, v.phone);
+    await goOnline(d);
+    drivers.set(v.id, d);
+  }
+  const rider = await newPassenger('Vehicle Rider', PEOPLE.vehicleRider);
+
+  for (const v of RIDE_VEHICLES) {
+    step(`${v.id}: booked, offered only to a ${v.id} driver, driven to a receipt`);
+    const driver = drivers.get(v.id)!;
+    await chooseDrop(rider);
+    await rider.tap(t(`category.${v.id}`));
+    await rider.tap(bookButton(`category.${v.id}`));
+    await rider.see(t('m.trip.searching'));
+    await driver.see(newRequest, 30_000);
+    await driver.see(t(`category.${v.id}`));
+    await pause(4000);
+    for (const [other, person] of drivers) if (other !== v.id) await person.notSee(newRequest);
+
+    await acceptAndArrive(driver, rider, v.name);
+    if (v.plate) await rider.see(v.plate);
+    await driver.fill(0, await readOtp(rider));
+    await driver.tap(t('trip.action.start'));
+    await rider.see(t('trip.status.IN_PROGRESS'), 15_000);
+    await driver.tap(t('trip.action.complete'));
+    await driver.see(t('m.receipt.title'));
+    await rider.see(t('m.receipt.title'), 15_000);
+    assert.equal(await fareTotal(rider), await fareTotal(driver));
+    await driver.tap(t('m.close'));
+    await driver.see(t('m.drive.waiting'));
+    await rider.tap(t('m.close'));
+    await rider.see(t('m.book.title'));
+  }
+
+  step('a parcel too heavy for two wheels can only go by auto');
+  await rider.tap(t('m.tab.parcel'));
+  await rider.tap(t('m.parcel.dropSearch'));
+  await rider.tap('T. Nagar');
+  await rider.fill(0, 'Asha Receiver');
+  await rider.fill(1, '9876543210');
+  await rider.fill(2, '20');
+  await rider.tap(t('m.parcel.continue'));
+  await rider.see(t('m.book.tooHeavy'));
+  await rider.see(t('category.parcel-scooter'));
+  await rider.see(bookButton('category.parcel-auto'));
+  await rider.page.getByRole('button', { name: t('m.back') }).filter({ visible: true }).first().click();
+
+  step('a light parcel by scooter goes to the scooter driver only');
+  await rider.see(t('m.parcel.continue'));
+  await rider.fill(2, '2');
+  await rider.tap(t('m.parcel.continue'));
+  await pause(1500);
+  await rider.tap(t('category.parcel-scooter'));
+  await rider.tap(bookButton('category.parcel-scooter'));
+  await rider.see(t('m.trip.searching'));
+  await drivers.get('scooter')!.see(newRequest, 30_000);
+  await drivers.get('scooter')!.see(t('category.parcel-scooter'));
+  await pause(4000);
+  for (const [other, person] of drivers) if (other !== 'scooter') await person.notSee(newRequest);
+  const confirmCancel = rider.expectDialog(t('m.trip.cancelConfirm'));
+  await rider.tap(t('m.trip.cancel'));
+  await confirmCancel;
+  await rider.see(t('m.trip.cancelled'), 15_000);
+
+  for (const d of drivers.values()) await goOffline(d);
+}
+
+// ---------------------------------------------------------------- every screen, both languages
+
+type Lang = 'en' | 'ta';
+
+/** Opens each screen by the route a person would take, and photographs it into test-results/e2e/screens. */
+async function tour(lang: Lang, phones: { rider: string; applicant: string; driver: string; driverName: string }) {
+  mkdirSync(join(OUT, 'screens'), { recursive: true });
+  const tx = (key: string, params?: Record<string, string | number>) => {
+    const text = translate(lang, key, params);
+    assert.notEqual(text, key, `missing translation: ${key}`);
+    return text;
+  };
+  const issues: string[] = [];
+  const untranslated = new Set<string>();
+  let count = 0;
+
+  async function shot(p: Person, name: string, full = false) {
+    await pause(600);
+    if (full) await p.page.setViewportSize({ width: 390, height: 1800 });
+    if (full) await pause(300);
+    const label = `${String(++count).padStart(2, '0')}-${name}`;
+    await p.page.screenshot({ path: join(OUT, 'screens', `${lang}-${label}.png`) });
+    const seen = await p.page.evaluate(() => {
+      const width = document.documentElement.clientWidth;
+      const texts = [...document.querySelectorAll('div, span')].filter((e) => e.children.length === 0 && e.textContent?.trim() && e.checkVisibility());
+      const inView = texts.filter((e) => e.getBoundingClientRect().right > 0 && e.getBoundingClientRect().left < width);
+      return {
+        wide: document.documentElement.scrollWidth > width,
+        cut: inView.filter((e) => e.getBoundingClientRect().right > width + 1 || e.getBoundingClientRect().left < -1).map((e) => e.textContent!),
+        strings: inView.map((e) => e.textContent!.trim()),
+      };
+    });
+    if (full) await p.page.setViewportSize({ width: 390, height: 844 });
+    if (seen.wide) issues.push(`${label}: the page scrolls sideways`);
+    for (const text of seen.cut) issues.push(`${label}: runs off the screen: ${text}`);
+    for (const text of seen.strings) {
+      if (/^(m|a|ui|trip|category|meter|fare|tariff|parcel)\.[\w.-]+$/.test(text)) issues.push(`${label}: raw translation key: ${text}`);
+      if (lang === 'ta' && /[A-Za-z]{3}/.test(text) && !/[஀-௿]/.test(text)) untranslated.add(`${label}: ${text}`);
+    }
+  }
+  const back = (p: Person) => p.page.getByRole('button', { name: tx('m.back') }).filter({ visible: true }).first().click();
+
+  async function signIn(who: string, phone: string, capture = false) {
+    const p = await person(`${who} ${lang}`);
+    await p.page.goto(APP);
+    await p.tap(lang === 'en' ? 'English' : 'தமிழ்', 120_000);
+    if (capture) await shot(p, 'login');
+    await p.fill(0, phone);
+    await p.tap(tx('m.login.sendOtp'));
+    await p.see(tx('m.login.otp', { phone: `+91${phone}` }));
+    if (capture) await shot(p, 'login-otp');
+    await p.fill(0, OTP);
+    await p.tap(tx('m.login.verify'));
+    return p;
+  }
+
+  step(`${lang}: login, welcome and driver sign-up`);
+  const applicant = await signIn('Applicant', phones.applicant);
+  await applicant.see(tx('m.welcome.title'));
+  await applicant.fill(0, 'Tour Applicant');
+  await applicant.tap(new RegExp(escapeRegex(tx('m.welcome.drive')) + '$'));
+  await applicant.see(tx('m.reg.title'));
+  await shot(applicant, 'driver-signup', true);
+
+  const rider = await signIn('Rider', phones.rider, true);
+  await rider.see(tx('m.welcome.title'));
+  await shot(rider, 'welcome');
+  await rider.fill(0, 'Tour Rider');
+  await rider.tap(new RegExp(escapeRegex(tx('m.welcome.ride')) + '$'));
+
+  step(`${lang}: booking screens`);
+  await rider.see(tx('m.book.title'));
+  await shot(rider, 'home');
+  await rider.tap(tx('m.book.title'));
+  await rider.see(tx('m.book.myLocation'));
+  await shot(rider, 'search');
+  await rider.tap(lang === 'en' ? 'Marina Beach' : 'மெரினா கடற்கரை');
+  await rider.see(new RegExp('^' + escapeRegex(tx('m.book.confirm', { service: tx('category.auto') }))));
+  await pause(1500);
+  await shot(rider, 'choose-vehicle');
+  await rider.tap(tx('m.book.cash'));
+  await rider.see(tx('m.profile.payment'));
+  await shot(rider, 'payment');
+  await back(rider);
+
+  step(`${lang}: driver home, offer and the whole trip, on both phones`);
+  const driver = await signIn('Driver', phones.driver);
+  await driver.see(tx('m.book.title'));
+  await driver.tap(tx('m.tab.account'));
+  await driver.tap(tx('m.account.driveMode'));
+  await driver.see(tx('m.drive.offline'));
+  await shot(driver, 'driver-offline');
+  await driver.tap(tx('m.drive.goOnline'));
+  await driver.see(tx('m.drive.waiting'));
+  await shot(driver, 'driver-online');
+
+  await rider.tap(new RegExp('^' + escapeRegex(tx('m.book.confirm', { service: tx('category.auto') }))));
+  await rider.see(tx('m.trip.searching'));
+  await shot(rider, 'trip-searching');
+  const offer = new RegExp(escapeRegex(tx('m.drive.newRequest')) + '$');
+  await driver.see(offer, 30_000);
+  await shot(driver, 'driver-offer');
+  await driver.tap(tx('m.drive.accept'));
+  await rider.see(tx('m.trip.onTheWay', { name: phones.driverName }), 15_000);
+  await shot(rider, 'trip-on-the-way');
+  await shot(driver, 'driver-to-pickup');
+  await driver.tap(tx('trip.action.arrive'));
+  await rider.see(tx('m.trip.arrived', { name: phones.driverName }), 15_000);
+  await shot(rider, 'trip-arrived');
+  await driver.see(tx('m.drive.otp'));
+  await shot(driver, 'driver-enter-otp');
+  await driver.fill(0, await readOtp(rider));
+  await driver.tap(tx('trip.action.start'));
+  await rider.see(tx('trip.status.IN_PROGRESS'), 15_000);
+  await shot(rider, 'trip-in-progress');
+  await driver.see(tx('trip.action.complete'));
+  await shot(driver, 'driver-in-progress');
+  await driver.tap(tx('trip.action.complete'));
+  await driver.see(tx('m.receipt.title'));
+  await rider.see(tx('m.receipt.title'), 15_000);
+  await shot(rider, 'receipt-rider', true);
+  await shot(driver, 'receipt-driver', true);
+  await driver.tap(tx('m.close'));
+  await driver.see(tx('m.drive.waiting'));
+  await rider.tap(tx('m.close'));
+  await rider.see(tx('m.book.title'));
+
+  step(`${lang}: earnings and the driver's profile`);
+  await driver.tap(tx('m.tab.earnings'));
+  await driver.see(tx('m.earn.title'));
+  await shot(driver, 'driver-earnings', true);
+  await driver.tap(tx('m.tab.account'));
+  await driver.see(tx('m.account.rideMode'));
+  await shot(driver, 'driver-profile');
+  await driver.tap(tx('m.tab.drive'));
+  await driver.see(tx('m.drive.waiting'));
+  await driver.page.getByRole('switch', { name: tx('m.drive.goOffline') }).click();
+  await driver.see(tx('m.drive.offline'));
+
+  step(`${lang}: parcel`);
+  await rider.tap(tx('m.tab.parcel'));
+  await rider.see(tx('m.parcel.dropSearch'));
+  await shot(rider, 'parcel', true);
+
+  step(`${lang}: meter, running, then stopped with no network`);
+  await rider.tap(tx('m.tab.meter'));
+  await rider.see(tx('m.meter.start'));
+  await shot(rider, 'meter-setup', true);
+  await rider.tap(tx('m.meter.demo'));
+  await rider.tap(tx('m.meter.start'));
+  await rider.see(tx('m.meter.stop'));
+  await pause(3000);
+  await shot(rider, 'meter-running');
+  await rider.context.setOffline(true);
+  await rider.tap(tx('m.meter.stop'));
+  await rider.see(tx('m.receipt.title'));
+  await shot(rider, 'meter-receipt', true);
+  await rider.context.setOffline(false);
+  await rider.tap(tx('m.close'));
+  await rider.see(tx('m.meter.start'));
+
+  step(`${lang}: profile and everything it opens`);
+  await rider.tap(tx('m.tab.account'));
+  await rider.see(tx('m.profile.rides'));
+  await shot(rider, 'profile');
+  for (const [key, name] of [
+    ['m.profile.rides', 'past-rides'],
+    ['m.profile.payment', 'profile-payment'],
+    ['m.profile.safety', 'safety'],
+    ['m.profile.help', 'help'],
+  ] as const) {
+    await rider.tap(tx(key));
+    await pause(500);
+    await shot(rider, name, true);
+    await back(rider);
+    await rider.see(tx('m.profile.rides'));
+  }
+
+  writeFileSync(join(OUT, 'screens', `${lang}-english-only.txt`), [...untranslated].join('\n') + '\n');
+  assert.deepEqual(issues, [], `screen problems:\n${issues.join('\n')}`);
+  console.log(`    · ${lang}: ${count} screens photographed`);
+}
+
+async function screens() {
+  realMapTiles = true;
+  await tour('en', { rider: '9811100010', applicant: '9811100011', driver: PEOPLE.tripDriver, driverName: 'Ravi Trips' });
+  await Promise.all(people.map((p) => p.context.close().catch(() => {})));
+  await tour('ta', { rider: '9811100012', applicant: '9811100013', driver: '9000000011', driverName: 'Murugan K' });
 }
 
 // ---------------------------------------------------------------- runner
@@ -716,6 +990,8 @@ const AREAS: Record<string, [string, () => Promise<void>]> = {
   sos: ['SOS', sos],
   roles: ['Roles', roles],
   errors: ['Errors', errors],
+  vehicles: ['Every vehicle', vehicles],
+  screens: ['Every screen, English and Tamil', screens],
 };
 
 async function runArea(key: string): Promise<string | null> {

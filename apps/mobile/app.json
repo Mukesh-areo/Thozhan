@@ -41,7 +41,8 @@
         {
           "cameraPermission": "Thozhan uses the camera to photograph your licence and vehicle documents."
         }
-      ]
+      ],
+      "expo-font"
     ]
   }
 }

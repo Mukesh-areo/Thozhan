@@ -80,12 +80,13 @@ const DOCS = {
   insurance: 'x/i.jpg',
 };
 let plates = 1000;
-async function driver(name: string, at: [number, number], admin: User): Promise<User> {
+async function driver(name: string, at: [number, number], admin: User, vehicle = 'auto'): Promise<User> {
   const d = await user(name);
   await d.rpc('register_driver', {
     p_vehicle_number: `TN 09 AB ${plates++}`,
     p_licence_number: 'TN0920190012345',
     p_documents: DOCS,
+    p_vehicle: vehicle,
   });
   await admin.rpc('admin_review_driver', {
     p_driver: d.id,
@@ -586,4 +587,51 @@ test('supabase-js works against the dev backend: phone OTP, RPC, functions, stor
 
   const fn = await client.functions.invoke('fee-payment-link', { body: {} });
   assert.ok(fn.error, 'not a driver: no payment link');
+});
+
+test('every vehicle type is offered only to drivers of that vehicle', async () => {
+  await clearTrips();
+  await db.pg.exec(`update service_flags set enabled = true`);
+  const admin = await user('Admin', 'admin');
+  const drivers = new Map<string, User>();
+  for (const vehicle of ['auto', 'bike', 'scooter', 'cab-mini', 'cab-sedan', 'cab-suv']) {
+    drivers.set(vehicle, await driver(`Driver ${vehicle}`, [13.084, 80.271], admin, vehicle));
+  }
+  const rider = await user('Rider');
+  const parcel = { receiverName: 'Meena', receiverPhone: '9876543210', weightGrams: 2000 };
+
+  for (const [category, vehicle] of [
+    ['auto', 'auto'],
+    ['bike', 'bike'],
+    ['scooter', 'scooter'],
+    ['cab-mini', 'cab-mini'],
+    ['cab-sedan', 'cab-sedan'],
+    ['cab-suv', 'cab-suv'],
+    ['parcel-auto', 'auto'],
+    ['parcel-bike', 'bike'],
+    ['parcel-scooter', 'scooter'],
+  ] as const) {
+    const trip = await rider.rpc('request_trip', {
+      p_category: category,
+      p_pickup: CENTRAL,
+      p_dropoff: TNAGAR,
+      p_estimate_meters: 7600,
+      p_quote: {},
+      p_client_key: `k-vehicle-${category}`,
+      ...(category.startsWith('parcel') ? { p_parcel: parcel } : {}),
+    });
+    for (const [own, d] of drivers) {
+      const { offers } = await d.rpc('driver_inbox');
+      const got = offers.filter((o: { trip: { id: string } }) => o.trip.id === trip.id).length;
+      assert.equal(got, own === vehicle ? 1 : 0, `${category} offered to the ${own} driver: ${got}`);
+    }
+    await db.pg.exec(`update trips set status = 'CANCELLED', ended_at = now() where is_open(status); update offers set status = 'expired' where status = 'offered'`);
+  }
+
+  const scooterOnly = await user('Unknown vehicle');
+  await rejects(
+    scooterOnly.rpc('register_driver', { p_vehicle_number: 'TN 09 AB 7777', p_licence_number: 'TN0920190012345', p_documents: DOCS, p_vehicle: 'tractor' }),
+    'bad_vehicle',
+  );
+  await clearTrips();
 });

@@ -1,4 +1,4 @@
-// Demo driver bots for local development: the two seeded drivers go online near Chennai
+// Demo driver bots for local development: the seeded drivers go online near Chennai
 // Central and T. Nagar, accept offers and move each trip along, so one person can try the
 // passenger app alone. They use the same API as the driver app. Being a demo, they read the
 // passenger's OTP straight from the database, and when a trip starts they write a simulated,
@@ -17,6 +17,31 @@ const BOTS = [
     id: '00000000-0000-4000-a000-000000000012',
     phone: '919000000012',
     home: [13.0418, 80.2341] as const,
+  },
+  {
+    id: '00000000-0000-4000-a000-000000000013',
+    phone: '919000000013',
+    home: [13.08, 80.27] as const,
+  },
+  {
+    id: '00000000-0000-4000-a000-000000000014',
+    phone: '919000000014',
+    home: [13.05, 80.24] as const,
+  },
+  {
+    id: '00000000-0000-4000-a000-000000000015',
+    phone: '919000000015',
+    home: [13.075, 80.26] as const,
+  },
+  {
+    id: '00000000-0000-4000-a000-000000000016',
+    phone: '919000000016',
+    home: [13.045, 80.25] as const,
+  },
+  {
+    id: '00000000-0000-4000-a000-000000000017',
+    phone: '919000000017',
+    home: [13.07, 80.245] as const,
   },
 ];
 

@@ -183,9 +183,8 @@ async function record(locale: Locale, out: string) {
     await tap(new RegExp(t('m.welcome.ride') + '$'), 2500);
 
     await caption('book');
-    await tap(t('m.book.choosePlace'));
+    await tap(t('m.book.title'));
     await tap(locale === 'ta' ? 'மெரினா கடற்கரை' : 'Marina Beach', 1500);
-    await scrollApp(500);
     await tap(new RegExp('^' + t('m.book.confirm', { service: t('category.auto') })), 1500);
 
     await caption('waiting');

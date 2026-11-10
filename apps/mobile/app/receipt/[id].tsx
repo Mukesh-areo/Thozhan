@@ -1,15 +1,14 @@
-import { getCategory } from '@thozhan/shared';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { rpc, type Trip } from '../../src/api';
 import { errorText, useI18n } from '../../src/i18n';
-import { Badge, Button, Card, FareLines, Field, H1, H2, Notice, P, Row, Screen } from '../../src/ui';
+import { Button, Card, FareLines, Field, H2, Notice, P, ReceiptHero, RouteStops, Row, Screen } from '../../src/ui';
 
 const minutes = (s: number) => Math.floor(s / 60);
 
 export default function Receipt() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { t, km } = useI18n();
+  const { t, km, money } = useI18n();
   const [trip, setTrip] = useState<Trip | null>(null);
   const [asked, setAsked] = useState('');
   const [complaint, setComplaint] = useState('');
@@ -50,16 +49,13 @@ export default function Receipt() {
     );
   // The API includes `rider` only in the driver's and staff views.
   const isRider = trip.rider === null;
-  const category = getCategory(trip.category);
 
   return (
     <Screen>
-      <Badge text={`${trip.flow === 'meter' ? '⏱️' : category.icon} ${trip.code}`} tone="muted" />
-      <H1>{t('m.receipt.title')}</H1>
+      <ReceiptHero title={t('m.receipt.title')} amount={trip.fare ? money(trip.fare.totalPaise) : null} code={trip.code} />
       <Card>
         {trip.flow === 'meter' ? <Row label={t('m.trips.meter')} value={trip.vehicleNumber ?? '—'} /> : null}
-        {trip.pickup ? <Row label={t('m.book.pickup')} value={trip.pickup.name} /> : null}
-        {trip.dropoff ? <Row label={t('m.book.drop')} value={trip.dropoff.name} /> : null}
+        {trip.pickup && trip.dropoff ? <RouteStops pickup={trip.pickup.name} drop={trip.dropoff.name} pickupLabel={t('m.book.pickup')} dropLabel={t('m.book.drop')} /> : null}
         {trip.driver ? <Row label={t('a.col.driver')} value={`${trip.driver.name} · ${trip.driver.vehicleNumber}`} /> : null}
         {trip.distanceMeters != null ? <Row label={t('m.receipt.distance')} value={`${km(trip.distanceMeters, 2)} ${t('ui.unit.km')}`} /> : null}
         {trip.waitingSeconds ? <Row label={t('m.receipt.waiting')} value={`${minutes(trip.waitingSeconds)} ${t('ui.unit.min')}`} /> : null}

@@ -52,6 +52,9 @@ Every number uses the OTP **123456**. Type the 10-digit number; the app adds +91
 | 90000 00004 | Driver reviewer (driver review and documents) |
 | 90000 00011 | Murugan K, approved auto driver, TN 09 AB 4821 |
 | 90000 00012 | Selvi R, approved auto driver |
+| 90000 00013 | Karthik B, approved bike driver |
+| 90000 00014 | Revathi S, approved scooter driver |
+| 90000 00015 to 17 | Approved Cab Mini, Sedan and SUV drivers |
 | Any other number | A new passenger, who can also apply to drive |
 
 With `--bots` (on by default in `dev:backend`), the two demo drivers run by themselves. They go online, accept nearby requests and move each trip along over about a minute, so one person can try the passenger app alone. The bots also write a simulated GPS track for each trip, so the server computes the fare from that track just as it would for a real driver. To drive a trip yourself, sign in as a driver on a second phone or browser and turn the bots off by running `node supabase/dev/server.ts` without `--bots`.
@@ -268,6 +271,6 @@ select created_at, app, kind, screen, code, app_version, platform, message from 
 - Places are a fixed list of Chennai landmarks plus "my current location". There is no address search yet.
 - Maps use OpenStreetMap's public tiles until `EXPO_PUBLIC_MAP_TILE_URL` and `VITE_MAP_TILE_URL` are set; those tiles are not allowed for production load. The mobile map also loads Leaflet from unpkg.com, so it needs that site to be reachable.
 - Error reports need a signed-in user, so a crash before sign-in is sent only after a later sign-in on that device, and visitors to the public tracking page never send theirs. Old reports are not deleted automatically.
-- Bike, cab and other parcel services are built but switched off in **Services** until approval. Their fares are illustrative.
+- Bike, scooter, cab and other parcel services are built. They start switched off on a real project, so an admin turns each on in **Services** once it is approved; the local seed data switches them all on. Their fares are illustrative.
 - The auto fare follows G.O. Ms. No. 366. Three interpretations are marked on every receipt until the department confirms them, so receipts say "reference fare only".
 - Tamil text needs review by a native speaker before the pilot.

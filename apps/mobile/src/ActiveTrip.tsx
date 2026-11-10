@@ -2,13 +2,13 @@
 import * as Clipboard from 'expo-clipboard';
 import { availableActions, getCategory, type TripStatus } from '@thozhan/shared';
 import { useState } from 'react';
-import { Alert, Linking, Platform, Share, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Platform, Pressable, Share, Text, View } from 'react-native';
 import { rpc, type Trip } from './api';
 import { SHARE_BASE_URL } from './config';
 import { errorText, useI18n } from './i18n';
 import { currentFix } from './location';
 import { MapView } from './MapView';
-import { Badge, Button, C, Card, FareLines, H1, H2, Notice, P, Row, Screen } from './ui';
+import { Badge, Button, C, Card, FareLines, H2, Icon, Notice, P, RouteStops, Row, Sheet, useTopInset, VehicleArt } from './ui';
 
 /** Asks yes/no; Alert.alert has no buttons on web. */
 export function confirm(title: string, yes: string, no: string): Promise<boolean> {
@@ -23,6 +23,7 @@ export function confirm(title: string, yes: string, no: string): Promise<boolean
 
 export function ActiveTrip({ trip, onChange }: { trip: Trip; onChange(trip: Trip | null): void }) {
   const { t, money, km } = useI18n();
+  const top = useTopInset();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -95,21 +96,33 @@ export function ActiveTrip({ trip, onChange }: { trip: Trip; onChange(trip: Trip
   const markers = [
     ...(trip.pickup ? [{ ...trip.pickup, kind: 'pickup' as const }] : []),
     ...(trip.dropoff ? [{ ...trip.dropoff, kind: 'drop' as const }] : []),
-    ...(trip.driver?.lat != null && trip.driver.lon != null ? [{ lat: trip.driver.lat, lon: trip.driver.lon, kind: 'driver' as const }] : []),
+    ...(trip.driver?.lat != null && trip.driver.lon != null ? [{ lat: trip.driver.lat, lon: trip.driver.lon, kind: 'driver' as const, emoji: getCategory(trip.driver.vehicle).icon }] : []),
   ];
 
   return (
-    <Screen>
-      <Badge text={`${category.icon} ${t(category.nameKey)} · ${trip.code}`} tone="muted" />
-      <H1>{headline}</H1>
+    <View style={{ flex: 1, backgroundColor: C.bg }}>
+      <View style={{ flex: 1, minHeight: 200 }}>
+        <MapView fill route markers={markers} />
+        <Pressable onPress={sos} disabled={busy === 'sos'} accessibilityRole="button" style={{ position: 'absolute', top, right: 16, minHeight: 44, borderRadius: 22, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: C.danger }}>
+          <Icon name="alert-triangle" size={16} color="#fff" />
+          <Text style={{ color: '#fff', fontSize: 15, lineHeight: 22, fontWeight: '800' }}>{t('m.trip.sos')}</Text>
+        </Pressable>
+      </View>
+      <Sheet>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <View style={{ flex: 1 }}>
+          <Badge text={`${t(category.nameKey)} · ${trip.code}`} tone="muted" />
+          <H2>{headline}</H2>
+        </View>
+        {searching ? <ActivityIndicator color={C.brand} size="large" /> : <VehicleArt category={trip.category} />}
+      </View>
       {searching ? <P muted>{t('m.trip.searchingNote')}</P> : null}
-      <MapView markers={markers} height={230} />
 
       {trip.driver ? (
         <Card>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: C.brandSoft, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ fontSize: 22 }}>🛺</Text>
+              <Icon name="user" color={C.brand} />
             </View>
             <View style={{ flex: 1 }}>
               <H2>{trip.driver.name}</H2>
@@ -137,8 +150,7 @@ export function ActiveTrip({ trip, onChange }: { trip: Trip; onChange(trip: Trip
       ) : null}
 
       <Card>
-        <Row label={t('m.book.pickup')} value={trip.pickup?.name ?? '—'} />
-        <Row label={t('m.book.drop')} value={trip.dropoff?.name ?? '—'} />
+        <RouteStops pickup={trip.pickup?.name ?? '—'} drop={trip.dropoff?.name ?? '—'} pickupLabel={t('m.book.pickup')} dropLabel={t('m.book.drop')} />
         {trip.estimateMeters ? <Row label={t('m.receipt.distance')} value={`${km(trip.estimateMeters)} ${t('ui.unit.km')}`} /> : null}
         {trip.parcel ? <Row label={t('m.drive.receiver')} value={trip.parcel.receiverName} /> : null}
         {trip.quote ? <Row label={t('ui.trip.estimatedFare')} value={money(trip.quote.totalPaise)} strong /> : null}
@@ -152,11 +164,9 @@ export function ActiveTrip({ trip, onChange }: { trip: Trip; onChange(trip: Trip
       <Notice text={notice} tone="ok" />
       <Notice text={error} />
       {notice ? <Button title={t('m.trip.call112')} kind="danger" onPress={() => Linking.openURL('tel:112')} /> : null}
-      <View style={{ flexDirection: 'row', gap: 10 }}>
-        <Button title={`🆘 ${t('m.trip.sos')}`} kind="danger" onPress={sos} loading={busy === 'sos'} style={{ flex: 1 }} />
-        {!searching ? <Button title={t('m.trip.share')} kind="secondary" onPress={share} loading={busy === 'share'} style={{ flex: 1 }} /> : null}
-      </View>
+      {!searching ? <Button title={t('m.trip.share')} icon="share-2" kind="secondary" onPress={share} loading={busy === 'share'} /> : null}
       {canCancel ? <Button title={t('m.trip.cancel')} kind="ghost" onPress={cancel} loading={busy === 'cancel'} /> : null}
-    </Screen>
+      </Sheet>
+    </View>
   );
 }

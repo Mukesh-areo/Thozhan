@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { rpc, type Me } from '../src/api';
 import { errorText, useI18n } from '../src/i18n';
 import { useSession } from '../src/session';
-import { Button, Field, H1, H2, Notice, Screen } from '../src/ui';
+import { C, Card, Field, H1, H2, Icon, Notice, Screen, VehicleArt } from '../src/ui';
 
 export default function Welcome() {
   const { t, locale } = useI18n();
@@ -28,13 +29,25 @@ export default function Welcome() {
     }
   }
 
+  const option = (mode: 'rider' | 'driver', art: string, label: string) => (
+    <Pressable onPress={() => choose(mode)} disabled={busy !== null} accessibilityRole="button">
+      <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <VehicleArt category={art} size={84} />
+        <Text style={{ flex: 1, fontSize: 17, lineHeight: 25, fontWeight: '700', color: C.ink }}>{label}</Text>
+        {busy === mode ? <ActivityIndicator color={C.brand} /> : <Icon name="chevron-right" color={C.muted} />}
+      </Card>
+    </Pressable>
+  );
+
   return (
     <Screen>
       <H1>{t('m.welcome.title')}</H1>
       <Field label={t('m.welcome.name')} value={name} onChangeText={setName} autoFocus autoCapitalize="words" />
-      <H2>{t('m.welcome.how')}</H2>
-      <Button title={`🙋  ${t('m.welcome.ride')}`} onPress={() => choose('rider')} loading={busy === 'rider'} />
-      <Button title={`🛺  ${t('m.welcome.drive')}`} kind="secondary" onPress={() => choose('driver')} loading={busy === 'driver'} />
+      <View style={{ gap: 12 }}>
+        <H2>{t('m.welcome.how')}</H2>
+        {option('rider', 'parcel-auto', t('m.welcome.ride'))}
+        {option('driver', 'auto', t('m.welcome.drive'))}
+      </View>
       <Notice text={error} />
     </Screen>
   );

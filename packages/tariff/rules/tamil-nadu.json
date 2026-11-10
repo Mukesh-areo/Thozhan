@@ -92,6 +92,40 @@
     ]
   },
   {
+    "id": "tn-scooter-draft",
+    "version": 1,
+    "jurisdiction": "IN-TN",
+    "service": "bike",
+    "category": "scooter",
+    "status": "ILLUSTRATIVE",
+    "legalReference": null,
+    "effectiveFrom": null,
+    "plain": {
+      "baseDistanceMeters": 2000,
+      "baseFarePaise": 2500,
+      "perKmPaise": 900
+    },
+    "waiting": {
+      "perMinutePaise": 100,
+      "freeMinutes": 3,
+      "minuteCounting": "floor"
+    },
+    "night": {
+      "start": "22:00",
+      "end": "05:00",
+      "multiplierPermille": 1250,
+      "appliesTo": "distance+waiting",
+      "decidedBy": "start"
+    },
+    "rounding": "nearest-rupee",
+    "assumptions": [
+      {
+        "code": "no-published-bike-tariff",
+        "confirmed": false
+      }
+    ]
+  },
+  {
     "id": "tn-cab-mini-draft",
     "version": 1,
     "jurisdiction": "IN-TN",
@@ -212,6 +246,40 @@
       "baseDistanceMeters": 2000,
       "baseFarePaise": 4000,
       "perKmPaise": 1000
+    },
+    "waiting": {
+      "perMinutePaise": 100,
+      "freeMinutes": 5,
+      "minuteCounting": "floor"
+    },
+    "maxWeightGrams": 10000,
+    "weightSlabs": [
+      {
+        "aboveGrams": 5000,
+        "surchargePaise": 2000
+      }
+    ],
+    "rounding": "nearest-rupee",
+    "assumptions": [
+      {
+        "code": "parcel-commercial-pricing",
+        "confirmed": false
+      }
+    ]
+  },
+  {
+    "id": "tn-parcel-scooter-draft",
+    "version": 1,
+    "jurisdiction": "IN-TN",
+    "service": "parcel",
+    "category": "parcel-scooter",
+    "status": "ILLUSTRATIVE",
+    "legalReference": null,
+    "effectiveFrom": null,
+    "plain": {
+      "baseDistanceMeters": 2000,
+      "baseFarePaise": 3500,
+      "perKmPaise": 900
     },
     "waiting": {
       "perMinutePaise": 100,

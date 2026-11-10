@@ -1,11 +1,11 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Image, ScrollView, Text, View } from 'react-native';
 import { supabase } from '../src/api';
 import { USING_DEV_BACKEND } from '../src/config';
 import { useI18n } from '../src/i18n';
 import { useSession } from '../src/session';
-import { Button, C, Field, Gap, H1, Notice, P, Screen, Segmented } from '../src/ui';
+import { Button, C, Card, Field, H2, Notice, P, Segmented } from '../src/ui';
 
 const toE164 = (raw: string) => {
   const digits = raw.replace(/\D/g, '');
@@ -45,30 +45,31 @@ export default function Login() {
   }
 
   return (
-    <Screen>
-      <View style={{ alignItems: 'flex-end' }}>
-        <View style={{ width: 170 }}>
-          <Segmented
-            value={locale}
-            onChange={setLocale}
-            options={[
-              { value: 'ta', label: 'தமிழ்' },
-              { value: 'en', label: 'English' },
-            ]}
-          />
+    <ScrollView style={{ flex: 1, backgroundColor: C.bg }} contentContainerStyle={{ paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
+      <View>
+        <Image source={require('../assets/illustrations/hero-login.png')} style={{ width: '100%', height: 280 }} resizeMode="cover" accessibilityIgnoresInvertColors />
+        <View style={{ position: 'absolute', top: 44, left: 18, right: 18, gap: 10 }}>
+          <View style={{ alignSelf: 'flex-end', width: 170 }}>
+            <Segmented
+              value={locale}
+              onChange={setLocale}
+              options={[
+                { value: 'ta', label: 'தமிழ்' },
+                { value: 'en', label: 'English' },
+              ]}
+            />
+          </View>
+          <Text style={{ fontSize: 38, lineHeight: 50, fontWeight: '800', color: '#fff' }}>Thozhan</Text>
+          <Text style={{ fontSize: 15, lineHeight: 22, color: '#d5e4dc', maxWidth: 160 }}>{t('app.tagline')}</Text>
         </View>
       </View>
-      <Gap h={30} />
-      <Text style={{ fontSize: 44, fontWeight: '800', color: C.brand }}>
-        Thozhan<Text style={{ color: '#8bc34a' }}>↗</Text>
-      </Text>
-      <P muted>{t('app.tagline')}</P>
-      <Gap h={16} />
-      <H1>{t('m.login.title')}</H1>
+      <View style={{ marginTop: -26, marginHorizontal: 16 }}>
+      <Card style={{ gap: 14 }}>
+      <H2>{t('m.login.title')}</H2>
       {!sent ? (
         <>
           <Field label={t('m.login.phone')} value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="98765 43210" maxLength={14} autoFocus />
-          <Button title={t('m.login.sendOtp')} onPress={send} loading={busy} />
+          <Button kind="lime" title={t('m.login.sendOtp')} onPress={send} loading={busy} />
         </>
       ) : (
         <>
@@ -81,7 +82,7 @@ export default function Login() {
             autoFocus
             placeholder="••••••"
           />
-          <Button title={t('m.login.verify')} onPress={verify} loading={busy} disabled={otp.trim().length !== 6} />
+          <Button kind="lime" title={t('m.login.verify')} onPress={verify} loading={busy} disabled={otp.trim().length !== 6} />
           <Button title={t('m.login.change')} kind="ghost" onPress={() => setSent(false)} />
         </>
       )}
@@ -90,6 +91,8 @@ export default function Login() {
       <P small muted>
         {t('m.login.terms')}
       </P>
-    </Screen>
+      </Card>
+      </View>
+    </ScrollView>
   );
 }

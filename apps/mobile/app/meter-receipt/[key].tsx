@@ -3,11 +3,11 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useSyncExternalStore } from 'react';
 import { useI18n } from '../../src/i18n';
 import { meterStore, syncMeter } from '../../src/meter-store';
-import { Button, Card, FareLines, H1, Notice, P, Row, Screen } from '../../src/ui';
+import { Button, Card, FareLines, Notice, P, ReceiptHero, Row, Screen } from '../../src/ui';
 
 export default function MeterReceipt() {
   const { key } = useLocalSearchParams<{ key: string }>();
-  const { t, km } = useI18n();
+  const { t, km, money } = useI18n();
   const state = useSyncExternalStore(meterStore.subscribe, meterStore.get);
   const run = state.outbox.find((o) => o.clientKey === key);
   const uploaded = state.synced[key];
@@ -17,7 +17,7 @@ export default function MeterReceipt() {
 
   return (
     <Screen>
-      <H1>{t('m.receipt.title')}</H1>
+      <ReceiptHero title={t('m.receipt.title')} amount={run.fare ? money(run.fare.totalPaise) : null} />
       <Notice tone="warn" text={t('m.receipt.offline')} />
       <Card>
         {run.vehicleNumber ? <Row label={t('meter.vehicleNumber')} value={run.vehicleNumber.toUpperCase()} /> : null}
