@@ -1,4 +1,5 @@
-// The Profile page: who you are, then one line for each thing you can open.
+// The Account tab. Passengers and drivers each have their own account type, chosen at login
+// and tied to the number (UX handoff §1), so there is no switch here, only that type's pages.
 import { router } from 'expo-router';
 import { View } from 'react-native';
 import { rpc } from './api';
@@ -9,24 +10,13 @@ import { Badge, C, Card, Gap, H1, H2, Icon, ListRow, P, Screen, Segmented } from
 
 export function AccountScreen() {
   const { t, locale, setLocale } = useI18n();
-  const { me, mode, setMode, signOut, refresh } = useSession();
+  const { me, mode, signOut } = useSession();
   const status = me?.driver?.status;
   const isDriver = mode === 'driver';
 
   function changeLocale(next: 'ta' | 'en') {
     setLocale(next);
     rpc('update_profile', { p_name: null, p_locale: next }).catch(() => {});
-  }
-
-  async function switchMode() {
-    if (isDriver) {
-      setMode('rider');
-      router.replace('/book');
-      return;
-    }
-    await refresh();
-    setMode('driver');
-    router.replace(status === 'approved' ? '/drive' : '/driver-register');
   }
 
   return (
@@ -41,24 +31,35 @@ export function AccountScreen() {
             <H2>{me?.name ?? '—'}</H2>
             <P muted>+{me?.phone}</P>
           </View>
+          {me?.rating ? (
+            <View style={{ alignItems: 'flex-end' }}>
+              <H2>{`★ ${me.rating.average.toFixed(1)}`}</H2>
+              <P small muted>
+                {t('m.rate.count', { count: me.rating.count })}
+              </P>
+            </View>
+          ) : null}
         </View>
-        {status ? <Badge text={t('m.account.driverStatus', { status: t(`m.reg.status.${status}`) })} tone={status === 'approved' ? 'ok' : 'warn'} /> : null}
+        <Badge text={isDriver ? t('m.role.driverPartner') : t('m.role.passenger')} tone="muted" />
+        {isDriver && status ? <Badge text={t('m.account.driverStatus', { status: t(`m.reg.status.${status}`) })} tone={status === 'approved' ? 'ok' : 'warn'} /> : null}
       </Card>
       <View>
-        {isDriver ? null : (
+        {isDriver ? (
           <>
-            <ListRow icon="clock" title={t('m.profile.rides')} onPress={() => router.push('/trips')} />
-            <ListRow icon="package" title={t('m.profile.parcel')} onPress={() => router.navigate('/parcel')} />
+            <ListRow icon="file-text" title={t('m.manage.documents')} onPress={() => router.push('/documents')} />
+            <ListRow icon="shield" title={t('m.insurance.title')} onPress={() => router.push('/insurance')} />
+          </>
+        ) : (
+          <>
+            <ListRow icon="bookmark" title={t('m.account.saved')} onPress={() => router.push('/saved-places')} />
             <ListRow icon="credit-card" title={t('m.profile.payment')} onPress={() => router.push('/payment')} />
-            <ListRow icon="shield" title={t('m.profile.safety')} onPress={() => router.push('/safety')} />
+            <ListRow icon="umbrella" title={t('m.insurance.title')} onPress={() => router.push('/insurance')} />
+            <ListRow icon="shield" title={t('m.safety.centre')} onPress={() => router.push('/safety')} />
+            <ListRow icon="users" title={t('m.contacts.title')} onPress={() => router.push('/contacts')} />
           </>
         )}
-        <ListRow icon="help-circle" title={t('m.profile.help')} onPress={() => router.push('/help')} />
-        <ListRow
-          icon="repeat"
-          title={isDriver ? t('m.account.rideMode') : me?.driver ? t('m.account.driveMode') : t('m.account.becomeDriver')}
-          onPress={switchMode}
-        />
+        <ListRow icon="help-circle" title={t('m.help.title')} onPress={() => router.push('/help')} />
+        <ListRow icon="lock" title={t('m.privacy.title')} onPress={() => router.push('/privacy')} />
         <ListRow
           icon="log-out"
           title={t('m.signOut')}
@@ -81,6 +82,9 @@ export function AccountScreen() {
           { value: 'en', label: 'English' },
         ]}
       />
+      <P small muted>
+        {t('m.account.typeFixed')}
+      </P>
       {USING_DEV_BACKEND ? (
         <P small muted>
           {t('m.devBackend')}: {SUPABASE_URL}

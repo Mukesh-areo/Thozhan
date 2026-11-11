@@ -7,6 +7,7 @@ import { rpc, type Trip } from './api';
 import { SHARE_BASE_URL } from './config';
 import { errorText, useI18n } from './i18n';
 import { currentFix } from './location';
+import { CancelReasons } from './CancelReasons';
 import { MapView } from './MapView';
 import { Badge, Button, C, Card, FareLines, H2, Icon, Notice, P, RouteStops, Row, Sheet, useTopInset, VehicleArt } from './ui';
 
@@ -27,6 +28,7 @@ export function ActiveTrip({ trip, onChange }: { trip: Trip; onChange(trip: Trip
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
   const category = getCategory(trip.category);
   const name = trip.driver?.name || t('m.drive.rider');
   const canCancel = availableActions(trip.flow, trip.status as TripStatus, 'rider').includes('cancel');
@@ -39,19 +41,6 @@ export function ActiveTrip({ trip, onChange }: { trip: Trip; onChange(trip: Trip
         ? t('m.trip.arrived', { name })
         : t(`trip.status.${trip.status}`);
   const showStartOtp = ['REQUESTED', 'ACCEPTED', 'ARRIVED', 'AT_PICKUP'].includes(trip.status);
-
-  async function cancel() {
-    if (!(await confirm(t('m.trip.cancelConfirm'), t('m.yes'), t('m.no')))) return;
-    setBusy('cancel');
-    try {
-      await rpc('trip_action', { p_trip: trip.id, p_action: 'cancel' });
-      onChange(null);
-    } catch (e) {
-      setError(errorText(t, e));
-    } finally {
-      setBusy(null);
-    }
-  }
 
   async function sos() {
     if (!(await confirm(t('m.trip.sosConfirm'), t('m.trip.sos'), t('m.cancel')))) return;
@@ -128,7 +117,9 @@ export function ActiveTrip({ trip, onChange }: { trip: Trip; onChange(trip: Trip
               <H2>{trip.driver.name}</H2>
               <Text style={{ fontSize: 18, fontWeight: '800', letterSpacing: 1, color: C.ink }}>{trip.driver.vehicleNumber}</Text>
             </View>
+            {trip.driver.rating ? <Badge text={`★ ${trip.driver.rating.average.toFixed(1)}`} tone="ok" /> : <Badge text={t('m.rate.new')} tone="muted" />}
           </View>
+          {showStartOtp ? <P small muted>{t('m.trip.matchPlate')}</P> : null}
         </Card>
       ) : null}
 
@@ -153,6 +144,7 @@ export function ActiveTrip({ trip, onChange }: { trip: Trip; onChange(trip: Trip
         <RouteStops pickup={trip.pickup?.name ?? '—'} drop={trip.dropoff?.name ?? '—'} pickupLabel={t('m.book.pickup')} dropLabel={t('m.book.drop')} />
         {trip.estimateMeters ? <Row label={t('m.receipt.distance')} value={`${km(trip.estimateMeters)} ${t('ui.unit.km')}`} /> : null}
         {trip.parcel ? <Row label={t('m.drive.receiver')} value={trip.parcel.receiverName} /> : null}
+        {trip.options?.pickupNote ? <Row label={t('m.review.pickupNote')} value={trip.options.pickupNote} /> : null}
         {trip.quote ? <Row label={t('ui.trip.estimatedFare')} value={money(trip.quote.totalPaise)} strong /> : null}
       </Card>
       {trip.quote && searching ? (
@@ -165,7 +157,8 @@ export function ActiveTrip({ trip, onChange }: { trip: Trip; onChange(trip: Trip
       <Notice text={error} />
       {notice ? <Button title={t('m.trip.call112')} kind="danger" onPress={() => Linking.openURL('tel:112')} /> : null}
       {!searching ? <Button title={t('m.trip.share')} icon="share-2" kind="secondary" onPress={share} loading={busy === 'share'} /> : null}
-      {canCancel ? <Button title={t('m.trip.cancel')} kind="ghost" onPress={cancel} loading={busy === 'cancel'} /> : null}
+      {canCancel && cancelling ? <CancelReasons trip={trip} role="rider" onCancelled={() => onChange(null)} onClose={() => setCancelling(false)} /> : null}
+      {canCancel && !cancelling ? <Button title={t('m.trip.cancel')} kind="ghost" onPress={() => setCancelling(true)} /> : null}
       </Sheet>
     </View>
   );

@@ -2,7 +2,7 @@ import type { Session } from '@supabase/supabase-js';
 import type { Locale } from '@thozhan/i18n';
 import { useEffect, useMemo, useState } from 'react';
 import { I18nContext, makeI18n, rpc, supabase, useI18n, USING_DEV_BACKEND } from './lib.tsx';
-import { Audit, Compliance, Drivers, FareCheck, Fees, Incidents, Overview, Services, Staff, Trips, type StaffRole } from './pages.tsx';
+import { Audit, Compliance, Drivers, FareCheck, Fees, Incidents, Overview, Services, Staff, Tickets, Trips, type StaffRole } from './pages.tsx';
 import { Track } from './Track.tsx';
 
 interface Me {
@@ -17,6 +17,7 @@ const PAGES = {
   drivers: { component: Drivers, roles: ['admin', 'reviewer'] },
   trips: { component: Trips, roles: ['admin', 'support'] },
   incidents: { component: Incidents, roles: ['admin', 'support'] },
+  tickets: { component: Tickets, roles: ['admin', 'support'] },
   fees: { component: Fees, roles: ['admin'] },
   services: { component: Services, roles: ['admin'] },
   compliance: { component: Compliance, roles: ['admin', 'gov'] },

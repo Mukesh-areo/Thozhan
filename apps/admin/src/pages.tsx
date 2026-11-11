@@ -145,6 +145,9 @@ interface Driver {
   vehicleNumber: string;
   licenceNumber: string;
   documents: Record<string, string>;
+  documentExpiry: Record<string, string>;
+  requiredDocuments: string[];
+  expiredDocuments: string[];
   reviewNote: string | null;
   online: boolean;
   trips: number;
@@ -202,10 +205,11 @@ export function Drivers() {
             {d.reviewNote ? <p className="small">“{d.reviewNote}”</p> : null}
             <div className="docs">
               <small>{t('a.drivers.docs')}:</small>
-              {['licence', 'rc', 'permit', 'insurance'].map((k) =>
+              {(d.requiredDocuments ?? ['licence', 'rc', 'permit', 'insurance']).map((k) =>
                 d.documents?.[k] ? (
-                  <button key={k} className="link" onClick={() => openDocument(d.documents[k]!)}>
-                    {t(`m.reg.doc.${k}`)} ↗
+                  <button key={k} className={`link ${d.expiredDocuments?.includes(k) ? 'warn' : ''}`} onClick={() => openDocument(d.documents[k]!)}>
+                    {t(`m.reg.doc.${k}`)}
+                    {d.documentExpiry?.[k] ? ` (${d.expiredDocuments?.includes(k) ? t('m.docs.expired') : t('m.docs.validTill', { date: d.documentExpiry[k]! })})` : ''} ↗
                   </button>
                 ) : (
                   <span key={k} className="badge danger">
@@ -362,6 +366,77 @@ export function Incidents() {
               <div className="actions">
                 <button disabled={busy} onClick={() => resolve(i)}>
                   {t('a.inc.resolve')}
+                </button>
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------- support tickets
+
+interface Ticket {
+  id: string;
+  code: string;
+  category: string;
+  status: 'open' | 'answered' | 'closed';
+  body: string;
+  reply: string | null;
+  createdAt: string;
+  trip: { id: string; code: string } | null;
+  reporter: { id: string; name: string | null; phone: string; accountType: 'passenger' | 'driver' | null };
+}
+
+export function Tickets() {
+  const { t, locale } = useI18n();
+  const [status, setStatus] = useState<'open' | 'answered' | 'closed'>('open');
+  const [list, error, reload] = usePoll(() => rpc<Ticket[]>('admin_tickets', { p_status: status }), 10000, [status]);
+  const [busy, act] = useAction(reload);
+
+  function reply(k: Ticket, close: boolean) {
+    const text = prompt(t('a.tickets.replyPrompt'));
+    if (text) act(() => rpc('admin_reply_ticket', { p_ticket: k.id, p_reply: text, p_close: close }));
+  }
+
+  return (
+    <>
+      <h1>{t('a.nav.tickets')}</h1>
+      <div className="seg">
+        {(['open', 'answered', 'closed'] as const).map((s) => (
+          <button key={s} className={s === status ? 'on' : ''} onClick={() => setStatus(s)}>
+            {t(`m.ticket.status.${s}`)}
+          </button>
+        ))}
+      </div>
+      <Err text={error} />
+      {list && !list.length ? <p className="muted">{t('a.none')}</p> : null}
+      <div className="cards">
+        {list?.map((k) => (
+          <div key={k.id} className="card">
+            <div className="row-between">
+              <span className={`badge ${k.category === 'safety' || k.category === 'account_deletion' ? 'danger' : 'warn'}`}>{t(`m.ticket.${k.category}`)}</span>
+              <small className="muted">{when(k.createdAt, locale)}</small>
+            </div>
+            <p>
+              <strong>{k.reporter.name || '—'}</strong> <span className="mono">{k.reporter.phone}</span>
+              {k.reporter.accountType ? <span className="muted small"> · {t(k.reporter.accountType === 'driver' ? 'm.role.driverPartner' : 'm.role.passenger')}</span> : null}
+            </p>
+            <p className="small mono">
+              {k.code}
+              {k.trip ? ` · ${k.trip.code}` : ''}
+            </p>
+            <p>“{k.body}”</p>
+            {k.reply ? <p className="muted small">✓ {k.reply}</p> : null}
+            {k.status !== 'closed' ? (
+              <div className="actions">
+                <button disabled={busy} onClick={() => reply(k, false)}>
+                  {t('a.tickets.reply')}
+                </button>
+                <button disabled={busy} className="secondary" onClick={() => reply(k, true)}>
+                  {t('a.tickets.replyClose')}
                 </button>
               </div>
             ) : null}

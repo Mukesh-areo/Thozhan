@@ -63,12 +63,12 @@
     "jurisdiction": "IN-TN",
     "service": "bike",
     "category": "bike",
-    "status": "ILLUSTRATIVE",
+    "status": "PENDING_APPROVAL",
     "legalReference": null,
     "effectiveFrom": null,
     "plain": {
       "baseDistanceMeters": 2000,
-      "baseFarePaise": 3000,
+      "baseFarePaise": 2500,
       "perKmPaise": 1000
     },
     "waiting": {
@@ -86,7 +86,7 @@
     "rounding": "nearest-rupee",
     "assumptions": [
       {
-        "code": "no-published-bike-tariff",
+        "code": "proposed-pilot-fare",
         "confirmed": false
       }
     ]
@@ -97,13 +97,13 @@
     "jurisdiction": "IN-TN",
     "service": "bike",
     "category": "scooter",
-    "status": "ILLUSTRATIVE",
+    "status": "PENDING_APPROVAL",
     "legalReference": null,
     "effectiveFrom": null,
     "plain": {
       "baseDistanceMeters": 2000,
       "baseFarePaise": 2500,
-      "perKmPaise": 900
+      "perKmPaise": 1000
     },
     "waiting": {
       "perMinutePaise": 100,
@@ -120,7 +120,7 @@
     "rounding": "nearest-rupee",
     "assumptions": [
       {
-        "code": "no-published-bike-tariff",
+        "code": "proposed-pilot-fare",
         "confirmed": false
       }
     ]
@@ -131,19 +131,17 @@
     "jurisdiction": "IN-TN",
     "service": "cab",
     "category": "cab-mini",
-    "status": "ILLUSTRATIVE",
+    "status": "PENDING_APPROVAL",
     "legalReference": null,
     "effectiveFrom": null,
     "plain": {
-      "baseDistanceMeters": 2000,
+      "baseDistanceMeters": 4000,
       "baseFarePaise": 10000,
-      "perKmPaise": 2000
+      "perKmPaise": 1600
     },
-    "perRideMinutePaise": 150,
-    "minimumFarePaise": 12000,
     "waiting": {
-      "perMinutePaise": 200,
-      "freeMinutes": 3,
+      "perMinutePaise": 150,
+      "freeMinutes": 5,
       "minuteCounting": "floor"
     },
     "night": {
@@ -156,7 +154,7 @@
     "rounding": "nearest-rupee",
     "assumptions": [
       {
-        "code": "no-sourced-cab-tariff",
+        "code": "proposed-pilot-fare",
         "confirmed": false
       }
     ]
@@ -167,19 +165,17 @@
     "jurisdiction": "IN-TN",
     "service": "cab",
     "category": "cab-sedan",
-    "status": "ILLUSTRATIVE",
+    "status": "PENDING_APPROVAL",
     "legalReference": null,
     "effectiveFrom": null,
     "plain": {
-      "baseDistanceMeters": 2000,
+      "baseDistanceMeters": 4000,
       "baseFarePaise": 12000,
-      "perKmPaise": 2400
+      "perKmPaise": 1800
     },
-    "perRideMinutePaise": 200,
-    "minimumFarePaise": 15000,
     "waiting": {
-      "perMinutePaise": 200,
-      "freeMinutes": 3,
+      "perMinutePaise": 150,
+      "freeMinutes": 5,
       "minuteCounting": "floor"
     },
     "night": {
@@ -192,7 +188,7 @@
     "rounding": "nearest-rupee",
     "assumptions": [
       {
-        "code": "no-sourced-cab-tariff",
+        "code": "proposed-pilot-fare",
         "confirmed": false
       }
     ]
@@ -203,19 +199,17 @@
     "jurisdiction": "IN-TN",
     "service": "cab",
     "category": "cab-suv",
-    "status": "ILLUSTRATIVE",
+    "status": "PENDING_APPROVAL",
     "legalReference": null,
     "effectiveFrom": null,
     "plain": {
-      "baseDistanceMeters": 2000,
+      "baseDistanceMeters": 4000,
       "baseFarePaise": 16000,
-      "perKmPaise": 3000
+      "perKmPaise": 2200
     },
-    "perRideMinutePaise": 250,
-    "minimumFarePaise": 20000,
     "waiting": {
-      "perMinutePaise": 300,
-      "freeMinutes": 3,
+      "perMinutePaise": 150,
+      "freeMinutes": 5,
       "minuteCounting": "floor"
     },
     "night": {
@@ -228,7 +222,7 @@
     "rounding": "nearest-rupee",
     "assumptions": [
       {
-        "code": "no-sourced-cab-tariff",
+        "code": "proposed-pilot-fare",
         "confirmed": false
       }
     ]
@@ -239,12 +233,12 @@
     "jurisdiction": "IN-TN",
     "service": "parcel",
     "category": "parcel-bike",
-    "status": "ILLUSTRATIVE",
+    "status": "PENDING_APPROVAL",
     "legalReference": null,
     "effectiveFrom": null,
     "plain": {
       "baseDistanceMeters": 2000,
-      "baseFarePaise": 4000,
+      "baseFarePaise": 3500,
       "perKmPaise": 1000
     },
     "waiting": {
@@ -252,17 +246,11 @@
       "freeMinutes": 5,
       "minuteCounting": "floor"
     },
-    "maxWeightGrams": 10000,
-    "weightSlabs": [
-      {
-        "aboveGrams": 5000,
-        "surchargePaise": 2000
-      }
-    ],
+    "maxWeightGrams": 5000,
     "rounding": "nearest-rupee",
     "assumptions": [
       {
-        "code": "parcel-commercial-pricing",
+        "code": "proposed-pilot-fare",
         "confirmed": false
       }
     ]
@@ -273,30 +261,24 @@
     "jurisdiction": "IN-TN",
     "service": "parcel",
     "category": "parcel-scooter",
-    "status": "ILLUSTRATIVE",
+    "status": "PENDING_APPROVAL",
     "legalReference": null,
     "effectiveFrom": null,
     "plain": {
       "baseDistanceMeters": 2000,
       "baseFarePaise": 3500,
-      "perKmPaise": 900
+      "perKmPaise": 1000
     },
     "waiting": {
       "perMinutePaise": 100,
       "freeMinutes": 5,
       "minuteCounting": "floor"
     },
-    "maxWeightGrams": 10000,
-    "weightSlabs": [
-      {
-        "aboveGrams": 5000,
-        "surchargePaise": 2000
-      }
-    ],
+    "maxWeightGrams": 5000,
     "rounding": "nearest-rupee",
     "assumptions": [
       {
-        "code": "parcel-commercial-pricing",
+        "code": "proposed-pilot-fare",
         "confirmed": false
       }
     ]
@@ -307,12 +289,12 @@
     "jurisdiction": "IN-TN",
     "service": "parcel",
     "category": "parcel-auto",
-    "status": "ILLUSTRATIVE",
+    "status": "PENDING_APPROVAL",
     "legalReference": null,
     "effectiveFrom": null,
     "plain": {
-      "baseDistanceMeters": 2000,
-      "baseFarePaise": 7000,
+      "baseDistanceMeters": 3000,
+      "baseFarePaise": 6000,
       "perKmPaise": 1500
     },
     "waiting": {
@@ -321,20 +303,10 @@
       "minuteCounting": "floor"
     },
     "maxWeightGrams": 50000,
-    "weightSlabs": [
-      {
-        "aboveGrams": 10000,
-        "surchargePaise": 3000
-      },
-      {
-        "aboveGrams": 25000,
-        "surchargePaise": 6000
-      }
-    ],
     "rounding": "nearest-rupee",
     "assumptions": [
       {
-        "code": "parcel-commercial-pricing",
+        "code": "proposed-pilot-fare",
         "confirmed": false
       }
     ]

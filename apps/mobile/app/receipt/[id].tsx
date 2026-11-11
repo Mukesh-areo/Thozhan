@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { rpc, type Trip } from '../../src/api';
 import { errorText, useI18n } from '../../src/i18n';
+import { RateCard } from '../../src/RateCard';
 import { Button, Card, FareLines, Field, H2, Notice, P, ReceiptHero, RouteStops, Row, Screen } from '../../src/ui';
 
 const minutes = (s: number) => Math.floor(s / 60);
@@ -21,6 +22,18 @@ export default function Receipt() {
       .then(setTrip)
       .catch((e) => setError(errorText(t, e)));
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function collect(method: 'cash' | 'upi') {
+    setError(null);
+    setBusy(method);
+    try {
+      setTrip(await rpc<Trip>('confirm_payment', { p_trip: id, p_method: method }));
+    } catch (e) {
+      setError(errorText(t, e));
+    } finally {
+      setBusy(null);
+    }
+  }
 
   async function report(kind: 'overcharge' | 'complaint') {
     setError(null);
@@ -49,6 +62,7 @@ export default function Receipt() {
     );
   // The API includes `rider` only in the driver's and staff views.
   const isRider = trip.rider === null;
+  const ended = trip.status === 'COMPLETED' || trip.status === 'DELIVERED';
 
   return (
     <Screen>
@@ -60,6 +74,8 @@ export default function Receipt() {
         {trip.distanceMeters != null ? <Row label={t('m.receipt.distance')} value={`${km(trip.distanceMeters, 2)} ${t('ui.unit.km')}`} /> : null}
         {trip.waitingSeconds ? <Row label={t('m.receipt.waiting')} value={`${minutes(trip.waitingSeconds)} ${t('ui.unit.min')}`} /> : null}
         <Row label={t('a.col.status')} value={t(`trip.status.${trip.status}`)} />
+        {trip.cancelDetail ? <Row label={t('m.cancel.reason')} value={t(`m.cancel.${trip.cancelDetail}`)} /> : null}
+        {trip.paidVia ? <Row label={t('m.pay.paidBy')} value={t(`m.pay.${trip.paidVia}`)} /> : null}
       </Card>
       {trip.fare ? (
         <Card>
@@ -81,6 +97,17 @@ export default function Receipt() {
             disabled={complaint.trim().length < 5}
           />
         </Card>
+      ) : null}
+      {!isRider && ended && !trip.paidVia && trip.fare ? (
+        <Card tone="brand">
+          <H2>{t('m.pay.collect', { amount: money(trip.fare.totalPaise) })}</H2>
+          <Button title={t('m.pay.gotCash')} kind="lime" icon="dollar-sign" onPress={() => collect('cash')} loading={busy === 'cash'} />
+          <Button title={t('m.pay.gotUpi')} kind="secondary" icon="smartphone" onPress={() => collect('upi')} loading={busy === 'upi'} />
+        </Card>
+      ) : null}
+      {ended && trip.flow !== 'meter' ? <RateCard trip={trip} by={isRider ? 'rider' : 'driver'} onRated={setTrip} /> : null}
+      {trip.flow !== 'meter' ? (
+        <Button title={t('m.receipt.help')} kind="secondary" icon="help-circle" onPress={() => router.push(`/help?trip=${trip.id}&code=${trip.code}`)} />
       ) : null}
       <Notice text={done} tone="ok" />
       <Notice text={error} />

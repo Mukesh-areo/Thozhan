@@ -7,11 +7,13 @@ import { useBooking } from '../../../src/booking';
 import { FavouriteButton } from '../../../src/FavouriteButton';
 import { useI18n } from '../../../src/i18n';
 import { MapView } from '../../../src/MapView';
-import { C, Icon, ListRow, Notice, Sheet, VehicleArt } from '../../../src/ui';
+import { useSession } from '../../../src/session';
+import { C, Icon, ListRow, Notice, Sheet, VehicleArt, type IconName } from '../../../src/ui';
 
 export default function Book() {
   const { t } = useI18n();
   const b = useBooking();
+  const { notice, setNotice } = useSession();
   if (b.trip) return <ActiveTrip trip={b.trip} onChange={b.setTrip} />;
 
   const openSearch = (field: 'pickup' | 'drop') => {
@@ -49,6 +51,11 @@ export default function Book() {
       </View>
       <Sheet>
         <Notice text={b.info} tone="warn" />
+        {notice ? (
+          <Pressable onPress={() => setNotice(null)} accessibilityRole="button" accessibilityHint={t('m.dismiss')}>
+            <Notice text={notice} tone="warn" />
+          </Pressable>
+        ) : null}
         <Pressable onPress={() => openSearch('drop')} accessibilityRole="button" style={styles.search}>
           <Icon name="search" size={24} />
           <Text style={styles.searchText}>{t('m.book.title')}</Text>
@@ -72,12 +79,27 @@ export default function Book() {
           </View>
           <VehicleArt category="parcel-auto" size={84} />
         </Pressable>
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <Shortcut icon="shield" title={t('m.safety.centre')} body={t('m.home.safetyBody')} onPress={() => router.push('/safety')} />
+          <Shortcut icon="file-text" title={t('m.fares.title')} body={t('m.home.faresBody')} onPress={() => router.push('/fares')} />
+        </View>
       </Sheet>
     </View>
   );
 }
 
+function Shortcut({ icon, title, body, onPress }: { icon: IconName; title: string; body: string; onPress(): void }) {
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={title} style={styles.shortcut}>
+      <Icon name={icon} color={C.brand} />
+      <Text style={styles.promoTitle}>{title}</Text>
+      <Text style={styles.promoBody}>{body}</Text>
+    </Pressable>
+  );
+}
+
 const styles = {
+  shortcut: { flex: 1, gap: 4, borderRadius: 18, borderWidth: 1, borderColor: C.line, padding: 14, minHeight: 52 },
   pill: {
     position: 'absolute',
     left: 16,

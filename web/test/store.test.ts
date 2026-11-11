@@ -54,10 +54,10 @@ test('ride lifecycle enforces OTP and charges ₹10 once per IST day', () => {
 test('parcel needs a weight within the vehicle limit and both OTPs', () => {
   const s = emptyState();
   const parcel = { category: 'parcel-bike', pickup: 0, drop: 1, payment: 'upi' as const };
-  assert.deepEqual(createBooking(s, { ...parcel, parcel: { weightGrams: 12000, receiver: 'A' } }, NOW, rand), { ok: false, error: 'weight' });
-  const r = createBooking(s, { ...parcel, parcel: { weightGrams: 6000, receiver: 'A' } }, NOW, rand);
+  assert.deepEqual(createBooking(s, { ...parcel, parcel: { weightGrams: 6000, receiver: 'A' } }, NOW, rand), { ok: false, error: 'weight' });
+  const r = createBooking(s, { ...parcel, parcel: { weightGrams: 4000, receiver: 'A' } }, NOW, rand);
   assert.ok(r.ok);
-  assert.ok(r.trip.fare.lines.some((l) => l.code === 'weight'));
+  assert.ok(r.trip.fare.lines.some((l) => l.code === 'base'));
   driverAction(s, 'accept', null, NOW);
   driverAction(s, 'arrive', null, NOW);
   assert.equal(driverAction(s, 'pickup', r.trip.startOtp, NOW).ok, true);

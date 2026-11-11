@@ -1,18 +1,21 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Session } from '@supabase/supabase-js';
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { AppError, rpc, supabase, type Me } from './api';
 import { useI18n } from './i18n';
 
+/** Which app this account sees. A number is a passenger or a driver account, never both. */
 export type Mode = 'rider' | 'driver';
-const MODE_KEY = 'thozhan-mode';
+
+export const modeOf = (me: Me | null): Mode => (me?.accountType === 'driver' || (!me?.accountType && me?.driver) ? 'driver' : 'rider');
 
 interface SessionState {
   ready: boolean;
   session: Session | null;
   me: Me | null;
   mode: Mode;
-  setMode(mode: Mode): void;
+  /** Shown once on the home screen, e.g. when the number already belongs to the other account type. */
+  notice: string | null;
+  setNotice(text: string | null): void;
   refresh(): Promise<Me | null>;
   signOut(): Promise<void>;
 }
@@ -24,7 +27,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [me, setMe] = useState<Me | null>(null);
-  const [mode, setModeState] = useState<Mode>('rider');
+  const [notice, setNotice] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -39,8 +42,6 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let alive = true;
     (async () => {
-      const saved = await AsyncStorage.getItem(MODE_KEY).catch(() => null);
-      if (saved === 'driver' || saved === 'rider') setModeState(saved);
       const { data } = await supabase.auth.getSession();
       if (!alive) return;
       setSession(data.session);
@@ -67,18 +68,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     };
   }, [setLocale]);
 
-  const setMode = useCallback((next: Mode) => {
-    setModeState(next);
-    AsyncStorage.setItem(MODE_KEY, next).catch(() => {});
-  }, []);
-
   const signOut = useCallback(async () => {
     await supabase.auth.signOut().catch(() => {});
     setMe(null);
     setSession(null);
+    setNotice(null);
   }, []);
 
-  return <Context.Provider value={{ ready, session, me, mode, setMode, refresh, signOut }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ ready, session, me, mode: modeOf(me), notice, setNotice, refresh, signOut }}>{children}</Context.Provider>;
 }
 
 export function useSession(): SessionState {

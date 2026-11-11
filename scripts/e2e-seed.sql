@@ -36,3 +36,9 @@ update profiles set locale = 'en' where id in (
   '00000000-0000-4000-a000-000000000013', '00000000-0000-4000-a000-000000000014', '00000000-0000-4000-a000-000000000015',
   '00000000-0000-4000-a000-000000000016', '00000000-0000-4000-a000-000000000017'
 );
+
+-- All seven papers with validity dates, as registration now requires.
+update drivers set
+  documents = '{"licence":"demo","rc":"demo","permit":"demo","insurance":"demo","pollution":"demo","fitness":"demo","photo":"demo"}',
+  document_expiry = '{"licence":"2031-03-31","permit":"2030-12-31","insurance":"2030-12-31","pollution":"2030-12-31","fitness":"2030-12-31"}'
+where documents ->> 'licence' = 'demo';

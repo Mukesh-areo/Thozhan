@@ -4,7 +4,20 @@ import Feather from '@expo/vector-icons/Feather';
 import type { FareBreakdown } from '@thozhan/tariff';
 import { router } from 'expo-router';
 import type { ComponentProps, ReactNode } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
+  type TextInputProps,
+  type ViewStyle,
+} from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useI18n } from './i18n';
 
@@ -28,18 +41,34 @@ export const C = {
 const SHADOW = '0px 4px 18px rgba(20, 32, 27, 0.09)';
 
 export type IconName = ComponentProps<typeof Feather>['name'];
-export const Icon = ({ name, size = 22, color = C.ink }: { name: IconName; size?: number; color?: string }) => <Feather name={name} size={size} color={color} />;
+/** Decorative: hidden from screen readers, so a button reads as its words only. */
+export const Icon = ({ name, size = 22, color = C.ink }: { name: IconName; size?: number; color?: string }) => (
+  <Feather name={name} size={size} color={color} accessible={false} importantForAccessibility="no" accessibilityElementsHidden />
+);
+
+/**
+ * Keeps the focused field and the button under it above the on-screen keyboard. The app draws
+ * edge to edge, so Android no longer resizes the window for the keyboard; this pads by however
+ * much of the view the keyboard actually covers (zero if the window did resize).
+ */
+export const KeyboardSafe = ({ children }: { children: ReactNode }) => (
+  <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+    {children}
+  </KeyboardAvoidingView>
+);
 
 export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['top', 'left', 'right']}>
-      {scroll ? (
-        <ScrollView contentContainerStyle={s.screen} keyboardShouldPersistTaps="handled">
-          {children}
-        </ScrollView>
-      ) : (
-        <View style={[s.screen, { flex: 1 }]}>{children}</View>
-      )}
+      <KeyboardSafe>
+        {scroll ? (
+          <ScrollView contentContainerStyle={s.screen} keyboardShouldPersistTaps="handled">
+            {children}
+          </ScrollView>
+        ) : (
+          <View style={[s.screen, { flex: 1 }]}>{children}</View>
+        )}
+      </KeyboardSafe>
     </SafeAreaView>
   );
 }
@@ -69,7 +98,13 @@ export const P = ({ children, muted, small, center }: { children: ReactNode; mut
 
 export function Card({ children, style, tone }: { children: ReactNode; style?: ViewStyle; tone?: 'brand' | 'warn' | 'danger' }) {
   const toneStyle =
-    tone === 'brand' ? { backgroundColor: C.brand } : tone === 'warn' ? { backgroundColor: C.warnSoft } : tone === 'danger' ? { backgroundColor: C.dangerSoft } : null;
+    tone === 'brand'
+      ? { backgroundColor: C.brand }
+      : tone === 'warn'
+        ? { backgroundColor: C.warnSoft }
+        : tone === 'danger'
+          ? { backgroundColor: C.dangerSoft }
+          : null;
   return <View style={[s.card, toneStyle, style]}>{children}</View>;
 }
 
@@ -101,6 +136,8 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ disabled: !!off, busy: !!loading }}
       onPress={off ? undefined : onPress}
       style={({ pressed }) => [s.button, { backgroundColor: palette.bg, borderColor: palette.border, opacity: off ? 0.55 : pressed ? 0.85 : 1 }, style]}
     >
@@ -221,10 +258,16 @@ export function ListRow({
 }) {
   return (
     <View style={[s.listRow, divider && s.listDivider]}>
-      <Pressable onPress={onPress} disabled={!onPress} accessibilityRole={onPress ? 'button' : undefined} style={s.listMain}>
+      <Pressable
+        onPress={onPress}
+        disabled={!onPress}
+        accessibilityRole={onPress ? 'button' : undefined}
+        accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
+        style={s.listMain}
+      >
         {icon ? <Icon name={icon} color={C.muted} /> : null}
         <View style={{ flex: 1 }}>
-          <Text style={s.listTitle} numberOfLines={1}>
+          <Text style={s.listTitle} numberOfLines={2}>
             {title}
           </Text>
           {subtitle ? <Text style={s.listSub}>{subtitle}</Text> : null}
@@ -323,7 +366,51 @@ export function FareLines({ fare, flags = [] }: { fare: FareBreakdown; flags?: s
   );
 }
 
+/** A labelled on/off row; the whole row is the touch target. */
+export function Toggle({ label, hint, value, onChange }: { label: string; hint?: string; value: boolean; onChange(v: boolean): void }) {
+  return (
+    <Pressable onPress={() => onChange(!value)} accessibilityRole="switch" accessibilityState={{ checked: value }} accessibilityLabel={label} style={s.toggle}>
+      <View style={{ flex: 1 }}>
+        <Text style={[s.p, { fontWeight: '600' }]}>{label}</Text>
+        {hint ? <Text style={s.listSub}>{hint}</Text> : null}
+      </View>
+      <Switch value={value} onValueChange={onChange} trackColor={{ true: C.brand }} />
+    </Pressable>
+  );
+}
+
+/** Five tappable stars, or a read-only average when no onChange is given. */
+export function Stars({ value, onChange, size = 34 }: { value: number; onChange?: (v: number) => void; size?: number }) {
+  const { t } = useI18n();
+  return (
+    <View style={{ flexDirection: 'row', gap: 6 }} accessibilityRole={onChange ? 'adjustable' : 'text'} accessibilityLabel={t('m.rate.stars', { n: value })}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Pressable key={n} onPress={onChange ? () => onChange(n) : undefined} disabled={!onChange} hitSlop={4} accessibilityLabel={t('m.rate.stars', { n })}>
+          <Text style={{ fontSize: size, lineHeight: size * 1.25, color: n <= Math.round(value) ? '#e3a008' : '#cfd8d3' }}>★</Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
+/** A tappable chip that can be on or off, e.g. a rating compliment. */
+export function Chip({ label, on, onPress }: { label: string; on: boolean; onPress(): void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: on }}
+      style={[s.chip, on && { backgroundColor: C.brand, borderColor: C.brand }]}
+    >
+      <Text style={[s.chipText, on && { color: '#fff' }]}>{label}</Text>
+    </Pressable>
+  );
+}
+
 const s = StyleSheet.create({
+  toggle: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52 },
+  chip: { minHeight: 40, borderRadius: 20, borderWidth: 1, borderColor: C.line, paddingHorizontal: 14, justifyContent: 'center', backgroundColor: '#fff' },
+  chipText: { fontSize: 14, lineHeight: 21, fontWeight: '600', color: C.ink },
   screen: { padding: 16, gap: 14, paddingBottom: 40 },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   headerBack: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginLeft: -8 },
@@ -332,7 +419,16 @@ const s = StyleSheet.create({
   p: { fontSize: 15, lineHeight: 23, color: C.ink },
   strong: { fontWeight: '700' },
   card: { backgroundColor: C.card, borderRadius: 20, padding: 16, gap: 10, boxShadow: SHADOW },
-  button: { minHeight: 54, borderRadius: 27, flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, borderWidth: 1 },
+  button: {
+    minHeight: 54,
+    borderRadius: 27,
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    borderWidth: 1,
+  },
   buttonText: { fontSize: 16, lineHeight: 24, fontWeight: '700', textAlign: 'center' },
   label: { fontSize: 14, lineHeight: 20, color: C.muted, fontWeight: '600' },
   input: { minHeight: 52, borderRadius: 14, borderWidth: 1, borderColor: C.line, backgroundColor: '#fff', paddingHorizontal: 14, fontSize: 16, color: C.ink },

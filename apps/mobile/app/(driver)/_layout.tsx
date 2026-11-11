@@ -13,6 +13,7 @@ export default function DriverTabs() {
     <Tabs screenOptions={options}>
       <Tabs.Screen name="drive" options={{ title: t('m.tab.drive'), tabBarIcon: tabIcon('navigation') }} />
       <Tabs.Screen name="earnings" options={{ title: t('m.tab.earnings'), tabBarIcon: tabIcon('credit-card') }} />
+      <Tabs.Screen name="manage" options={{ title: t('m.tab.manage'), tabBarIcon: tabIcon('briefcase') }} />
       <Tabs.Screen name="driver-account" options={{ title: t('m.tab.account'), tabBarIcon: tabIcon('user') }} />
     </Tabs>
   );

@@ -27,6 +27,13 @@ export default function Earnings() {
   }
 
   const due = ledger?.balancePaise ?? 0;
+  const since = (days: number) => {
+    const from = Date.now() - days * 86_400_000;
+    const rows = (ledger?.days ?? []).filter((d) => Date.parse(d.day) >= from);
+    return { trips: rows.reduce((n, d) => n + d.trips, 0), paise: rows.reduce((n, d) => n + d.earningsPaise, 0) };
+  };
+  const week = since(7);
+  const month = since(30);
   return (
     <Screen>
       <H1>{t('m.earn.title')}</H1>
@@ -38,6 +45,29 @@ export default function Earnings() {
         {due >= 10000 ? <Text style={{ color: '#fff', fontSize: 13, lineHeight: 19 }}>{t('m.earn.blocked')}</Text> : null}
       </Card>
       <Notice text={error} />
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+        <Card style={{ flex: 1 }}>
+          <P small muted>
+            {t('m.earn.week')}
+          </P>
+          <H2>{money(week.paise)}</H2>
+          <P small muted>
+            {t('m.earn.trips', { trips: week.trips })}
+          </P>
+        </Card>
+        <Card style={{ flex: 1 }}>
+          <P small muted>
+            {t('m.earn.month')}
+          </P>
+          <H2>{money(month.paise)}</H2>
+          <P small muted>
+            {t('m.earn.trips', { trips: month.trips })}
+          </P>
+        </Card>
+      </View>
+      <P small muted>
+        {t('m.earn.direct')}
+      </P>
       <Card>
         <H2>{t('m.earn.days')}</H2>
         {ledger?.days.length ? (

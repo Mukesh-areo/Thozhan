@@ -58,7 +58,8 @@ export interface Trip {
   dropoff: Place | null;
   estimateMeters: number | null;
   quote: FareBreakdown | null;
-  parcel: { receiverName: string; receiverPhone?: string; weightGrams: number; item?: string } | null;
+  parcel: ParcelInfo | null;
+  options: TripOptions;
   startOtp: string | null;
   dropOtp: string | null;
   vehicleNumber: string | null;
@@ -68,13 +69,52 @@ export interface Trip {
   fare: FareBreakdown | null;
   totalPaise: number | null;
   fareFlags: string[];
+  paidVia: 'cash' | 'upi' | null;
+  proof: { pickupPhoto: boolean; deliveryPhoto: boolean };
+  myRating: { stars: number; tags: string[] } | null;
   createdAt: string;
   acceptedAt: string | null;
+  arrivedAt: string | null;
   startedAt: string | null;
   endedAt: string | null;
   cancelReason: string | null;
-  rider: { name: string } | null;
-  driver: { name: string; vehicleNumber: string; vehicle: string; lat: number | null; lon: number | null; locationAt: string | null } | null;
+  cancelDetail: string | null;
+  rider: { name: string; rating: Rating | null } | null;
+  driver: {
+    name: string;
+    vehicleNumber: string;
+    vehicle: string;
+    lat: number | null;
+    lon: number | null;
+    locationAt: string | null;
+    rating: Rating | null;
+  } | null;
+}
+
+export interface Rating {
+  average: number;
+  count: number;
+}
+
+export interface ParcelInfo {
+  receiverName: string;
+  receiverPhone?: string;
+  weightGrams: number;
+  item?: string | null;
+  category?: string;
+  declaredValue?: number | null;
+  dimensionsCm?: [number, number, number] | null;
+  packages?: number;
+  loadingHelp?: boolean;
+  fragile?: boolean;
+  prohibitedAck?: boolean;
+}
+
+/** What the passenger asked for at booking; drivers see it on the offer. */
+export interface TripOptions {
+  pickupNote?: string;
+  safety?: { onePassenger: boolean; helmet: boolean; noLuggage: boolean; conditions: boolean };
+  cab?: { passengers: number; luggage: 'none' | 'small' | 'large'; ac: boolean; assistance: boolean; pet: boolean };
 }
 
 export interface Me {
@@ -83,6 +123,8 @@ export interface Me {
   name: string | null;
   locale: 'ta' | 'en';
   staffRole: 'admin' | 'gov' | 'support' | 'reviewer' | null;
+  accountType: 'passenger' | 'driver' | null;
+  rating: Rating | null;
   driver: {
     status: 'pending' | 'approved' | 'rejected' | 'suspended';
     vehicle: string;
@@ -90,8 +132,40 @@ export interface Me {
     licenceNumber: string;
     documents: Record<string, string>;
     reviewNote: string | null;
+    reviewedAt: string | null;
+    createdAt: string;
+    documentExpiry: Record<string, string>;
+    expiredDocuments: string[];
+    requiredDocuments: string[];
     online: boolean;
   } | null;
+}
+
+export interface Ticket {
+  id: string;
+  code: string;
+  category: string;
+  status: 'open' | 'answered' | 'closed';
+  body: string;
+  reply: string | null;
+  repliedAt: string | null;
+  createdAt: string;
+  trip: { id: string; code: string } | null;
+}
+
+export interface Contact {
+  id: string;
+  name: string;
+  phone: string;
+}
+
+export interface Performance {
+  rating: Rating | null;
+  offers: number;
+  accepted: number;
+  completed: number;
+  cancelledByDriver: number;
+  compliments: Record<string, number>;
 }
 
 export interface Offer {

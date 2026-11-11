@@ -11,7 +11,8 @@ import { createApp, signJwt } from '../dev/server.ts';
 
 const BASE = 'http://backend.test';
 const NOWHERE = '00000000-0000-4000-a000-0000000000ff';
-const DOCS = { licence: 'x/l.jpg', rc: 'x/rc.jpg', permit: 'x/p.jpg', insurance: 'x/i.jpg' };
+const DOCS = { licence: 'x/l.jpg', rc: 'x/rc.jpg', permit: 'x/p.jpg', insurance: 'x/i.jpg', pollution: 'x/pu.jpg', fitness: 'x/f.jpg', photo: 'x/ph.jpg' };
+const EXPIRY = { licence: '2030-12-31', permit: '2030-12-31', insurance: '2030-12-31', pollution: '2030-12-31', fitness: '2030-12-31' };
 
 type Role = 'admin' | 'gov' | 'support' | 'reviewer';
 interface User {
@@ -45,7 +46,7 @@ async function user(name: string, staffRole?: Role): Promise<User> {
 
 async function pendingDriver(name = 'Driver'): Promise<User> {
   const d = await user(name);
-  await d.rpc('register_driver', { p_vehicle_number: `TN 11 AB ${plates++}`, p_licence_number: 'TN1120190012345', p_documents: DOCS });
+  await d.rpc('register_driver', { p_vehicle_number: `TN 11 AB ${plates++}`, p_licence_number: 'TN1120190012345', p_documents: DOCS, p_expiry: EXPIRY });
   return d;
 }
 

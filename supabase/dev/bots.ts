@@ -126,6 +126,12 @@ export function startBots(db: Database, app: (req: Request) => Promise<Response>
     const [, action] = pace;
     const { rows } = await db.pg.query<{ start_otp: string; drop_otp: string }>(`select start_otp, drop_otp from trips where id = $1`, [trip.id]);
     const otp = action === 'start' || action === 'pickup' ? rows[0]!.start_otp : action === 'deliver' ? rows[0]!.drop_otp : undefined;
+    // Parcels need the driver's photo before pickup and before delivery (server-enforced). A bot has
+    // no camera, so it records a placeholder path; no image is stored behind it.
+    if (action === 'pickup' || action === 'deliver') {
+      const stage = action === 'pickup' ? 'pickup' : 'delivery';
+      await call(bot, '/rest/v1/rpc/set_parcel_proof', { p_trip: trip.id, p_stage: stage, p_path: `${bot.id}/parcel/${trip.id}-${stage}-demo.jpg` }).catch(() => {});
+    }
     if (action === 'complete' || action === 'deliver')
       await call(bot, '/functions/v1/finish-trip', {
         tripId: trip.id,

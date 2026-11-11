@@ -179,6 +179,10 @@ class Person {
     await this.see(text, timeout);
     await this.at(text).click();
   }
+  /** A bottom tab, by role, so a same-named chip on the page (e.g. the Trips "Meter" filter) is not hit. */
+  async tabTo(text: string) {
+    await this.page.getByRole('tab', { name: text }).filter({ visible: true }).first().click();
+  }
   box(index = 0) {
     return this.page.getByRole('textbox').filter({ visible: true }).nth(index);
   }
@@ -224,10 +228,12 @@ async function person(who: string, geolocation = CENTRAL) {
 
 // ---------------------------------------------------------------- steps shared by the areas
 
-async function signInMobile(who: string, phone: string) {
+/** Login asks first whether this number is a passenger or a driver partner (UX handoff §1). */
+async function signInMobile(who: string, phone: string, role: 'passenger' | 'driver' = 'passenger') {
   const p = await person(who);
   await p.page.goto(APP);
   await p.tap('English', 120_000);
+  await p.tap(t(role === 'driver' ? 'm.role.driverPartner' : 'm.role.passenger'));
   await p.fill(0, phone);
   await p.tap(t('m.login.sendOtp'));
   await p.see(t('m.login.otp', { phone: `+91${phone}` }));
@@ -240,17 +246,14 @@ async function newPassenger(who: string, phone: string) {
   const p = await signInMobile(who, phone);
   await p.see(t('m.welcome.title'));
   await p.fill(0, who);
-  await p.tap(new RegExp(escapeRegex(t('m.welcome.ride')) + '$'));
+  await p.tap(t('m.welcome.continue'));
   await p.see(t('m.book.title'));
   return p;
 }
 
 async function approvedDriver(who: string, phone: string) {
-  const p = await signInMobile(who, phone);
-  await p.see(t('m.book.title'));
-  await p.tap(t('m.tab.account'));
-  await p.tap(t('m.account.driveMode'));
-  await p.see(t('m.drive.offline'));
+  const p = await signInMobile(who, phone, 'driver');
+  await p.see(t('m.drive.offline'), 60_000);
   return p;
 }
 
@@ -278,7 +281,30 @@ async function signInAdmin(who: string, phone: string) {
 
 /** The heading starts with the vehicle's emoji. */
 const newRequest = new RegExp(escapeRegex(t('m.drive.newRequest')) + '$');
-const bookButton = (service: string) => new RegExp('^' + escapeRegex(t('m.book.confirm', { service: t(service) })));
+const bookButton = (service: string) => new RegExp('^' + escapeRegex(t('m.book.continueWith', { service: t(service) })));
+const confirmButton = new RegExp('^' + escapeRegex(t('m.review.confirm', { amount: '' })));
+
+/** The review step: two-wheelers need the passenger's safety checks before it confirms. */
+async function confirmReview(rider: Person, twoWheeler = false) {
+  await rider.see(t('m.review.title'));
+  if (twoWheeler) for (const key of ['m.review.onePassenger', 'm.review.helmet', 'm.review.noLuggage', 'm.review.conditions']) await rider.tap(t(key));
+  await rider.tap(confirmButton);
+  await rider.see(t('m.trip.searching'));
+}
+
+/** Parcel photos go through the file picker in a browser. */
+async function parcelPhoto(driver: Person, key: 'm.drive.photoPickup' | 'm.drive.photoDelivery') {
+  const [chooser] = await Promise.all([driver.page.waitForEvent('filechooser'), driver.tap(t(key))]);
+  await chooser.setFiles(DOCUMENT_PATH);
+  await driver.gone(t(key), 20_000);
+}
+
+/** Cancelling asks for a reason first. */
+async function cancelWithReason(p: Person, reason = 'm.cancel.changed_plans') {
+  await p.tap(t('m.trip.cancel'));
+  await p.tap(t(reason));
+  await p.tap(t('m.trip.cancel'));
+}
 
 async function chooseDrop(rider: Person, place = 'Marina Beach') {
   await rider.tap(t('m.book.title'));
@@ -292,7 +318,7 @@ async function chooseDrop(rider: Person, place = 'Marina Beach') {
 async function bookAuto(rider: Person, place?: string) {
   await chooseDrop(rider, place);
   await rider.tap(bookButton('category.auto'));
-  await rider.see(t('m.trip.searching'));
+  await confirmReview(rider);
 }
 
 /** The four-digit codes on the passenger's screen; the start OTP is first, then the drop OTP. */
@@ -308,8 +334,9 @@ async function readOtp(rider: Person, index = 0) {
 const wrong = (otp: string) => (otp === '0000' ? '1111' : '0000');
 
 /** Offer, accept and arrive: the driver is then at the pickup and needs the OTP. */
-async function acceptAndArrive(driver: Person, rider: Person, name: string) {
+async function acceptAndArrive(driver: Person, rider: Person, name: string, twoWheeler = false) {
   await driver.see(newRequest, 30_000);
+  if (twoWheeler) await driver.tap(t('m.drive.helmetCheck'));
   await driver.tap(t('m.drive.accept'));
   await rider.see(t('m.trip.onTheWay', { name }), 15_000);
   await driver.tap(t('trip.action.arrive'));
@@ -343,24 +370,26 @@ async function reloadDrivers(admin: Person, tab: 'a.drivers.pending' | 'a.driver
 
 // ---------------------------------------------------------------- the six areas
 
+const AUTO_DOCS = ['licence', 'rc', 'permit', 'insurance', 'pollution', 'fitness', 'photo'];
+
 async function onboarding() {
   step('a new number applies to drive');
-  const driver = await signInMobile('Applicant', PEOPLE.newDriver);
+  const driver = await signInMobile('Applicant', PEOPLE.newDriver, 'driver');
   await driver.see(t('m.welcome.title'));
   await driver.fill(0, 'Arun New');
-  await driver.tap(new RegExp(escapeRegex(t('m.welcome.drive')) + '$'));
+  await driver.tap(t('m.welcome.continue'));
   await driver.see(t('m.reg.title'));
 
-  step('submit does nothing until all four documents are uploaded');
+  step('submit names the first missing document until all seven are uploaded');
   await driver.fill(0, 'TN 09 ZZ 4321');
   await driver.fill(1, 'TN0920210099887');
   await driver.tap(t('m.reg.submit'));
-  await pause(500);
+  await driver.see(t('m.reg.missingDoc', { doc: t('m.reg.doc.licence') }));
   await driver.notSee(t('m.reg.status.pending'));
 
-  step('upload licence, RC, permit and insurance through the file picker');
+  step('upload all seven papers through the file picker');
   const uploaded = `✓ ${t('m.reg.uploaded')}`;
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < AUTO_DOCS.length; i++) {
     const [chooser] = await Promise.all([
       driver.page.waitForEvent('filechooser'),
       driver.page.getByText(t('m.reg.gallery'), { exact: true }).filter({ visible: true }).nth(i).click(),
@@ -371,6 +400,15 @@ async function onboarding() {
       timeout: 15_000,
     });
   }
+
+  step('each paper with a validity date needs a future date');
+  await driver.tap(t('m.reg.submit'));
+  await driver.see(t('m.reg.badExpiry', { doc: t('m.reg.doc.licence') }));
+  // Text boxes: plate, licence number, then one date each for licence, permit, insurance, pollution, fitness.
+  await driver.fill(2, '2020-01-01');
+  await driver.tap(t('m.reg.submit'));
+  await driver.see(t('m.reg.badExpiry', { doc: t('m.reg.doc.licence') }));
+  for (let i = 2; i <= 6; i++) await driver.fill(i, '2030-12-31');
 
   step('a badly formed number plate is refused in the app');
   await driver.fill(0, 'KA 01 1');
@@ -383,7 +421,7 @@ async function onboarding() {
   await driver.page.reload();
   await driver.see(t('m.reg.status.pending'), 60_000);
 
-  step('admin opens all four documents and gets the uploaded file back');
+  step('admin opens every document and gets the uploaded file back');
   const admin = await signInAdmin('Admin', PEOPLE.admin);
   await admin.see(t('a.nav.overview'));
   await admin.tap(t('a.nav.drivers'));
@@ -391,7 +429,7 @@ async function onboarding() {
   await card.waitFor();
   await assertContains(card, 'TN 09 ZZ 4321');
   await assertContains(card, 'Arun New');
-  for (const doc of ['licence', 'rc', 'permit', 'insurance']) {
+  for (const doc of AUTO_DOCS) {
     const [popup] = await Promise.all([
       admin.context.waitForEvent('page'),
       card.getByRole('button', { name: new RegExp(escapeRegex(t(`m.reg.doc.${doc}`))) }).click(),
@@ -522,6 +560,18 @@ async function trip() {
   await driver.notSee(t('m.receipt.asked'));
   await rider.see(t('m.receipt.asked'));
 
+  step('the driver records the cash; both rate each other');
+  await driver.tap(t('m.pay.gotCash'));
+  await driver.see(t('m.pay.cash'));
+  await driver.notSee(t('m.pay.gotCash'));
+  await rider.page.getByLabel(t('m.rate.stars', { n: 5 }), { exact: true }).filter({ visible: true }).first().click();
+  await rider.tap(t('m.rate.tag.safe_driving'));
+  await rider.tap(t('m.rate.submit'));
+  await rider.see(t('m.rate.thanks'));
+  await driver.page.getByLabel(t('m.rate.stars', { n: 4 }), { exact: true }).filter({ visible: true }).first().click();
+  await driver.tap(t('m.rate.submit'));
+  await driver.see(t('m.rate.thanks'));
+
   step('the driver is back online, with the trip and the day fee counted');
   await driver.tap(t('m.close'));
   await driver.see(t('m.drive.waiting'));
@@ -535,25 +585,32 @@ async function parcel() {
   await goOnline(driver);
   const rider = await newPassenger('Lakshmi', PEOPLE.parcelRider);
 
-  step('receiver details are required');
-  await rider.tap(t('m.tab.parcel'));
+  step('receiver details and the packed-safely declaration are required');
+  await rider.tap(t('m.parcel.title'));
   await rider.tap(t('m.parcel.dropSearch'));
   await rider.tap('T. Nagar');
   await rider.tap(t('m.parcel.continue'));
   await rider.see(t('m.error.receiver_required'));
+  // Text boxes: receiver name, receiver phone, description, weight, value, L, W, H, packages.
   await rider.fill(0, 'Asha Receiver');
   await rider.fill(1, '9876543210');
-  await rider.fill(2, '3');
-  await rider.fill(3, 'Documents');
+  await rider.fill(2, 'Documents');
+  await rider.fill(3, '3');
+  await rider.tap(t('m.parcel.continue'));
+  await rider.see(t('m.error.prohibited_ack_required'));
+  await rider.tap(t('m.parcel.ack'));
   await rider.tap(t('m.parcel.continue'));
   await pause(1500);
+  await rider.tap(t('category.parcel-auto'));
   await rider.tap(bookButton('category.parcel-auto'));
-  await rider.see(t('m.trip.searching'));
+  await confirmReview(rider);
   await rider.see('Asha Receiver');
 
-  step('the driver accepts and needs the pickup OTP');
+  step('the driver accepts, takes the pickup photo and needs the pickup OTP');
   await acceptAndArrive(driver, rider, 'Kumar Parcels');
-  await driver.see('Asha Receiver · 3 kg');
+  await driver.see('Asha Receiver');
+  await driver.see('Documents · 3 kg');
+  await parcelPhoto(driver, 'm.drive.photoPickup');
   const pickupOtp = await readOtp(rider, 0);
   const dropOtp = await readOtp(rider, 1);
   assert.notEqual(pickupOtp, dropOtp);
@@ -574,6 +631,7 @@ async function parcel() {
   await driver.tap(t('trip.action.reach-drop'));
   await rider.see(t('trip.status.AT_DROP'), 15_000);
   assert.equal(await readOtp(rider), dropOtp, 'the drop OTP stays on the sender’s screen');
+  await parcelPhoto(driver, 'm.drive.photoDelivery');
   await driver.see(t('m.drive.dropOtp'));
   await driver.fill(0, wrong(dropOtp));
   await driver.tap(t('trip.action.deliver'));
@@ -703,11 +761,13 @@ async function errors() {
   await rider.see(t('m.book.title'));
   await rider.notSee(t('m.trip.searching'));
 
-  step('the passenger can book again and cancel');
+  step('the passenger can book again and cancel, giving a reason');
   await bookAuto(rider);
-  const confirmCancel = rider.expectDialog(t('m.trip.cancelConfirm'));
   await rider.tap(t('m.trip.cancel'));
-  await confirmCancel;
+  await rider.tap(t('m.trip.cancel'));
+  await rider.see(t('m.cancel.pick'));
+  await rider.tap(t('m.cancel.changed_plans'));
+  await rider.tap(t('m.trip.cancel'));
   await rider.see(t('m.trip.cancelled'), 15_000);
   await rider.see(t('m.book.title'));
 }
@@ -737,13 +797,14 @@ async function vehicles() {
     await chooseDrop(rider);
     await rider.tap(t(`category.${v.id}`));
     await rider.tap(bookButton(`category.${v.id}`));
-    await rider.see(t('m.trip.searching'));
+    const twoWheeler = v.id === 'bike' || v.id === 'scooter';
+    await confirmReview(rider, twoWheeler);
     await driver.see(newRequest, 30_000);
     await driver.see(t(`category.${v.id}`));
     await pause(4000);
     for (const [other, person] of drivers) if (other !== v.id) await person.notSee(newRequest);
 
-    await acceptAndArrive(driver, rider, v.name);
+    await acceptAndArrive(driver, rider, v.name, twoWheeler);
     if (v.plate) await rider.see(v.plate);
     await driver.fill(0, await readOtp(rider));
     await driver.tap(t('trip.action.start'));
@@ -759,12 +820,13 @@ async function vehicles() {
   }
 
   step('a parcel too heavy for two wheels can only go by auto');
-  await rider.tap(t('m.tab.parcel'));
+  await rider.tap(t('m.parcel.title'));
   await rider.tap(t('m.parcel.dropSearch'));
   await rider.tap('T. Nagar');
   await rider.fill(0, 'Asha Receiver');
   await rider.fill(1, '9876543210');
-  await rider.fill(2, '20');
+  await rider.fill(3, '20');
+  await rider.tap(t('m.parcel.ack'));
   await rider.tap(t('m.parcel.continue'));
   await rider.see(t('m.book.tooHeavy'));
   await rider.see(t('category.parcel-scooter'));
@@ -773,19 +835,17 @@ async function vehicles() {
 
   step('a light parcel by scooter goes to the scooter driver only');
   await rider.see(t('m.parcel.continue'));
-  await rider.fill(2, '2');
+  await rider.fill(3, '2');
   await rider.tap(t('m.parcel.continue'));
   await pause(1500);
   await rider.tap(t('category.parcel-scooter'));
   await rider.tap(bookButton('category.parcel-scooter'));
-  await rider.see(t('m.trip.searching'));
+  await confirmReview(rider);
   await drivers.get('scooter')!.see(newRequest, 30_000);
   await drivers.get('scooter')!.see(t('category.parcel-scooter'));
   await pause(4000);
   for (const [other, person] of drivers) if (other !== 'scooter') await person.notSee(newRequest);
-  const confirmCancel = rider.expectDialog(t('m.trip.cancelConfirm'));
-  await rider.tap(t('m.trip.cancel'));
-  await confirmCancel;
+  await cancelWithReason(rider);
   await rider.see(t('m.trip.cancelled'), 15_000);
 
   for (const d of drivers.values()) await goOffline(d);
@@ -833,11 +893,13 @@ async function tour(lang: Lang, phones: { rider: string; applicant: string; driv
   }
   const back = (p: Person) => p.page.getByRole('button', { name: tx('m.back') }).filter({ visible: true }).first().click();
 
-  async function signIn(who: string, phone: string, capture = false) {
+  async function signIn(who: string, phone: string, capture = false, role: 'passenger' | 'driver' = 'passenger') {
     const p = await person(`${who} ${lang}`);
     await p.page.goto(APP);
     await p.tap(lang === 'en' ? 'English' : 'தமிழ்', 120_000);
     if (capture) await shot(p, 'login');
+    await p.tap(tx(role === 'driver' ? 'm.role.driverPartner' : 'm.role.passenger'));
+    if (capture) await shot(p, 'login-phone');
     await p.fill(0, phone);
     await p.tap(tx('m.login.sendOtp'));
     await p.see(tx('m.login.otp', { phone: `+91${phone}` }));
@@ -848,10 +910,10 @@ async function tour(lang: Lang, phones: { rider: string; applicant: string; driv
   }
 
   step(`${lang}: login, welcome and driver sign-up`);
-  const applicant = await signIn('Applicant', phones.applicant);
+  const applicant = await signIn('Applicant', phones.applicant, false, 'driver');
   await applicant.see(tx('m.welcome.title'));
   await applicant.fill(0, 'Tour Applicant');
-  await applicant.tap(new RegExp(escapeRegex(tx('m.welcome.drive')) + '$'));
+  await applicant.tap(tx('m.welcome.continue'));
   await applicant.see(tx('m.reg.title'));
   await shot(applicant, 'driver-signup', true);
 
@@ -859,7 +921,7 @@ async function tour(lang: Lang, phones: { rider: string; applicant: string; driv
   await rider.see(tx('m.welcome.title'));
   await shot(rider, 'welcome');
   await rider.fill(0, 'Tour Rider');
-  await rider.tap(new RegExp(escapeRegex(tx('m.welcome.ride')) + '$'));
+  await rider.tap(tx('m.welcome.continue'));
 
   step(`${lang}: booking screens`);
   await rider.see(tx('m.book.title'));
@@ -868,26 +930,30 @@ async function tour(lang: Lang, phones: { rider: string; applicant: string; driv
   await rider.see(tx('m.book.myLocation'));
   await shot(rider, 'search');
   await rider.tap(lang === 'en' ? 'Marina Beach' : 'மெரினா கடற்கரை');
-  await rider.see(new RegExp('^' + escapeRegex(tx('m.book.confirm', { service: tx('category.auto') }))));
+  await rider.see(new RegExp('^' + escapeRegex(tx('m.book.continueWith', { service: tx('category.auto') }))));
   await pause(1500);
   await shot(rider, 'choose-vehicle');
   await rider.tap(tx('m.book.cash'));
   await rider.see(tx('m.profile.payment'));
   await shot(rider, 'payment');
   await back(rider);
+  await rider.tap(tx('m.fares.see'));
+  await rider.see(tx('m.fares.title'));
+  await shot(rider, 'fare-chart', true);
+  await back(rider);
+  await rider.tap(new RegExp('^' + escapeRegex(tx('m.book.continueWith', { service: tx('category.auto') }))));
+  await rider.see(tx('m.review.title'));
+  await shot(rider, 'review', true);
 
   step(`${lang}: driver home, offer and the whole trip, on both phones`);
-  const driver = await signIn('Driver', phones.driver);
-  await driver.see(tx('m.book.title'));
-  await driver.tap(tx('m.tab.account'));
-  await driver.tap(tx('m.account.driveMode'));
-  await driver.see(tx('m.drive.offline'));
+  const driver = await signIn('Driver', phones.driver, false, 'driver');
+  await driver.see(tx('m.drive.offline'), 60_000);
   await shot(driver, 'driver-offline');
   await driver.tap(tx('m.drive.goOnline'));
   await driver.see(tx('m.drive.waiting'));
   await shot(driver, 'driver-online');
 
-  await rider.tap(new RegExp('^' + escapeRegex(tx('m.book.confirm', { service: tx('category.auto') }))));
+  await rider.tap(new RegExp('^' + escapeRegex(tx('m.review.confirm', { amount: '' }))));
   await rider.see(tx('m.trip.searching'));
   await shot(rider, 'trip-searching');
   const offer = new RegExp(escapeRegex(tx('m.drive.newRequest')) + '$');
@@ -922,8 +988,15 @@ async function tour(lang: Lang, phones: { rider: string; applicant: string; driv
   await driver.tap(tx('m.tab.earnings'));
   await driver.see(tx('m.earn.title'));
   await shot(driver, 'driver-earnings', true);
+  await driver.tap(tx('m.tab.manage'));
+  await driver.see(tx('m.manage.performance'));
+  await shot(driver, 'driver-manage', true);
+  await driver.tap(tx('m.manage.documents'));
+  await driver.see(tx('m.docs.reviewNote'));
+  await shot(driver, 'driver-documents', true);
+  await back(driver);
   await driver.tap(tx('m.tab.account'));
-  await driver.see(tx('m.account.rideMode'));
+  await driver.see(tx('m.account.typeFixed'));
   await shot(driver, 'driver-profile');
   await driver.tap(tx('m.tab.drive'));
   await driver.see(tx('m.drive.waiting'));
@@ -931,12 +1004,16 @@ async function tour(lang: Lang, phones: { rider: string; applicant: string; driv
   await driver.see(tx('m.drive.offline'));
 
   step(`${lang}: parcel`);
-  await rider.tap(tx('m.tab.parcel'));
+  await rider.tap(tx('m.parcel.title'));
   await rider.see(tx('m.parcel.dropSearch'));
   await shot(rider, 'parcel', true);
+  await back(rider);
+  await rider.tap(tx('m.tab.trips'));
+  await rider.see(tx('m.trips.all'));
+  await shot(rider, 'trips');
 
   step(`${lang}: meter, running, then stopped with no network`);
-  await rider.tap(tx('m.tab.meter'));
+  await rider.tabTo(tx('m.tab.meter'));
   await rider.see(tx('m.meter.start'));
   await shot(rider, 'meter-setup', true);
   await rider.tap(tx('m.meter.demo'));
@@ -954,19 +1031,22 @@ async function tour(lang: Lang, phones: { rider: string; applicant: string; driv
 
   step(`${lang}: profile and everything it opens`);
   await rider.tap(tx('m.tab.account'));
-  await rider.see(tx('m.profile.rides'));
+  await rider.see(tx('m.account.saved'));
   await shot(rider, 'profile');
   for (const [key, name] of [
-    ['m.profile.rides', 'past-rides'],
+    ['m.account.saved', 'saved-places'],
     ['m.profile.payment', 'profile-payment'],
-    ['m.profile.safety', 'safety'],
-    ['m.profile.help', 'help'],
+    ['m.insurance.title', 'insurance'],
+    ['m.safety.centre', 'safety'],
+    ['m.contacts.title', 'trusted-contacts'],
+    ['m.help.title', 'help'],
+    ['m.privacy.title', 'privacy'],
   ] as const) {
     await rider.tap(tx(key));
     await pause(500);
     await shot(rider, name, true);
     await back(rider);
-    await rider.see(tx('m.profile.rides'));
+    await rider.see(tx('m.account.saved'));
   }
 
   writeFileSync(join(OUT, 'screens', `${lang}-english-only.txt`), [...untranslated].join('\n') + '\n');

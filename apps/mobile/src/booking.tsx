@@ -3,7 +3,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { rpc, type Place, type Trip } from './api';
+import { rpc, type Place, type Trip, type TripOptions } from './api';
 import { POLL } from './config';
 import { useI18n } from './i18n';
 import { placesFor } from './places';
@@ -15,10 +15,38 @@ export interface ParcelDetails {
   receiverPhone: string;
   weightKg: string;
   item: string;
+  category: string;
+  declaredValue: string;
+  /** Length × width × height in cm, for auto parcels. */
+  dimensions: [string, string, string];
+  packages: string;
+  loadingHelp: boolean;
+  fragile: boolean;
+  prohibitedAck: boolean;
 }
 
+export const PARCEL_ITEMS = ['documents', 'clothes', 'food', 'electronics', 'household', 'other'] as const;
+
+const EMPTY_OPTIONS: TripOptions = {
+  pickupNote: '',
+  safety: { onePassenger: false, helmet: false, noLuggage: false, conditions: false },
+  cab: { passengers: 1, luggage: 'none', ac: false, assistance: false, pet: false },
+};
+
 const FAVOURITES_KEY = 'thozhan-favourite-places';
-const EMPTY_PARCEL: ParcelDetails = { receiverName: '', receiverPhone: '', weightKg: '2', item: '' };
+const EMPTY_PARCEL: ParcelDetails = {
+  receiverName: '',
+  receiverPhone: '',
+  weightKg: '2',
+  item: '',
+  category: 'documents',
+  declaredValue: '',
+  dimensions: ['', '', ''],
+  packages: '1',
+  loadingHelp: false,
+  fragile: false,
+  prohibitedAck: false,
+};
 
 interface BookingState {
   trip: Trip | null;
@@ -39,6 +67,9 @@ interface BookingState {
   setCategory(id: string): void;
   parcel: ParcelDetails;
   setParcel(next: Partial<ParcelDetails>): void;
+  /** Pickup note, bike safety checks and cab preferences for the next booking. */
+  options: TripOptions;
+  setOptions(next: Partial<TripOptions>): void;
   /** Clears the destination and parcel form once a booking is placed. */
   reset(): void;
   info: string | null;
@@ -63,6 +94,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
   const [flow, setFlow] = useState<BookingFlow>('ride');
   const [category, setCategory] = useState('auto');
   const [parcel, setParcelState] = useState<ParcelDetails>(EMPTY_PARCEL);
+  const [options, setOptionsState] = useState<TripOptions>(EMPTY_OPTIONS);
   const [info, setInfo] = useState<string | null>(null);
   const [recents, setRecents] = useState<Place[]>([]);
   const [favourites, setFavourites] = useState<Place[]>([]);
@@ -131,9 +163,12 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     setCategory,
     parcel,
     setParcel: (next) => setParcelState((current) => ({ ...current, ...next })),
+    options,
+    setOptions: (next) => setOptionsState((current) => ({ ...current, ...next })),
     reset: () => {
       setDrop(null);
       setParcelState(EMPTY_PARCEL);
+      setOptionsState(EMPTY_OPTIONS);
     },
     info,
     setInfo,

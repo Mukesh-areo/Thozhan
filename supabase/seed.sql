@@ -58,3 +58,12 @@ insert into drivers (id, status, vehicle, vehicle_number, licence_number, docume
 on conflict do nothing;
 
 update service_flags set enabled = true;
+
+-- Every demo driver has all the papers their vehicle needs, with validity dates (UX handoff §14).
+-- Murugan's pollution certificate runs out in 20 days, so the renewal reminder can be seen.
+update drivers set
+  documents = '{"licence":"demo","rc":"demo","permit":"demo","insurance":"demo","pollution":"demo","fitness":"demo","photo":"demo"}',
+  document_expiry = jsonb_build_object('licence', '2031-03-31', 'permit', '2027-12-31', 'insurance', '2027-06-30',
+    'pollution', case when id = '00000000-0000-4000-a000-000000000011' then (current_date + 20)::text else '2027-03-31' end,
+    'fitness', '2028-01-31')
+where documents ->> 'licence' = 'demo';

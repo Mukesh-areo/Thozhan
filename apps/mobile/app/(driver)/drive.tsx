@@ -3,8 +3,9 @@ import { availableActions, getCategory, PLACES, type TripAction, type TripStatus
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { ActivityIndicator, Linking, Switch, Text, View } from 'react-native';
-import { confirm } from '../../src/ActiveTrip';
+import { ActivityIndicator, Linking, Pressable, Switch, Text, View } from 'react-native';
+import { CancelReasons } from '../../src/CancelReasons';
+import { daysUntil, photoUpload } from '../../src/documents';
 import { invoke, rpc, type Inbox, type Offer, type Trip } from '../../src/api';
 import { POLL, USING_DEV_BACKEND } from '../../src/config';
 import { errorText, useI18n } from '../../src/i18n';
@@ -13,7 +14,25 @@ import type { MapMarker } from '../../src/map-html';
 import { MapView } from '../../src/MapView';
 import { useSession } from '../../src/session';
 import { usePoll } from '../../src/usePoll';
-import { Badge, Button, C, Card, Field, H2, Icon, Notice, P, RouteStops, Row, Sheet, useTopInset, VehicleArt } from '../../src/ui';
+import {
+  Badge,
+  Button,
+  C,
+  Card,
+  Field,
+  H2,
+  Icon,
+  KeyboardSafe,
+  ListRow,
+  Notice,
+  P,
+  RouteStops,
+  Row,
+  Sheet,
+  Toggle,
+  useTopInset,
+  VehicleArt,
+} from '../../src/ui';
 
 const ON_BOARD = ['IN_PROGRESS', 'PICKED_UP', 'IN_TRANSIT', 'AT_DROP'];
 const FINISH: TripAction[] = ['complete', 'deliver', 'return'];
@@ -21,7 +40,7 @@ const DEMO_SPOT = { lat: PLACES[0]!.lat + 0.0007, lon: PLACES[0]!.lon };
 
 export default function Drive() {
   const { t, money, km } = useI18n();
-  const { me, refresh } = useSession();
+  const { me, refresh, notice, setNotice } = useSession();
   const top = useTopInset();
   const [here, setHere] = useState<{ lat: number; lon: number } | null>(null);
   const [online, setOnline] = useState(!!me?.driver?.online);
@@ -30,6 +49,12 @@ export default function Drive() {
   const [error, setError] = useState<string | null>(null);
   const [demo, setDemo] = useState(false);
   const [otp, setOtp] = useState('');
+  const [cancelling, setCancelling] = useState(false);
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 15000);
+    return () => clearInterval(timer);
+  }, []);
   const tracking = useRef<Tracking | null>(null);
   const lastPing = useRef(0);
   const lastFixAt = useRef(0);
@@ -139,7 +164,7 @@ export default function Drive() {
 
   async function act(current: Trip, action: TripAction) {
     setError(null);
-    if (action === 'cancel' && !(await confirm(t('m.trip.cancelConfirm'), t('m.yes'), t('m.no')))) return;
+    if (action === 'cancel') return setCancelling(true);
     setBusy(action);
     try {
       if (FINISH.includes(action)) {
@@ -173,84 +198,167 @@ export default function Drive() {
       ]
     : [{ ...(here ?? DEMO_SPOT), kind: 'driver', emoji }];
 
+  async function proof(current: Trip, stage: 'pickup' | 'delivery') {
+    if (!me) return;
+    setError(null);
+    setBusy(`proof-${stage}`);
+    try {
+      const result = await photoUpload(me.id, `parcel/${current.id}-${stage}`, true);
+      if (!result) return;
+      if ('error' in result) return setError(t(`m.error.${result.error}`));
+      await rpc<Trip>('set_parcel_proof', { p_trip: current.id, p_stage: stage, p_path: result.path });
+      setInbox(await rpc<Inbox>('driver_inbox'));
+    } catch (e) {
+      setError(errorText(t, e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function notFound(current: Trip) {
+    setError(null);
+    setBusy('no_show');
+    try {
+      await rpc<Trip>('cancel_trip', { p_trip: current.id, p_reason: 'no_show' });
+      setInbox(await rpc<Inbox>('driver_inbox'));
+    } catch (e) {
+      setError(errorText(t, e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const waitedLong = !!trip?.arrivedAt && ['ARRIVED', 'AT_PICKUP'].includes(trip.status) && now - Date.parse(trip.arrivedAt) >= 5 * 60_000;
+  const driverInfo = me?.driver;
+  const expired = driverInfo?.expiredDocuments ?? [];
+  const expiringSoon = Object.entries(driverInfo?.documentExpiry ?? {}).filter(([, d]) => daysUntil(d) >= 0 && daysUntil(d) <= 30);
+
+  // One live offer at a time: the server never offers a driver a second trip while one is open.
+  const offer = !trip ? inbox?.offers[0] : undefined;
   let footer: ReactNode = undefined;
-  if (trip) footer = <TripActions trip={trip} otp={otp} setOtp={setOtp} busy={busy} onAct={(a) => act(trip, a)} />;
+  if (trip && cancelling)
+    footer = (
+      <CancelReasons
+        trip={trip}
+        role="driver"
+        onCancelled={() => {
+          setCancelling(false);
+          rpc<Inbox>('driver_inbox')
+            .then(setInbox)
+            .catch(() => {});
+        }}
+        onClose={() => setCancelling(false)}
+      />
+    );
+  else if (trip) footer = <TripActions trip={trip} otp={otp} setOtp={setOtp} busy={busy} onAct={(a) => act(trip, a)} onProof={(stage) => proof(trip, stage)} />;
+  else if (offer) footer = <OfferActions key={offer.id} offer={offer} busy={busy === offer.id} onAccept={() => accept(offer)} onDecline={() => decline(offer)} />;
   else if (!online) footer = <Button kind="lime" title={t('m.drive.goOnline')} onPress={() => toggle(true)} loading={busy === 'online'} />;
 
   return (
-    <View style={{ flex: 1, backgroundColor: C.bg }}>
-      <View style={{ flex: 1, minHeight: 170 }}>
-        <MapView fill route={!!focus} markers={markers} />
-        <View style={[styles.status, { top }]}>
-          <View style={[styles.dot, { backgroundColor: online ? C.ok : '#9aa5a0' }]} />
-          <View style={{ flex: 1 }}>
-            <Text style={styles.statusTitle} accessibilityRole="header">
-              {online ? t('m.drive.online') : t('m.drive.offline')}
-            </Text>
-            <Text style={styles.statusSub} numberOfLines={1}>
-              {me?.driver ? `${t(`category.${me.driver.vehicle}`)} · ${me.driver.vehicleNumber}` : ''}
-            </Text>
-          </View>
-          <Switch
-            value={online}
-            onValueChange={toggle}
-            disabled={busy === 'online' || !!trip}
-            trackColor={{ true: C.brand }}
-            accessibilityLabel={online ? t('m.drive.goOffline') : t('m.drive.goOnline')}
-          />
-        </View>
-      </View>
-      <Sheet maxHeight="68%" footer={footer}>
-        {inbox && !trip ? (
-          <View style={styles.today}>
-            <Icon name="trending-up" color={C.brand} />
+    <KeyboardSafe>
+      <View style={{ flex: 1, backgroundColor: C.bg }}>
+        <View style={{ flex: 1, minHeight: 170 }}>
+          <MapView fill route={!!focus} markers={markers} />
+          <View style={[styles.status, { top }]}>
+            <View style={[styles.dot, { backgroundColor: online ? C.ok : '#9aa5a0' }]} />
             <View style={{ flex: 1 }}>
-              <P>{t('m.drive.today', { trips: inbox.today.trips, amount: money(inbox.today.earningsPaise) })}</P>
-              {inbox.balancePaise > 0 ? <Row label={t('m.earn.balance')} value={money(inbox.balancePaise)} /> : null}
+              <Text style={styles.statusTitle} accessibilityRole="header">
+                {online ? t('m.drive.online') : t('m.drive.offline')}
+              </Text>
+              <Text style={styles.statusSub} numberOfLines={1}>
+                {me?.driver ? `${t(`category.${me.driver.vehicle}`)} · ${me.driver.vehicleNumber}` : ''}
+              </Text>
             </View>
+            <Switch
+              value={online}
+              onValueChange={toggle}
+              disabled={busy === 'online' || !!trip}
+              trackColor={{ true: C.brand }}
+              accessibilityLabel={online ? t('m.drive.goOffline') : t('m.drive.goOnline')}
+            />
           </View>
-        ) : null}
-        {demo ? <Notice tone="warn" text={t('m.drive.demoLocation')} /> : null}
-        <Notice text={error} />
-
-        {online && !trip && !inbox?.offers.length ? (
-          <View style={styles.waiting}>
-            <ActivityIndicator color={C.brand} />
-            <P muted>{t('m.drive.waiting')}</P>
-          </View>
-        ) : null}
-
-        {!trip &&
-          inbox?.offers.map((offer) => (
-            <OfferCard key={offer.id} offer={offer} busy={busy === offer.id} onAccept={() => accept(offer)} onDecline={() => decline(offer)} />
-          ))}
-
-        {trip ? (
-          <>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        </View>
+        <Sheet maxHeight="68%" footer={footer}>
+          {offer ? <OfferCard key={offer.id} offer={offer} /> : null}
+          {inbox && !trip ? (
+            <View style={styles.today}>
+              <Icon name="trending-up" color={C.brand} />
               <View style={{ flex: 1 }}>
-                <Badge text={`${t(`trip.status.${trip.status}`)} · ${trip.code}`} tone="warn" />
-                <H2>{trip.rider?.name || '—'}</H2>
+                <P>{t('m.drive.today', { trips: inbox.today.trips, amount: money(inbox.today.earningsPaise) })}</P>
+                {inbox.balancePaise > 0 ? <Row label={t('m.earn.balance')} value={money(inbox.balancePaise)} /> : null}
               </View>
-              <VehicleArt category={trip.category} />
             </View>
-            <RouteStops pickup={trip.pickup?.name ?? '—'} drop={trip.dropoff?.name ?? '—'} pickupLabel={t('m.book.pickup')} dropLabel={t('m.book.drop')} />
-            {trip.parcel ? <Row label={t('m.drive.receiver')} value={`${trip.parcel.receiverName} · ${trip.parcel.weightGrams / 1000} kg`} /> : null}
-            {trip.quote ? <Row label={t('ui.trip.estimatedFare')} value={money(trip.quote.totalPaise)} strong /> : null}
-            {onBoard && trip.estimateMeters ? (
-              <P small muted>
-                {t('m.drive.tripKm', { km: km(trip.estimateMeters) })}
-              </P>
-            ) : null}
-            <Button title={t('m.drive.navigate')} icon="navigation" kind="secondary" onPress={() => navigateTo(trip)} />
-          </>
-        ) : null}
-      </Sheet>
-    </View>
+          ) : null}
+          {!trip && expired.length ? (
+            <Card tone="danger">
+              <H2>{t('m.docs.expiredTitle')}</H2>
+              <P>{t('m.docs.expiredBody', { docs: expired.map((d) => t(`m.reg.doc.${d}`)).join(', ') })}</P>
+              <Button title={t('m.docs.renew')} kind="secondary" onPress={() => router.push('/documents')} />
+            </Card>
+          ) : null}
+          {!trip && !expired.length && expiringSoon.length ? (
+            <Notice tone="warn" text={t('m.docs.expiringSoon', { docs: expiringSoon.map(([d]) => t(`m.reg.doc.${d}`)).join(', ') })} />
+          ) : null}
+          {notice ? (
+            <Pressable onPress={() => setNotice(null)} accessibilityRole="button" accessibilityHint={t('m.dismiss')}>
+              <Notice text={notice} tone="warn" />
+            </Pressable>
+          ) : null}
+          {demo ? <Notice tone="warn" text={t('m.drive.demoLocation')} /> : null}
+          <Notice text={error} />
+
+          {online && !trip && !inbox?.offers.length ? (
+            <View style={styles.waiting}>
+              <ActivityIndicator color={C.brand} />
+              <P muted>{t('m.drive.waiting')}</P>
+            </View>
+          ) : null}
+
+          {!trip && !online ? (
+            <View>
+              <ListRow icon="file-text" title={t('m.manage.documents')} onPress={() => router.push('/documents')} />
+              <ListRow icon="umbrella" title={t('m.insurance.title')} onPress={() => router.push('/insurance')} />
+              <ListRow icon="shield" title={t('m.safety.centre')} onPress={() => router.push('/safety')} divider={false} />
+            </View>
+          ) : null}
+
+
+          {trip ? (
+            <>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={{ flex: 1 }}>
+                  <Badge text={`${t(`trip.status.${trip.status}`)} · ${trip.code}`} tone="warn" />
+                  <H2>{trip.rider?.name || '—'}</H2>
+                </View>
+                <VehicleArt category={trip.category} />
+              </View>
+              <RouteStops pickup={trip.pickup?.name ?? '—'} drop={trip.dropoff?.name ?? '—'} pickupLabel={t('m.book.pickup')} dropLabel={t('m.book.drop')} />
+              <TripDetails trip={trip} />
+              {trip.quote ? <Row label={t('ui.trip.estimatedFare')} value={money(trip.quote.totalPaise)} strong /> : null}
+              {onBoard && trip.estimateMeters ? (
+                <P small muted>
+                  {t('m.drive.tripKm', { km: km(trip.estimateMeters) })}
+                </P>
+              ) : null}
+              <Button title={t('m.drive.navigate')} icon="navigation" kind="secondary" onPress={() => navigateTo(trip)} />
+              {['ARRIVED', 'AT_PICKUP'].includes(trip.status) && !cancelling ? (
+                waitedLong ? (
+                  <Button title={t('m.drive.notFound')} kind="secondary" icon="user-x" onPress={() => notFound(trip)} loading={busy === 'no_show'} />
+                ) : (
+                  <P small muted>
+                    {t('m.drive.waitFirst')}
+                  </P>
+                )
+              ) : null}
+            </>
+          ) : null}
+        </Sheet>
+      </View>
+    </KeyboardSafe>
   );
 }
 
-function OfferCard({ offer, busy, onAccept, onDecline }: { offer: Offer; busy: boolean; onAccept(): void; onDecline(): void }) {
+function OfferCard({ offer }: { offer: Offer }) {
   const { t, money, km } = useI18n();
   const [left, setLeft] = useState(() => Math.max(0, Math.round((Date.parse(offer.expiresAt) - Date.now()) / 1000)));
   useEffect(() => {
@@ -268,18 +376,31 @@ function OfferCard({ offer, busy, onAccept, onDecline }: { offer: Offer; busy: b
         <VehicleArt category={trip.category} size={64} />
         <View style={{ flex: 1 }}>
           <Text style={styles.category}>{t(getCategory(trip.category).nameKey)}</Text>
-          <Text style={{ fontSize: 30, lineHeight: 40, fontWeight: '800', color: C.ink }}>{trip.quote ? money(trip.quote.totalPaise) : '—'}</Text>
+          <Text style={{ fontSize: 30, lineHeight: 40, fontWeight: '800', color: C.ink }}>{trip.quote?.totalPaise != null ? money(trip.quote.totalPaise) : '—'}</Text>
         </View>
       </View>
       <RouteStops pickup={trip.pickup?.name ?? '—'} drop={trip.dropoff?.name ?? '—'} pickupLabel={t('m.book.pickup')} dropLabel={t('m.book.drop')} />
       <P small muted>
         {t('m.drive.toPickup', { km: km(offer.pickupMeters) })} · {trip.estimateMeters ? t('m.drive.tripKm', { km: km(trip.estimateMeters) }) : ''}
       </P>
+      <TripDetails trip={trip} />
+    </Card>
+  );
+}
+
+/** Accept / decline for the live offer, kept in the sheet footer. Bike and scooter offers need the helmet check first. */
+function OfferActions({ offer, busy, onAccept, onDecline }: { offer: Offer; busy: boolean; onAccept(): void; onDecline(): void }) {
+  const { t } = useI18n();
+  const twoWheeler = offer.trip.category === 'bike' || offer.trip.category === 'scooter';
+  const [helmet, setHelmet] = useState(false);
+  return (
+    <View style={{ gap: 10 }}>
+      {twoWheeler ? <Toggle label={t('m.drive.helmetCheck')} value={helmet} onChange={setHelmet} /> : null}
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <Button title={t('m.drive.decline')} kind="secondary" onPress={onDecline} style={{ flex: 1 }} />
-        <Button title={t('m.drive.accept')} kind="lime" onPress={onAccept} loading={busy} style={{ flex: 2 }} />
+        <Button title={t('m.drive.accept')} kind="lime" onPress={onAccept} loading={busy} disabled={twoWheeler && !helmet} style={{ flex: 1.3 }} />
       </View>
-    </Card>
+    </View>
   );
 }
 
@@ -289,20 +410,33 @@ function TripActions({
   setOtp,
   busy,
   onAct,
+  onProof,
 }: {
   trip: Trip;
   otp: string;
   setOtp(v: string): void;
   busy: string | null;
   onAct(a: TripAction): void;
+  onProof(stage: 'pickup' | 'delivery'): void;
 }) {
   const { t } = useI18n();
   const actions = availableActions(trip.flow, trip.status as TripStatus, 'driver').filter((a) => a !== 'accept');
   const main = actions.filter((a) => a !== 'cancel' && a !== 'return');
   const needsStartOtp = main.includes('start') || main.includes('pickup');
   const needsDropOtp = main.includes('deliver');
+  const proofStage =
+    main.includes('pickup') && !trip.proof?.pickupPhoto ? 'pickup' : main.includes('deliver') && !trip.proof?.deliveryPhoto ? 'delivery' : null;
   return (
     <>
+      {proofStage ? (
+        <Button
+          title={proofStage === 'pickup' ? t('m.drive.photoPickup') : t('m.drive.photoDelivery')}
+          icon="camera"
+          kind="secondary"
+          onPress={() => onProof(proofStage)}
+          loading={busy === `proof-${proofStage}`}
+        />
+      ) : null}
       {needsStartOtp || needsDropOtp ? (
         <Field
           label={needsDropOtp ? t('m.drive.dropOtp') : t('m.drive.otp')}
@@ -320,7 +454,7 @@ function TripActions({
           title={t(`trip.action.${a}`)}
           onPress={() => onAct(a)}
           loading={busy === a}
-          disabled={(needsStartOtp || needsDropOtp) && otp.trim().length !== 4}
+          disabled={((needsStartOtp || needsDropOtp) && otp.trim().length !== 4) || ((a === 'pickup' || a === 'deliver') && !!proofStage)}
         />
       ))}
       {actions.includes('return') ? (
@@ -328,6 +462,40 @@ function TripActions({
       ) : null}
       {actions.includes('cancel') ? <Button title={t('trip.action.cancel')} kind="ghost" onPress={() => onAct('cancel')} loading={busy === 'cancel'} /> : null}
     </>
+  );
+}
+
+/** What the passenger asked for: pickup note, cab preferences, parcel details, and payment. */
+function TripDetails({ trip }: { trip: Trip }) {
+  const { t } = useI18n();
+  const cab = trip.options?.cab;
+  const p = trip.parcel;
+  const lines: [string, string][] = [];
+  if (trip.rider?.rating) lines.push([t('m.drive.riderRating'), `★ ${trip.rider.rating.average.toFixed(1)} (${trip.rider.rating.count})`]);
+  if (trip.options?.pickupNote) lines.push([t('m.review.pickupNote'), trip.options.pickupNote]);
+  if (cab) {
+    const extras = [cab.ac && t('m.review.ac'), cab.assistance && t('m.review.assistance'), cab.pet && t('m.review.pet')].filter(Boolean).join(', ');
+    lines.push([t('m.review.passengers'), String(cab.passengers)]);
+    lines.push([t('m.review.luggage'), t(`m.review.luggage.${cab.luggage}`)]);
+    if (extras) lines.push([t('m.drive.requests'), extras]);
+  }
+  if (p) {
+    lines.push([t('m.drive.receiver'), p.receiverName]);
+    lines.push([
+      t('m.parcel.item'),
+      `${p.category ? t(`m.parcel.item.${p.category}`) : (p.item ?? '—')} · ${p.weightGrams / 1000} kg${p.packages && p.packages > 1 ? ` · ×${p.packages}` : ''}`,
+    ]);
+    const flags = [p.fragile && t('m.parcel.fragile'), p.loadingHelp && t('m.parcel.loadingHelp')].filter(Boolean).join(', ');
+    if (flags) lines.push([t('m.drive.requests'), flags]);
+    lines.push([t('m.parcel.proof'), t('m.parcel.proofValue')]);
+  }
+  lines.push([t('m.review.payment'), t('m.drive.payDirect')]);
+  return (
+    <View>
+      {lines.map(([label, value]) => (
+        <Row key={label} label={label} value={value} />
+      ))}
+    </View>
   );
 }
 
