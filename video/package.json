@@ -11,7 +11,8 @@
     "narration": "powershell -NoProfile -ExecutionPolicy Bypass -File tts-windows.ps1 && node measure-narration.cjs",
     "studio:explainer": "remotion studio index.jsx",
     "render:explainer": "remotion render index.jsx ThozhanExplainer ../media/Thozhan-Explainer.mp4 --codec=h264 --crf=20 --concurrency=4",
-    "still:explainer": "remotion still index.jsx ThozhanExplainer explainer-still.png"
+    "still:explainer": "remotion still index.jsx ThozhanExplainer explainer-still.png",
+    "render:illustrations": "node illustrations/render.cjs"
   },
   "keywords": [],
   "author": "",

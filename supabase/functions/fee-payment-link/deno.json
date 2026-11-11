@@ -1,0 +1,7 @@
+{
+  "lock": false,
+  "imports": {
+    "@thozhan/tariff": "../../../packages/tariff/src/index.ts",
+    "@thozhan/meter": "../../../packages/meter/src/index.ts"
+  }
+}

@@ -38,7 +38,7 @@ npm run dev:mobile
 | Admin dashboard | http://localhost:5173 |
 | Mobile app in a browser | press `w` in the Expo terminal, or open http://localhost:8081 |
 
-`dev:backend` keeps its data in `supabase/.dev-data` between runs. To start again from the seed data, run `npm run dev:backend:fresh`.
+`dev:backend` keeps its data in `supabase/.dev-data` between runs. To start again from the seed data, run `npm run dev:backend:fresh`. Migrations apply only to a fresh local database, so run it after pulling a new migration.
 
 ### Test accounts
 
@@ -48,8 +48,13 @@ Every number uses the OTP **123456**. Type the 10-digit number; the app adds +91
 | --- | --- |
 | 90000 00001 | Admin (all dashboard pages) |
 | 90000 00002 | Transport Department (fare compliance and fare check only) |
+| 90000 00003 | Support (trips and incidents) |
+| 90000 00004 | Driver reviewer (driver review and documents) |
 | 90000 00011 | Murugan K, approved auto driver, TN 09 AB 4821 |
 | 90000 00012 | Selvi R, approved auto driver |
+| 90000 00013 | Karthik B, approved bike driver |
+| 90000 00014 | Revathi S, approved scooter driver |
+| 90000 00015 to 17 | Approved Cab Mini, Sedan and SUV drivers |
 | Any other number | A new passenger, who can also apply to drive |
 
 With `--bots` (on by default in `dev:backend`), the two demo drivers run by themselves. They go online, accept nearby requests and move each trip along over about a minute, so one person can try the passenger app alone. The bots also write a simulated GPS track for each trip, so the server computes the fare from that track just as it would for a real driver. To drive a trip yourself, sign in as a driver on a second phone or browser and turn the bots off by running `node supabase/dev/server.ts` without `--bots`.
@@ -113,13 +118,15 @@ The local server stands in for Supabase but is not Supabase. These steps have no
 
    `supabase/seed.sql` holds the demo staff and drivers. Load it only into a test project.
 2. **Phone sign-in:** in *Authentication → Providers → Phone*, connect an SMS provider with DLT registration (MSG91 or Twilio). Until then, add test numbers with fixed OTPs on the same page.
-3. **Staff accounts:** after a staff member signs in once, set their role in the SQL editor:
+3. **Staff accounts:** after the first admin signs in once, set their role in the SQL editor:
 
    ```sql
    update profiles set staff_role = 'admin' where phone = '91XXXXXXXXXX';
    ```
 
-4. **Edge functions:** set the secrets, then deploy the functions. The functions import the shared packages through `supabase/functions/deno.json`.
+   That admin assigns every other role on the dashboard's **Staff roles** page, which records each change in the audit log.
+
+4. **Edge functions:** set the secrets, then deploy the functions. Each function imports the shared packages through its own `supabase/functions/<name>/deno.json`, which the Supabase CLI finds by itself. The CLI does not read a `deno.json` placed directly in `supabase/functions/`. Deploy from the repository root so the CLI can upload `packages/`.
 
    ```bash
    npx supabase secrets set RAZORPAY_KEY_ID=… RAZORPAY_KEY_SECRET=… RAZORPAY_WEBHOOK_SECRET=…
@@ -146,6 +153,12 @@ The local server stands in for Supabase but is not Supabase. These steps have no
 npm run typecheck && npm run typecheck:apps && npm test
 ```
 
+To run the edge functions on Deno, install [Deno](https://docs.deno.com/runtime/getting_started/installation/) and run the command below. It serves all four functions and calls them over HTTP, with a fake standing in for Supabase's auth and database endpoints. Set `DENO_BIN` if `deno` is not on your `PATH`.
+
+```bash
+npm run test:deno
+```
+
 `npm test` includes the backend tests in `supabase/test`. They run the real migrations in an in-memory Postgres (PGlite) and cover:
 
 - the security rules;
@@ -157,6 +170,20 @@ npm run typecheck && npm run typecheck:apps && npm test
 - meter sync;
 - the payment webhook;
 - a supabase-js client against the local server.
+
+### Browser tests
+
+```bash
+npm run test:e2e
+```
+
+This runs the flows that need more than one person through the real apps in Chrome, with a separate browser for each passenger, driver and admin and no demo bots: driver onboarding and approval, a full trip, a parcel delivery, SOS, staff roles, and the error cases. It takes about four minutes. It starts the backend with fresh data, Expo and the admin dashboard itself, on ports 54321, 8081 and 5173, and stops if any of those is already in use. Set `E2E_EXPO_PORT` to run Expo on another port. To run only some areas, name them:
+
+```bash
+node scripts/e2e.ts trip parcel
+```
+
+The areas are `onboarding`, `trip`, `parcel`, `sos`, `roles` and `errors`. A failing area saves a screenshot of each open screen to `test-results/e2e`, next to the server logs.
 
 ### Recorded app test
 
@@ -173,11 +200,77 @@ The videos are saved to:
 
 It needs Google Chrome, and the ffmpeg that comes with `npm ci` in `video/`.
 
-## 5. Known limits
+## 5. Pilot configuration
+
+The apps have defaults that work on one computer. A pilot build needs the settings below. Anything named `EXPO_PUBLIC_…` or `VITE_…` is compiled into the app and can be read by anyone who has it, so never put a private key in one.
+
+### Mobile app
+
+Set these under `env` for the profile you build in `apps/mobile/eas.json`. For a local run, set them in the shell before `npm run dev:mobile`.
+
+| Variable | What it does | Default |
+| --- | --- | --- |
+| `EXPO_PUBLIC_SUPABASE_URL` | Address of the Supabase project | Local dev backend on port 54321 |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | The project's public anon key | Local dev key |
+| `EXPO_PUBLIC_SHARE_URL` | Start of shared trip links; the admin dashboard's `/track/` page | Local dashboard on port 5173 |
+| `EXPO_PUBLIC_MAP_TILE_URL` | Map tile address, such as `https://tiles.example.com/{z}/{x}/{y}.png`. **Required for a pilot** | OpenStreetMap's public server |
+| `EXPO_PUBLIC_MAP_ATTRIBUTION` | Credit shown on the map, as your tile provider requires. May contain HTML links | `© OpenStreetMap` |
+
+### Admin dashboard
+
+Set these in the environment of the `npm run build:admin` command, or in your static host's build settings.
+
+| Variable | What it does | Default |
+| --- | --- | --- |
+| `VITE_SUPABASE_URL` | Address of the Supabase project | Local dev backend on port 54321 |
+| `VITE_SUPABASE_ANON_KEY` | The project's public anon key | Local dev key |
+| `VITE_MAP_TILE_URL` | Map tile address. **Required for a pilot** | OpenStreetMap's public server |
+| `VITE_MAP_ATTRIBUTION` | Credit shown on the map | `© OpenStreetMap` |
+
+### Edge functions
+
+| Secret | What it does | Where it is set |
+| --- | --- | --- |
+| `SUPABASE_URL` | Address of the project, used by the functions | Supplied by Supabase |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server key the functions use to call internal database functions. Never put it in an app | Supplied by Supabase |
+| `RAZORPAY_KEY_ID` | Razorpay account key for day-fee payment links | `npx supabase secrets set` |
+| `RAZORPAY_KEY_SECRET` | Razorpay secret for the same | `npx supabase secrets set` |
+| `RAZORPAY_WEBHOOK_SECRET` | Checks that payment webhooks really came from Razorpay; must match the Razorpay dashboard | `npx supabase secrets set` |
+| `THOZHAN_DEV` | Turns on the test payment page. Set only by the local server. **Never set it on a live project** | Local server only |
+| `THOZHAN_PUBLIC_URL` | Address used for the test payment page | Local server only |
+
+### Local dev backend only
+
+| Variable | What it does | Default |
+| --- | --- | --- |
+| `DEV_JWT_SECRET` | Signs local sign-in tokens. The apps' built-in dev anon key stops working if you change it | A fixed local value |
+| `DEV_OTP` | The OTP that every number accepts | `123456` |
+| `RAZORPAY_WEBHOOK_SECRET` | Signs the test payment page's webhook | A fixed local value |
+
+### Set outside the code
+
+| Setting | Where |
+| --- | --- |
+| SMS provider with DLT registration for phone sign-in | Supabase: *Authentication → Providers → Phone* |
+| Razorpay webhook for `payment_link.paid` | Razorpay dashboard |
+| Staff roles | `update profiles set staff_role = …` in the SQL editor |
+
+### Reading error reports
+
+Both apps send uncaught errors and unhandled promise rejections to the `client_errors` table. Reports wait on the device while it is offline or signed out, and are sent later. OTPs, phone numbers, coordinates, tokens and ids are removed on the device and again on the server. Each user can store 60 reports an hour.
+
+There is no dashboard page yet. To read the newest reports, call `admin_client_errors` as an admin, or use the SQL editor:
+
+```sql
+select created_at, app, kind, screen, code, app_version, platform, message from client_errors order by created_at desc limit 100;
+```
+
+## 6. Known limits
 
 - The apps check for updates every few seconds rather than using Supabase Realtime. That is simple and reliable for a pilot, but uses more requests.
 - Places are a fixed list of Chennai landmarks plus "my current location". There is no address search yet.
-- Maps use OpenStreetMap's public tiles, which are for light use only. A pilot needs its own tile provider.
-- Bike, cab and other parcel services are built but switched off in **Services** until approval. Their fares are illustrative.
+- Maps use OpenStreetMap's public tiles until `EXPO_PUBLIC_MAP_TILE_URL` and `VITE_MAP_TILE_URL` are set; those tiles are not allowed for production load. The mobile map also loads Leaflet from unpkg.com, so it needs that site to be reachable.
+- Error reports need a signed-in user, so a crash before sign-in is sent only after a later sign-in on that device, and visitors to the public tracking page never send theirs. Old reports are not deleted automatically.
+- Bike, scooter, cab and other parcel services are built. They start switched off on a real project, so an admin turns each on in **Services** once it is approved; the local seed data switches them all on. Their fares are illustrative.
 - The auto fare follows G.O. Ms. No. 366. Three interpretations are marked on every receipt until the department confirms them, so receipts say "reference fare only".
 - Tamil text needs review by a native speaker before the pilot.

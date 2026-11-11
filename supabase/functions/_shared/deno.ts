@@ -1,11 +1,15 @@
-// Ctx for Supabase Edge Functions (Deno). Not loaded by Node.
-// @ts-nocheck — Deno globals and npm: specifiers are resolved by the Supabase runtime.
+// Ctx for Supabase Edge Functions (Deno). Not loaded by Node, and type-checked by `deno check`.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import type { Ctx, Handler } from './http.ts';
 
+function requireEnv(name: string): string {
+  const value = Deno.env.get(name);
+  if (!value) throw new Error(`${name} is not set`);
+  return value;
+}
+
 export function serve(handler: Handler) {
-  const url = Deno.env.get('SUPABASE_URL');
-  const service = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'), {
+  const service = createClient(requireEnv('SUPABASE_URL'), requireEnv('SUPABASE_SERVICE_ROLE_KEY'), {
     auth: { persistSession: false },
   });
   const ctx: Ctx = {

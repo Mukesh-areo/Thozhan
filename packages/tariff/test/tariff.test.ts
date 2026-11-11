@@ -80,35 +80,40 @@ test('rejects invalid input', () => {
   assert.throws(() => calculateFare(getActiveRule('bike'), { distanceMeters: 1, startedAt: DAY, terrain: 'ghat' }), RangeError);
 });
 
-test('cab: ride-time charge and minimum fare top-up', () => {
-  const mini = getActiveRule('cab-mini');
-  const short = calculateFare(mini, { distanceMeters: km(1), rideSeconds: 180, startedAt: DAY });
-  assert.equal(rupees(short), 120);
-  assert.equal(short.lines.find((l) => l.code === 'minimum_fare_topup')?.amountPaise, 1550);
-
-  const long = calculateFare(mini, { distanceMeters: km(10), rideSeconds: 1500, startedAt: DAY });
-  // 100 + 8 km × 20 + 25 min × 1.5 = 297.5 → 298
-  assert.equal(rupees(long), 298);
-  assert.equal(long.verifiedForBilling, false);
+// Worked examples from the UX handoff (§5–§8): proposed pilot fares, never billable as tariffs.
+test('proposed pilot fares match the UX handoff examples', () => {
+  const at = (category: string, meters: number, waitingSeconds = 0) =>
+    rupees(calculateFare(getActiveRule(category), { distanceMeters: meters, waitingSeconds, startedAt: DAY, weightGrams: 1000 }));
+  assert.deepEqual([at('bike', km(2)), at('bike', km(5)), at('bike', km(10))], [25, 55, 105]);
+  assert.deepEqual([at('cab-mini', km(5)), at('cab-mini', km(10))], [116, 196]);
+  assert.deepEqual([at('cab-sedan', km(5)), at('cab-sedan', km(10))], [138, 228]);
+  assert.deepEqual([at('cab-suv', km(5)), at('cab-suv', km(10))], [182, 292]);
+  assert.deepEqual([at('parcel-bike', km(5)), at('parcel-bike', km(10))], [65, 115]);
+  assert.deepEqual([at('parcel-auto', km(5)), at('parcel-auto', km(10))], [90, 165]);
+  // Bike: first 3 waiting minutes free, then ₹1/min. Cab: 5 free, then ₹1.50/min.
+  assert.equal(at('bike', km(5), 5 * 60), 57);
+  assert.equal(at('cab-mini', km(5), 9 * 60), 122);
+  const mini = calculateFare(getActiveRule('cab-mini'), { distanceMeters: km(5), startedAt: DAY });
+  assert.equal(mini.verifiedForBilling, false);
+  assert.equal(getActiveRule('cab-mini').status, 'PENDING_APPROVAL');
 });
 
-test('parcel: weight slabs and maximum weight', () => {
+test('parcel: price does not change with weight, up to each vehicle maximum', () => {
   const bike = getActiveRule('parcel-bike');
-  assert.equal(rupees(calculateFare(bike, { distanceMeters: km(4), weightGrams: 2000, startedAt: DAY })), 60);
-  assert.equal(rupees(calculateFare(bike, { distanceMeters: km(4), weightGrams: 6000, startedAt: DAY })), 80);
-  assert.throws(() => calculateFare(bike, { distanceMeters: km(4), weightGrams: 10001, startedAt: DAY }), RangeError);
-
+  assert.equal(rupees(calculateFare(bike, { distanceMeters: km(4), weightGrams: 500, startedAt: DAY })), 55);
+  assert.equal(rupees(calculateFare(bike, { distanceMeters: km(4), weightGrams: 5000, startedAt: DAY })), 55);
+  assert.throws(() => calculateFare(bike, { distanceMeters: km(4), weightGrams: 5001, startedAt: DAY }), RangeError);
   const autoParcel = getActiveRule('parcel-auto');
-  const heavy = calculateFare(autoParcel, { distanceMeters: km(2), weightGrams: 30000, startedAt: DAY });
-  assert.equal(heavy.lines.find((l) => l.code === 'weight')?.amountPaise, 6000);
+  assert.equal(rupees(calculateFare(autoParcel, { distanceMeters: km(2), weightGrams: 30000, startedAt: DAY })), 60);
+  assert.throws(() => calculateFare(autoParcel, { distanceMeters: km(2), weightGrams: 50001, startedAt: DAY }), RangeError);
 });
 
 test('registry: every rule validates and only dated rules apply before their start', () => {
   assert.deepEqual(TARIFF_RULES.flatMap(validateRule), []);
   assert.throws(() => getActiveRule('auto', new Date('2026-10-26T12:00:00+05:30')), RangeError);
   assert.equal(getActiveRule('auto', new Date('2026-10-27T00:30:00+05:30')).id, 'tn-auto-2026');
-  for (const category of ['bike', 'cab-mini', 'cab-sedan', 'cab-suv', 'parcel-bike', 'parcel-auto']) {
-    assert.equal(getActiveRule(category).status, 'ILLUSTRATIVE', category);
+  for (const category of ['bike', 'scooter', 'cab-mini', 'cab-sedan', 'cab-suv', 'parcel-bike', 'parcel-scooter', 'parcel-auto']) {
+    assert.equal(getActiveRule(category).status, 'PENDING_APPROVAL', category);
   }
   assert.ok(validateRule({ ...auto, legalReference: null }).length > 0);
 });

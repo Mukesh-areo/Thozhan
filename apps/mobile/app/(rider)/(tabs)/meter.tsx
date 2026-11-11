@@ -3,9 +3,9 @@ import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Switch, Text, View } from 'react-native';
-import { errorText, useI18n } from '../../src/i18n';
-import { loadMeter, meterStore, startMeter, stopMeter, syncMeter, type Source } from '../../src/meter-store';
-import { Badge, Button, C, Card, Field, H1, Notice, P, Row, Screen, Segmented } from '../../src/ui';
+import { errorText, useI18n } from '../../../src/i18n';
+import { loadMeter, meterStore, startMeter, stopMeter, syncMeter, type Source } from '../../../src/meter-store';
+import { Badge, Button, C, Card, Field, Notice, P, Row, Screen, Segmented, VehicleArt } from '../../../src/ui';
 
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
@@ -70,7 +70,7 @@ export default function Meter() {
   if (state.run) {
     return (
       <Screen>
-        <Badge text={`⏱️ ${t('m.meter.running')}${state.run.source === 'demo' ? ` · ${t('m.meter.demo')}` : ''}`} />
+        <Badge text={`${t('m.meter.running')}${state.run.source === 'demo' ? ` · ${t('m.meter.demo')}` : ''}`} />
         <Card tone="brand" style={{ alignItems: 'center', paddingVertical: 28 }}>
           <Text style={{ color: '#d5e4dc', fontSize: 15 }}>{t('meter.liveFare')}</Text>
           <Text style={{ color: '#fff', fontSize: 64, fontWeight: '800' }}>{state.fare ? money(state.fare.totalPaise) : '—'}</Text>
@@ -99,8 +99,17 @@ export default function Meter() {
 
   return (
     <Screen>
-      <H1>{t('meter.title')}</H1>
-      <P muted>{t('m.meter.sub')}</P>
+      <Card style={{ backgroundColor: C.brandSoft, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <View style={{ flex: 1, gap: 4 }}>
+          <Text style={{ fontSize: 24, lineHeight: 34, fontWeight: '800', color: C.brand }} accessibilityRole="header">
+            {t('meter.title')}
+          </Text>
+          <P small muted>
+            {t('m.meter.sub')}
+          </P>
+        </View>
+        <VehicleArt category="auto" size={96} />
+      </Card>
       <Card>
         <Field label={t('m.meter.vehicle')} value={vehicle} onChangeText={setVehicle} autoCapitalize="characters" placeholder="TN 09 AB 1234" />
         <P small muted>
@@ -133,7 +142,7 @@ export default function Meter() {
         <Row label={t('ui.go.night')} value={t('ui.go.nightVal')} />
       </Card>
       <Notice text={error} />
-      <Button title={t('m.meter.start')} onPress={start} loading={busy} />
+      <Button kind="lime" title={t('m.meter.start')} onPress={start} loading={busy} />
       {state.outbox.length ? (
         <Card tone="warn">
           <P>{t('m.meter.pending', { n: state.outbox.length })}</P>

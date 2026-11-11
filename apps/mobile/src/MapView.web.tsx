@@ -1,15 +1,15 @@
 import { createElement, useEffect, useRef } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { MAP_HTML, type MapMarker } from './map-html';
 
-export function MapView({ markers, height = 220 }: { markers: MapMarker[]; height?: number }) {
+export function MapView({ markers, height = 220, fill, route }: { markers: MapMarker[]; height?: number; fill?: boolean; route?: boolean }) {
   const frame = useRef<HTMLIFrameElement | null>(null);
-  const json = JSON.stringify({ markers });
+  const json = JSON.stringify({ markers, route: !!route });
   useEffect(() => {
     frame.current?.contentWindow?.postMessage(json, '*');
   }, [json]);
   return (
-    <View style={{ height, borderRadius: 18, overflow: 'hidden' }}>
+    <View style={fill ? StyleSheet.absoluteFill : { height, borderRadius: 18, overflow: 'hidden' }}>
       {createElement('iframe', {
         ref: frame,
         srcDoc: MAP_HTML,

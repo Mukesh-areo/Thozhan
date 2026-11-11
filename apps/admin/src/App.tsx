@@ -2,24 +2,28 @@ import type { Session } from '@supabase/supabase-js';
 import type { Locale } from '@thozhan/i18n';
 import { useEffect, useMemo, useState } from 'react';
 import { I18nContext, makeI18n, rpc, supabase, useI18n, USING_DEV_BACKEND } from './lib.tsx';
-import { Compliance, Drivers, FareCheck, Fees, Incidents, Overview, Services, Trips } from './pages.tsx';
+import { Audit, Compliance, Drivers, FareCheck, Fees, Incidents, Overview, Services, Staff, Tickets, Trips, type StaffRole } from './pages.tsx';
 import { Track } from './Track.tsx';
 
 interface Me {
   phone: string;
   name: string | null;
-  staffRole: 'admin' | 'gov' | null;
+  staffRole: StaffRole | null;
 }
 
+// Must match the require_staff checks in the database, which are what actually enforce this.
 const PAGES = {
   overview: { component: Overview, roles: ['admin'] },
-  drivers: { component: Drivers, roles: ['admin'] },
-  trips: { component: Trips, roles: ['admin'] },
-  incidents: { component: Incidents, roles: ['admin'] },
+  drivers: { component: Drivers, roles: ['admin', 'reviewer'] },
+  trips: { component: Trips, roles: ['admin', 'support'] },
+  incidents: { component: Incidents, roles: ['admin', 'support'] },
+  tickets: { component: Tickets, roles: ['admin', 'support'] },
   fees: { component: Fees, roles: ['admin'] },
   services: { component: Services, roles: ['admin'] },
   compliance: { component: Compliance, roles: ['admin', 'gov'] },
   farecheck: { component: FareCheck, roles: ['admin', 'gov'] },
+  audit: { component: Audit, roles: ['admin'] },
+  staff: { component: Staff, roles: ['admin'] },
 } as const;
 type Page = keyof typeof PAGES;
 
@@ -93,7 +97,9 @@ function Console() {
           <span className="logo">தோ</span>
           <div>
             <strong>{t(me.staffRole === 'gov' ? 'a.gov.title' : 'a.title')}</strong>
-            <small>{me.phone}</small>
+            <small>
+              {me.phone} · {t(`a.staff.role.${me.staffRole}`)}
+            </small>
           </div>
         </div>
         <nav>
@@ -179,7 +185,7 @@ function Login() {
             {t('m.login.change')}
           </button>
         ) : null}
-        {USING_DEV_BACKEND ? <p className="muted small">{t('m.login.devHint')} · 90000 00001 / 90000 00002</p> : null}
+        {USING_DEV_BACKEND ? <p className="muted small">{t('m.login.devHint')} · 90000 00001 – 90000 00004</p> : null}
       </form>
     </div>
   );

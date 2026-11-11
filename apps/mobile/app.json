@@ -39,9 +39,11 @@
       [
         "expo-image-picker",
         {
-          "cameraPermission": "Thozhan uses the camera to photograph your licence and vehicle documents."
+          "cameraPermission": "Thozhan uses the camera to photograph your documents, and parcels at pickup and delivery."
         }
-      ]
+      ],
+      "expo-font",
+      "./plugins/with-local-http"
     ]
   }
 }

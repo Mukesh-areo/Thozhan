@@ -5,7 +5,7 @@ export type TripFlow = 'ride' | 'meter' | 'delivery';
 /** Whether the service may operate at all, independent of the tariff status. */
 export type LegalStatus = 'PERMITTED' | 'PILOT_APPROVAL_REQUIRED' | 'PENDING_CLARIFICATION';
 
-export type LicenceClass = 'MCWG' | 'LMV-TR' | 'TRANS' | 'E-RICKSHAW';
+export type LicenceClass = 'MCWG' | 'MCWOG' | 'LMV-TR' | 'TRANS' | 'E-RICKSHAW';
 
 export interface Category {
   id: string;
@@ -58,6 +58,18 @@ export const CATEGORIES: readonly Category[] = Object.freeze([
     legalStatus: 'PENDING_CLARIFICATION',
     enabledByDefault: false,
   },
+  {
+    id: 'scooter',
+    service: 'bike',
+    nameKey: 'category.scooter',
+    icon: '🛵',
+    seats: 1,
+    flows: ['ride'],
+    driver: { licence: ['MCWG', 'MCWOG'], permit: 'bike-taxi', badgeRequired: false },
+    features: { startOtp: true, ...noParcelFeatures, ghatFare: false, womenRiderPreference: true },
+    legalStatus: 'PENDING_CLARIFICATION',
+    enabledByDefault: false,
+  },
   ...(['mini', 'sedan', 'suv'] as const).map((size) => ({
     id: `cab-${size}`,
     service: 'cab' as const,
@@ -79,7 +91,20 @@ export const CATEGORIES: readonly Category[] = Object.freeze([
     flows: ['delivery'],
     driver: { licence: ['MCWG'], permit: 'goods-two-wheeler', badgeRequired: false },
     features: { startOtp: true, dropOtp: true, proofOfDelivery: true, ghatFare: false, womenRiderPreference: false },
-    parcel: { maxWeightGrams: 10000, restrictedItemKeys: PARCEL_RESTRICTED },
+    parcel: { maxWeightGrams: 5000, restrictedItemKeys: PARCEL_RESTRICTED },
+    legalStatus: 'PENDING_CLARIFICATION',
+    enabledByDefault: false,
+  },
+  {
+    id: 'parcel-scooter',
+    service: 'parcel',
+    nameKey: 'category.parcel-scooter',
+    icon: '📦',
+    seats: 0,
+    flows: ['delivery'],
+    driver: { licence: ['MCWG', 'MCWOG'], permit: 'goods-two-wheeler', badgeRequired: false },
+    features: { startOtp: true, dropOtp: true, proofOfDelivery: true, ghatFare: false, womenRiderPreference: false },
+    parcel: { maxWeightGrams: 5000, restrictedItemKeys: PARCEL_RESTRICTED },
     legalStatus: 'PENDING_CLARIFICATION',
     enabledByDefault: false,
   },

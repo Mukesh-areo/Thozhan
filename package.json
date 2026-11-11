@@ -10,6 +10,7 @@
     "test": "node --test \"packages/*/test/*.test.ts\" \"web/test/*.test.ts\" \"supabase/test/*.test.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:web": "cd web && node test.cjs",
+    "test:deno": "node --test supabase/test/deno-functions.smoke.ts",
     "build:web": "esbuild web/src/main.ts --bundle --format=iife --target=es2020 --charset=utf8 --outfile=web/app.js",
     "dev:backend": "node supabase/dev/server.ts --bots",
     "dev:backend:fresh": "node supabase/dev/server.ts --fresh --bots",
@@ -17,7 +18,8 @@
     "dev:admin": "npm --workspace @thozhan/admin run dev",
     "build:admin": "npm --workspace @thozhan/admin run build",
     "typecheck:apps": "tsc -p apps/mobile --noEmit && tsc -p apps/admin",
-    "record:app": "node scripts/record-app.ts"
+    "record:app": "node scripts/record-app.ts",
+    "test:e2e": "node scripts/e2e.ts"
   },
   "engines": {
     "node": ">=22.18"
