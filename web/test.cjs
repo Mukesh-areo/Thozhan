@@ -37,7 +37,7 @@ const demo = vm.runInContext('thozhanDemo', ctx);
 const click = (id, _action) => node('#' + id).onclick();
 
 assert.match(node('#app').innerHTML, /Where are we going today/);
-assert.match(node('#app').innerHTML, /Government tariff/);
+assert.match(node('#app').innerHTML, /Government-notified tariff/);
 
 // Ride: duplicate booking is ignored, wrong OTP rejected, completion charges the day once.
 for (let i = 0; i < 2; i++) {
