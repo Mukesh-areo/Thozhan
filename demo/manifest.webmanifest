@@ -1,0 +1,9 @@
+{
+  "name": "Thozhan — தோழன்",
+  "short_name": "Thozhan",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f7f8f4",
+  "theme_color": "#123e32",
+  "lang": "ta"
+}
