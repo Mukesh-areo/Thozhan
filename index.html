@@ -196,6 +196,16 @@ footer a{color:var(--lime);word-break:break-all}
 @media print{.vs{box-shadow:none;border:1px solid var(--line)}}
 .also{margin-top:20px;padding:16px 20px;border-radius:16px;background:#fff;border:1px dashed #c9d3cc;color:var(--muted);font-size:15px}
 .also b{color:var(--ink)}
+.svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:28px}
+@media(max-width:900px){.svc-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.svc-grid{grid-template-columns:1fr}}
+.svc .emoji{font-size:34px;line-height:1;margin-bottom:12px}
+.svc ul{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:14px}
+.svc .fare{font-size:14px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.seg button{border:1px solid rgba(255,255,255,.25);background:transparent;color:#e8f2ec;border-radius:99px;padding:8px 14px;font:600 14px Inter,sans-serif;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--lime);color:var(--brand-deep);border-color:var(--lime)}
+.receipt .tag.pending{color:#ffd28a}
 .print-title{display:none;font-size:20px;margin:6px 0 12px}
 </style>
 </head>
@@ -206,6 +216,7 @@ footer a{color:var(--lime);word-break:break-all}
     <a class="brand" href="#top"><span class="logo">t</span>Thozhan</a>
     <div class="links">
       <a href="#new">What's new</a>
+      <a href="#services">Services</a>
       <a href="#meter">Digital meter</a>
       <a href="#benefits">Benefits</a>
       <a href="#built">What's built</a>
@@ -222,12 +233,13 @@ footer a{color:var(--lime);word-break:break-all}
       <span class="eyebrow" style="background:rgba(200,241,105,.15);color:var(--lime)">Proposal to the Government of Tamil Nadu</span>
       <h1>Every ride app serves its platform. <em>Thozhan serves the Government's tariff.</em></h1>
       <div class="ta-line ta">தோழன் · நம் நகரம். நம் மக்கள். நம் பயணம்.</div>
-      <p class="sub">Thozhan is built around one thing no ride app offers today: <b>a digital auto meter controlled by the Government</b>. It runs on street-hail trips as well as app bookings, applies the notified tariff, and gives the passenger and the driver the same receipt, quoting the Government order.</p>
+      <p class="sub">Thozhan is one Tamil-first platform for <b>autos, bike taxis, cabs and parcel delivery</b>, built around one thing no app offers today: <b>a digital fare meter controlled by the Government</b>. It applies the Government's tariff for each service, runs on street-hail trips as well as app bookings, and gives the passenger and the driver the same receipt.</p>
       <div class="cta no-print">
         <a class="btn lime" href="ux/">Explore the full UX (80 screens)</a>
         <a class="btn ghost" href="#meter">Try the fare meter</a>
       </div>
       <div class="pill-row">
+        <span class="pill">Autos · Bike taxis · Cabs · Parcels</span>
         <span class="pill">Government sets the fare</span>
         <span class="pill">Meter for street hails</span>
         <span class="pill">Receipt quotes the G.O.</span>
@@ -258,12 +270,13 @@ footer a{color:var(--lime);word-break:break-all}
   <div class="wrap">
     <span class="eyebrow">What's new</span>
     <h2>What no ride app does today</h2>
-    <p class="lead">Today's ride apps set their own prices, cover only trips booked through them, and keep the trip data. Thozhan turns the meter into public infrastructure that the Government controls.</p>
+    <p class="lead">Today's ride and delivery apps set their own prices, cover only trips booked through them, and keep the trip data. Thozhan turns the fare meter into public infrastructure that the Government controls, for every service.</p>
     <table class="vs">
-      <thead><tr><th></th><th>Typical ride apps</th><th class="us">Thozhan</th></tr></thead>
+      <thead><tr><th></th><th>Typical ride and delivery apps</th><th class="us">Thozhan</th></tr></thead>
       <tbody>
-        <tr><td>Who sets the fare</td><td class="them">The company</td><td class="us">The Government's tariff order, applied automatically</td></tr>
-        <tr><td>Street-hail trips</td><td class="them">Not covered: only trips booked in the app</td><td class="us">The meter runs on any hailed trip</td></tr>
+        <tr><td>Who sets the fare</td><td class="them">The company</td><td class="us">The Government's tariff for each service, applied automatically</td></tr>
+        <tr><td>Services</td><td class="them">Separate apps and pricing for rides and deliveries</td><td class="us">Autos, bike taxis, cabs and parcels on one Government-controlled meter</td></tr>
+        <tr><td>Street-hail trips</td><td class="them">Not covered: only trips booked in the app</td><td class="us">The meter runs on any hailed auto trip</td></tr>
         <tr><td>Tariff changes</td><td class="them">Each company decides if and when</td><td class="us">Configured once, applied statewide from the date in the order</td></tr>
         <tr><td>Receipt</td><td class="them">The company's own pricing</td><td class="us">Itemised, quoting the G.O., the same for passenger and driver</td></tr>
         <tr><td>Trip data</td><td class="them">Kept by the company</td><td class="us">Privacy-safe aggregates shared with CUMTA for planning</td></tr>
@@ -274,18 +287,43 @@ footer a{color:var(--lime);word-break:break-all}
   </div>
 </section>
 
+<!-- SERVICES -->
+<section id="services" style="background:#fff">
+  <div class="wrap">
+    <span class="eyebrow">One platform, every service</span>
+    <h2>Autos, bike taxis, cabs and parcels</h2>
+    <p class="lead">Each service has its own fare, set by the Government. Autos use the notified tariff today. Every other service starts only after the Government approves it and its fares, and can be switched on centrally, one at a time.</p>
+    <div class="svc-grid">
+      <div class="card svc"><div class="emoji" aria-hidden="true">🛺</div><h3>Auto</h3><span class="badge">Notified tariff</span>
+        <ul><li>App bookings and street hails</li><li>Up to 3 passengers</li><li>The first pilot service</li></ul>
+        <div class="fare"><b>₹50</b> for the first 1.8 km, then <b>₹25</b>/km<br><span class="note">G.O. Ms. No. 366, 27.10.2026</span></div></div>
+      <div class="card svc"><div class="emoji" aria-hidden="true">🏍️</div><h3>Bike taxi and scooter</h3><span class="badge warn">Subject to approval</span>
+        <ul><li>Fast, low-cost single rides</li><li>Rider safety checklist before every trip</li><li>Helmet confirmation by the driver</li></ul>
+        <div class="fare">Proposed: <b>₹25</b> for the first 2 km, then <b>₹10</b>/km</div></div>
+      <div class="card svc"><div class="emoji" aria-hidden="true">🚕</div><h3>Cab</h3><span class="badge warn">Subject to approval</span>
+        <ul><li>Mini, sedan and SUV</li><li>Families, airport and longer trips</li><li>Same meter and receipt as autos</li></ul>
+        <div class="fare">Proposed: from <b>₹100</b> for the first 4 km, then <b>₹16–22</b>/km</div></div>
+      <div class="card svc"><div class="emoji" aria-hidden="true">📦</div><h3>Parcel delivery</h3><span class="badge warn">Subject to approval</span>
+        <ul><li>By bike (up to 5 kg) or auto (up to 50 kg)</li><li>Item declaration and restricted-item check</li><li>Photo and OTP at pickup and delivery</li></ul>
+        <div class="fare">Proposed: from <b>₹35</b> for the first 2 km, then <b>₹10–15</b>/km</div></div>
+    </div>
+  </div>
+</section>
+
 <!-- METER -->
 <section class="meter page-break" id="meter">
   <div class="wrap">
     <span class="eyebrow">The central feature</span>
-    <h2>A digital auto meter the Government controls</h2>
-    <p class="lead">The Government sets the tariff once; Thozhan applies it to every trip, booked or hailed on the street. It records the approved tariff, distance, waiting time and fare rules, and prints the same receipt for passenger and driver. Try it with the current notified auto tariff:</p>
+    <h2>A digital fare meter the Government controls</h2>
+    <p class="lead">The Government sets the tariff for each service; Thozhan applies it to every trip, booked in the app or hailed on the street. It records the tariff, distance, waiting time and fare rules, and gives the passenger and the driver the same receipt. Choose a service and try it:</p>
     <div class="calc">
       <div class="panel">
+        <div class="seg no-print" role="group" aria-label="Service" id="seg"></div>
         <div class="field"><label for="km">Trip distance <output id="kmO">5.0 km</output></label><input id="km" type="range" min="0.5" max="25" step="0.1" value="5"></div>
         <div class="field"><label for="wait">Waiting time <output id="waitO">3 min</output></label><input id="wait" type="range" min="0" max="30" step="1" value="3"></div>
-        <label class="toggle"><input id="night" type="checkbox"> Night trip (10 pm – 5 am, 1.5×)</label>
+        <label class="toggle" id="nightRow"><input id="night" type="checkbox"> <span id="nightLbl">Night trip (10 pm – 5 am, 1.5×)</span></label>
         <ul class="check" style="margin-top:26px;color:#d6e6dd">
+          <li>One meter for autos, bike taxis, cabs and parcels</li>
           <li>Works for app bookings <b>and</b> street-hail trips</li>
           <li>Tariff changes are made centrally, effective from the date in the order</li>
           <li>GPS distance measured on the phone and checked on the server</li>
@@ -296,12 +334,12 @@ footer a{color:var(--lime);word-break:break-all}
         <div class="head">
           <div style="font-size:14px;color:#cfe1d7">Receipt · same for passenger and driver</div>
           <div class="amt" id="total">₹0</div>
-          <span class="tag">Government-notified tariff</span>
+          <span class="tag" id="tag">Government-notified tariff</span>
         </div>
         <div class="body">
           <div id="lines"></div>
           <div class="row total"><span>Total fare</span><span id="total2">₹0</span></div>
-          <p class="src">Source: G.O. Ms. No. 366, Home (Transport-I) Department, 27.10.2026. Minimum fare ₹50 for the first 1.8 km, then ₹25 per km; waiting ₹1 per minute; night 1.5×. Rounded to the nearest rupee (rounding rule to be confirmed with the Department).</p>
+          <p class="src" id="src"></p>
         </div>
       </div>
     </div>
@@ -322,7 +360,7 @@ footer a{color:var(--lime);word-break:break-all}
     <div class="tabpanel" id="t-gov" role="tabpanel" aria-labelledby="b-gov">
       <h3 class="print-title">For the Government</h3>
       <div class="grid g3">
-        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></div><div><h3>Tariff policy that is enforced</h3><p>Notified fares are applied automatically on every trip. A new order is configured once and takes effect statewide.</p></div></div>
+        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></div><div><h3>Tariff policy that is enforced</h3><p>The Government's fare for each service is applied automatically on every trip. A new order is configured once and takes effect statewide.</p></div></div>
         <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="13" width="3" height="4"/></svg></div><div><h3>Privacy-safe mobility data</h3><p>Aggregated demand, trip times, fare accuracy and complaint statistics for CUMTA planning, with no personal details shared.</p></div></div>
         <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8"/></svg></div><div><h3>Support for gig workers</h3><p>Transparent earnings records that can help with welfare-board registration and benefits.</p></div></div>
         <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.4 1.8.7 2.7a2 2 0 01-.5 2.1L8 9.8a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.5c.9.3 1.8.6 2.7.7a2 2 0 011.7 2z"/></svg></div><div><h3>Faster emergency response</h3><p>SOS with trip, vehicle and location details, ready to connect to 112 and the police if approved.</p></div></div>
@@ -334,7 +372,7 @@ footer a{color:var(--lime);word-break:break-all}
         <h3>Revenue planning scenario</h3>
         <p class="note" style="font-size:15px">Simple arithmetic to support discussion. This is not an income forecast and no revenue share has been agreed.</p>
         <div class="grid g3" style="margin-top:14px">
-          <div class="field"><label for="drv">Active drivers <output id="drvO">10,000</output></label><input id="drv" type="range" min="500" max="100000" step="500" value="10000"></div>
+          <div class="field"><label for="drv">Active drivers (all services) <output id="drvO">10,000</output></label><input id="drv" type="range" min="500" max="100000" step="500" value="10000"></div>
           <div class="field"><label for="pd">Paid days per month <output id="pdO">22</output></label><input id="pd" type="range" min="5" max="30" step="1" value="22"></div>
           <div class="field"><label for="share">Government share, if agreed <output id="shareO">10%</output></label><input id="share" type="range" min="0" max="50" step="1" value="10"></div>
         </div>
@@ -390,7 +428,7 @@ footer a{color:var(--lime);word-break:break-all}
       <div><div class="phone"><div class="screen"><img src="assets/screens/en-15-driver-offer.png" alt="Driver receiving a trip request"></div></div><div class="caption">Driver trip request</div></div>
       <div><div class="phone"><div class="screen"><img src="assets/screens/en-24-driver-earnings.png" alt="Driver earnings and ₹10 day fee"></div></div><div class="caption">Driver earnings records</div></div>
       <div><div class="phone"><div class="screen"><img src="assets/screens/en-31-meter-running.png" alt="Digital meter running"></div></div><div class="caption">Street-hail meter</div></div>
-      <div><div class="phone"><div class="screen"><img src="assets/screens/en-08-choose-vehicle.png" alt="Vehicle choice with fares"></div></div><div class="caption">Autos, bikes, cabs, parcels</div></div>
+      <div><div class="phone"><div class="screen"><img src="assets/screens/en-08-choose-vehicle.png" alt="Vehicle choice with fares"></div></div><div class="caption">Every service, one meter</div></div>
     </div>
     <div class="links-row">
       <a class="card link-card" href="ux/"><h3>Complete UX prototype</h3><p class="note" style="font-size:15px">All 80 passenger and driver screens, clickable.</p><span class="url" id="u-ux"></span><span class="go">Open the prototype →</span></a>
@@ -403,22 +441,23 @@ footer a{color:var(--lime);word-break:break-all}
 <!-- SERVICES & SAFEGUARDS -->
 <section id="safeguards">
   <div class="wrap">
-    <span class="eyebrow">Services and safeguards</span>
+    <span class="eyebrow">Safeguards</span>
     <h2>Every service only with the right approval</h2>
     <div class="grid g2" style="margin-top:26px">
       <div class="card">
-        <h3>Services</h3>
+        <h3>Switched on only after approval</h3>
         <div class="row"><span>Auto (booked and street hail)</span><span class="badge">Notified tariff</span></div>
         <div class="row"><span>Bike taxi and scooter</span><span class="badge warn">Subject to approval</span></div>
-        <div class="row"><span>Cab</span><span class="badge warn">Subject to approval</span></div>
-        <div class="row"><span>Parcel delivery (bike and auto)</span><span class="badge warn">Subject to approval</span></div>
-        <p class="note" style="margin-top:10px">Only autos would run in the first pilot. Each other service can be switched on centrally, only after the Government approves it and its fares.</p>
+        <div class="row"><span>Cab (mini, sedan, SUV)</span><span class="badge warn">Subject to approval</span></div>
+        <div class="row"><span>Parcel delivery (bike, scooter, auto)</span><span class="badge warn">Subject to approval</span></div>
+        <p class="note" style="margin-top:10px">Only autos would run in the first pilot. Each other service is switched on centrally, only after the Government approves it and its fares.</p>
       </div>
       <div class="card">
         <h3>Safeguards built in</h3>
         <ul class="check">
           <li>Driver documents and vehicle verified before going online</li>
           <li>Trip OTP and number-plate check before every ride</li>
+          <li>Bike taxis: rider safety checklist and helmet confirmation</li>
           <li>Parcel declaration and photos at pickup and delivery</li>
           <li>Personal data minimised; passengers can download or delete their data</li>
           <li>Complete audit trail of fares, fees and admin decisions</li>
@@ -438,7 +477,7 @@ footer a{color:var(--lime);word-break:break-all}
       <div class="card step"><div class="when">Phase 0</div><h3>Approvals</h3><p class="note" style="font-size:15px">Nodal officer, tariff and licence clarity, security review, driver consultation.</p></div>
       <div class="card step"><div class="when">Phase 1</div><h3>Closed pilot</h3><p class="note" style="font-size:15px">50–150 verified auto drivers in one service area, with staffed support and incident handling.</p></div>
       <div class="card step"><div class="when">Phase 2</div><h3>Measure and publish</h3><p class="note" style="font-size:15px">Fare accuracy, pickup times, driver take-home pay, complaints resolved, accessibility.</p></div>
-      <div class="card step"><div class="when">Phase 3</div><h3>Expand if approved</h3><p class="note" style="font-size:15px">More areas and services only after an independent review.</p></div>
+      <div class="card step"><div class="when">Phase 3</div><h3>Expand if approved</h3><p class="note" style="font-size:15px">Bike taxis, cabs and parcels, and more areas, only after approval and an independent review.</p></div>
     </div>
   </div>
 </section>
@@ -507,21 +546,47 @@ const $ = (id) => document.getElementById(id);
 const inr = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
 const inr2 = (n) => '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-// Fare meter: Tamil Nadu auto tariff, G.O. Ms. No. 366 (27.10.2026).
+// Fare meter: the same tariffs as the app (packages/tariff/rules/tamil-nadu.json).
+const SERVICES = [
+  { id: 'auto', name: 'Auto', base: 50, baseKm: 1.8, perKm: 25, wait: 1, free: 0, night: 1.5, official: true },
+  { id: 'bike', name: 'Bike taxi', base: 25, baseKm: 2, perKm: 10, wait: 1, free: 3, night: 1.25 },
+  { id: 'scooter', name: 'Scooter', base: 25, baseKm: 2, perKm: 10, wait: 1, free: 3, night: 1.25 },
+  { id: 'cab-mini', name: 'Cab mini', base: 100, baseKm: 4, perKm: 16, wait: 1.5, free: 5, night: 1.25 },
+  { id: 'cab-sedan', name: 'Cab sedan', base: 120, baseKm: 4, perKm: 18, wait: 1.5, free: 5, night: 1.25 },
+  { id: 'cab-suv', name: 'Cab SUV', base: 160, baseKm: 4, perKm: 22, wait: 1.5, free: 5, night: 1.25 },
+  { id: 'parcel-bike', name: 'Parcel by bike', base: 35, baseKm: 2, perKm: 10, wait: 1, free: 5, night: 0 },
+  { id: 'parcel-auto', name: 'Parcel by auto', base: 60, baseKm: 3, perKm: 15, wait: 1, free: 5, night: 0 },
+];
+let svc = SERVICES[0];
+$('seg').innerHTML = SERVICES.map((v, i) => `<button type="button" data-i="${i}" aria-pressed="${i === 0}">${v.name}</button>`).join('');
+$('seg').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  svc = SERVICES[+b.dataset.i];
+  $('seg').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b));
+  fare();
+});
 function fare() {
-  const km = +$('km').value, wait = +$('wait').value, night = $('night').checked;
+  const km = +$('km').value, wait = +$('wait').value, night = svc.night > 0 && $('night').checked;
   $('kmO').textContent = km.toFixed(1) + ' km';
   $('waitO').textContent = wait + ' min';
-  const base = 50, extraKm = Math.max(0, km - 1.8), dist = Math.round(extraKm * 25 * 100) / 100, waiting = wait * 1;
-  const nightAmt = night ? Math.round((base + dist + waiting) * 0.5 * 100) / 100 : 0;
-  const raw = base + dist + waiting + nightAmt, total = Math.round(raw), round = Math.round((total - raw) * 100) / 100;
-  const lines = [['Minimum fare (first 1.8 km)', base]];
-  if (dist) lines.push([`Additional distance (${extraKm.toFixed(1)} km × ₹25)`, dist]);
-  if (waiting) lines.push([`Waiting (${wait} min × ₹1)`, waiting]);
-  if (nightAmt) lines.push(['Night charge (50%)', nightAmt]);
+  $('nightRow').style.display = svc.night > 0 ? '' : 'none';
+  $('nightLbl').textContent = `Night trip (10 pm – 5 am, ${svc.night}×)`;
+  const extraKm = Math.max(0, km - svc.baseKm), dist = Math.round(extraKm * svc.perKm * 100) / 100;
+  const waitMin = Math.max(0, wait - svc.free), waiting = waitMin * svc.wait;
+  const nightAmt = night ? Math.round((svc.base + dist + waiting) * (svc.night - 1) * 100) / 100 : 0;
+  const raw = svc.base + dist + waiting + nightAmt, total = Math.round(raw), round = Math.round((total - raw) * 100) / 100;
+  const lines = [[`Minimum fare (first ${svc.baseKm} km)`, svc.base]];
+  if (dist) lines.push([`Additional distance (${extraKm.toFixed(1)} km × ₹${svc.perKm})`, dist]);
+  if (waiting) lines.push([`Waiting (${waitMin} min × ₹${svc.wait}${svc.free ? ', first ' + svc.free + ' min free' : ''})`, waiting]);
+  if (nightAmt) lines.push([`Night charge (${Math.round((svc.night - 1) * 100)}%)`, nightAmt]);
   if (round) lines.push(['Rounding', round]);
   $('lines').innerHTML = lines.map(([l, a]) => `<div class="row"><span>${l}</span><span>${a < 0 ? '−' + inr2(-a) : inr2(a)}</span></div>`).join('');
   $('total').textContent = $('total2').textContent = inr(total);
+  $('tag').textContent = svc.official ? 'Government-notified tariff' : 'Proposed fare · subject to Government approval';
+  $('tag').className = 'tag' + (svc.official ? '' : ' pending');
+  $('src').textContent = svc.official
+    ? 'Source: G.O. Ms. No. 366, Home (Transport-I) Department, 27.10.2026. Minimum fare ₹50 for the first 1.8 km, then ₹25 per km; waiting ₹1 per minute; night 1.5×. Rounded to the nearest rupee (rounding rule to be confirmed with the Department).'
+    : `${svc.name}: a proposed pilot fare for discussion only. It is not a notified tariff, and the service would start only after the Government approves it and sets its fares.`;
 }
 
 function revenue() {
