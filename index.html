@@ -163,7 +163,7 @@ ul.check li::before{content:"";position:absolute;left:0;top:5px;width:18px;heigh
 .closing .ta-line{color:var(--lime);font-size:22px;font-weight:700;margin-bottom:8px}
 footer{background:var(--brand-deep);color:#a9c2b5;font-size:13px;padding:26px 0}
 footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
-footer a{color:var(--lime)}
+footer a{color:var(--lime);word-break:break-all}
 
 /* print / PDF */
 @media print{
@@ -184,6 +184,18 @@ footer a{color:var(--lime)}
   a{text-decoration:none}
   .gallery{grid-template-columns:repeat(4,1fr);gap:14px}
 }
+.vs{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-top:28px}
+.vs th,.vs td{padding:16px 20px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.vs tr:last-child td{border-bottom:0}
+.vs thead th{font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bg)}
+.vs thead th.us{background:var(--brand);color:var(--lime)}
+.vs td:first-child{font-weight:700;width:26%}
+.vs td.them{color:var(--muted);width:32%}
+.vs td.us{background:var(--lime-soft);font-weight:600;color:var(--brand-deep)}
+@media(max-width:640px){.vs th,.vs td{padding:12px;font-size:14px}.vs td:first-child{width:auto}}
+@media print{.vs{box-shadow:none;border:1px solid var(--line)}}
+.also{margin-top:20px;padding:16px 20px;border-radius:16px;background:#fff;border:1px dashed #c9d3cc;color:var(--muted);font-size:15px}
+.also b{color:var(--ink)}
 .print-title{display:none;font-size:20px;margin:6px 0 12px}
 </style>
 </head>
@@ -193,6 +205,7 @@ footer a{color:var(--lime)}
   <div class="wrap">
     <a class="brand" href="#top"><span class="logo">t</span>Thozhan</a>
     <div class="links">
+      <a href="#new">What's new</a>
       <a href="#meter">Digital meter</a>
       <a href="#benefits">Benefits</a>
       <a href="#built">What's built</a>
@@ -207,18 +220,18 @@ footer a{color:var(--lime)}
   <div class="wrap">
     <div>
       <span class="eyebrow" style="background:rgba(200,241,105,.15);color:var(--lime)">Proposal to the Government of Tamil Nadu</span>
-      <h1>Fair fares for every ride. <em>One honest meter</em> for all of Tamil Nadu.</h1>
+      <h1>Every ride app serves its platform. <em>Thozhan serves the Government's tariff.</em></h1>
       <div class="ta-line ta">தோழன் · நம் நகரம். நம் மக்கள். நம் பயணம்.</div>
-      <p class="sub">Thozhan is a citizen-led, Tamil-first mobility platform for autos, authorised bike services, cabs and parcel delivery. At its heart is a <b>government-configurable digital auto meter</b>. It works for app bookings and street hails, and gives the passenger and the driver the same itemised receipt.</p>
+      <p class="sub">Thozhan is built around one thing no ride app offers today: <b>a digital auto meter controlled by the Government</b>. It runs on street-hail trips as well as app bookings, applies the notified tariff, and gives the passenger and the driver the same receipt, quoting the Government order.</p>
       <div class="cta no-print">
         <a class="btn lime" href="ux/">Explore the full UX (80 screens)</a>
         <a class="btn ghost" href="#meter">Try the fare meter</a>
       </div>
       <div class="pill-row">
-        <span class="pill">Government-notified tariff</span>
-        <span class="pill">No surge pricing</span>
-        <span class="pill">₹10 a day, zero commission</span>
-        <span class="pill">Tamil first</span>
+        <span class="pill">Government sets the fare</span>
+        <span class="pill">Meter for street hails</span>
+        <span class="pill">Receipt quotes the G.O.</span>
+        <span class="pill">Public mobility data</span>
         <span class="pill">Working Android app</span>
       </div>
     </div>
@@ -240,18 +253,24 @@ footer a{color:var(--lime)}
   </div>
 </div>
 
-<!-- PROBLEM -->
-<section id="problem">
+<!-- WHAT'S NEW -->
+<section id="new">
   <div class="wrap">
-    <span class="eyebrow">Why it matters</span>
-    <h2>Everyday travel should not start with an argument</h2>
-    <p class="lead">Passengers, drivers and the Government all lose when fares are unclear and data is locked inside private platforms.</p>
-    <div class="grid g4" style="margin-top:28px">
-      <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3>Fare disputes</h3><p class="note" style="font-size:15px">Street-hail fares are often negotiated instead of metered, even when the Government has notified a tariff.</p></div>
-      <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></div><h3>Unpredictable prices</h3><p class="note" style="font-size:15px">App fares can rise with demand-based surge pricing that is not part of any approved tariff.</p></div>
-      <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><h3>Commission on drivers</h3><p class="note" style="font-size:15px">Percentage commissions reduce what drivers take home on every single trip.</p></div>
-      <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div><h3>No public data</h3><p class="note" style="font-size:15px">Planners get little reliable, privacy-safe evidence about how people actually move.</p></div>
-    </div>
+    <span class="eyebrow">What's new</span>
+    <h2>What no ride app does today</h2>
+    <p class="lead">Today's ride apps set their own prices, cover only trips booked through them, and keep the trip data. Thozhan turns the meter into public infrastructure that the Government controls.</p>
+    <table class="vs">
+      <thead><tr><th></th><th>Typical ride apps</th><th class="us">Thozhan</th></tr></thead>
+      <tbody>
+        <tr><td>Who sets the fare</td><td class="them">The company</td><td class="us">The Government's tariff order, applied automatically</td></tr>
+        <tr><td>Street-hail trips</td><td class="them">Not covered: only trips booked in the app</td><td class="us">The meter runs on any hailed trip</td></tr>
+        <tr><td>Tariff changes</td><td class="them">Each company decides if and when</td><td class="us">Configured once, applied statewide from the date in the order</td></tr>
+        <tr><td>Receipt</td><td class="them">The company's own pricing</td><td class="us">Itemised, quoting the G.O., the same for passenger and driver</td></tr>
+        <tr><td>Trip data</td><td class="them">Kept by the company</td><td class="us">Privacy-safe aggregates shared with CUMTA for planning</td></tr>
+        <tr><td>Audit</td><td class="them">No public access</td><td class="us">Every fare, fee and decision recorded for Government inspection</td></tr>
+      </tbody>
+    </table>
+    <p class="also"><b>Also included, as in other apps:</b> SOS and 112 / 181 shortcuts, trip OTP, Tamil and English screens, and a flat daily fee for drivers instead of commission. These are standard in the market and are not what this proposal is about.</p>
   </div>
 </section>
 
@@ -293,50 +312,14 @@ footer a{color:var(--lime)}
 <section id="benefits">
   <div class="wrap">
     <span class="eyebrow">Who benefits</span>
-    <h2>Good for passengers, drivers and the Government</h2>
+    <h2>Good for the Government, passengers and drivers</h2>
     <div class="tabs no-print" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" aria-controls="t-pass" id="b-pass">Passengers</button>
+      <button class="tab" role="tab" aria-selected="true" aria-controls="t-gov" id="b-gov">Government</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="t-pass" id="b-pass">Passengers</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="t-drv" id="b-drv">Drivers</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="t-gov" id="b-gov">Government</button>
     </div>
 
-    <div class="tabpanel" id="t-pass" role="tabpanel" aria-labelledby="b-pass">
-      <h3 class="print-title">For passengers</h3>
-      <div class="grid g3">
-        <div class="card benefit"><div class="icon">₹</div><div><h3>The legal fare, every time</h3><p>Fares follow the notified tariff with no unapproved surge. The price is shown before booking.</p></div></div>
-        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6"/></svg></div><div><h3>Itemised receipt</h3><p>Base fare, distance, waiting and night charge, with the Government order quoted on the receipt.</p></div></div>
-        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg></div><div><h3>Safety at every step</h3><p>Trip OTP, number-plate check, SOS, 112 and 181 shortcuts, trusted contacts and live trip sharing.</p></div></div>
-        <div class="card benefit"><div class="icon ta" style="font-weight:700">அ</div><div><h3>Tamil first</h3><p>Every screen in Tamil and English, large touch targets and screen-reader labels.</p></div></div>
-        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><h3>Meter for street hails</h3><p>Stopped an auto on the road? Start the meter in the app and get the same fair receipt.</p></div></div>
-        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div><h3>Complaints that close</h3><p>Overcharge, lost-item and safety reports get a reference number and are tracked to resolution.</p></div></div>
-      </div>
-    </div>
-
-    <div class="tabpanel" id="t-drv" role="tabpanel" aria-labelledby="b-drv" hidden>
-      <h3 class="print-title">For drivers</h3>
-      <div class="grid g2">
-        <div class="card">
-          <h3>Keep what you earn</h3>
-          <p class="note" style="font-size:15px">Thozhan proposes a flat ₹10 platform charge, only after the driver's first completed eligible trip of the day. No commission. No charge on days with no trips. Passengers pay the driver directly by cash or UPI.</p>
-          <div class="field" style="margin-top:18px"><label for="earn">Fares collected per day <output id="earnO">₹1,500</output></label><input id="earn" type="range" min="300" max="4000" step="50" value="1500"></div>
-          <div class="field"><label for="days">Working days per month <output id="daysO">25</output></label><input id="days" type="range" min="10" max="30" step="1" value="25"></div>
-          <div class="field"><label for="comm">Commission rate to compare <output id="commO">20%</output></label><input id="comm" type="range" min="0" max="35" step="1" value="20"></div>
-          <div class="compare">
-            <div class="bad"><span class="note">Percentage commission</span><b id="cBad">₹0</b><span class="note">per month</span></div>
-            <div class="good"><span class="note">Thozhan day charge</span><b id="cGood">₹0</b><span class="note">per month</span></div>
-          </div>
-          <div class="result"><span class="note">Driver keeps an extra</span><div class="big" id="cSave">₹0</div><span class="note">per month, per driver. Illustrative: commission rates differ between platforms.</span></div>
-        </div>
-        <div class="grid" style="gap:18px">
-          <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div><div><h3>Clear earnings records</h3><p>Daily earnings, a fee ledger and 7 / 30-day summaries, ready for loans and welfare schemes.</p></div></div>
-          <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg></div><div><h3>Driver safety too</h3><p>Verified passengers, trip OTP, SOS and a fair process for complaints and ratings.</p></div></div>
-          <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div><div><h3>Simple paperwork</h3><p>Document upload with expiry reminders, so renewals are never missed.</p></div></div>
-          <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 000-7.8z"/></svg></div><div><h3>Optional insurance</h3><p>Access to cover through a licensed insurer, never sold by Thozhan itself.</p></div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="tabpanel" id="t-gov" role="tabpanel" aria-labelledby="b-gov" hidden>
+    <div class="tabpanel" id="t-gov" role="tabpanel" aria-labelledby="b-gov">
       <h3 class="print-title">For the Government</h3>
       <div class="grid g3">
         <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></div><div><h3>Tariff policy that is enforced</h3><p>Notified fares are applied automatically on every trip. A new order is configured once and takes effect statewide.</p></div></div>
@@ -363,6 +346,27 @@ footer a{color:var(--lime)}
         <p class="note" style="margin-top:12px">Before costs and taxes. Running costs (servers, SMS, maps, support, insurance administration) are paid from platform charges.</p>
       </div>
     </div>
+    <div class="tabpanel" id="t-pass" role="tabpanel" aria-labelledby="b-pass" hidden>
+      <h3 class="print-title">For passengers</h3>
+      <div class="grid g2">
+        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><h3>A fair meter on the street</h3><p>Stopped an auto on the road? Start the meter and pay the Government fare, with no bargaining.</p></div></div>
+        <div class="card benefit"><div class="icon">₹</div><div><h3>The Government's fare, not the company's</h3><p>Every trip uses the notified tariff, so the price can't change because of a company's demand pricing.</p></div></div>
+        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6"/></svg></div><div><h3>Proof in hand</h3><p>An itemised receipt that quotes the Government order: the same one the driver sees.</p></div></div>
+        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div><h3>Overcharging you can prove</h3><p>Report an overcharge straight from the receipt, measured against the official fare.</p></div></div>
+      </div>
+      <p class="also"><b>Also included:</b> SOS, 112 / 181 shortcuts, trip OTP, trusted contacts and Tamil and English screens.</p>
+    </div>
+
+    <div class="tabpanel" id="t-drv" role="tabpanel" aria-labelledby="b-drv" hidden>
+      <h3 class="print-title">For drivers</h3>
+      <div class="grid g2">
+        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg></div><div><h3>The Government's fare backs you</h3><p>Fares come from the official tariff, not from an app company, so no one can cut the rate on a driver.</p></div></div>
+        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6"/></svg></div><div><h3>No more arguments</h3><p>The passenger sees the same receipt, quoting the G.O., which settles fare disputes on the spot.</p></div></div>
+        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><h3>Street trips count too</h3><p>Hailed trips are metered and recorded, not just app bookings, so all of a driver's work is on record.</p></div></div>
+        <div class="card benefit"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div><div><h3>Records the Government recognises</h3><p>Earnings records that can be linked to Gig Workers Welfare Board registration and benefits.</p></div></div>
+      </div>
+      <p class="also"><b>Also included:</b> a flat ₹10 fee on working days instead of commission, document expiry reminders, SOS, and optional insurance through a licensed insurer.</p>
+    </div>
   </div>
 </section>
 
@@ -384,7 +388,7 @@ footer a{color:var(--lime)}
       <div><div class="phone"><div class="screen"><img src="assets/screens/en-22-receipt-rider.png" alt="Itemised receipt quoting the government order"></div></div><div class="caption">Itemised receipt</div></div>
       <div><div class="phone"><div class="screen"><img src="assets/screens/en-37-safety.png" alt="Safety centre with SOS, 112 and 181"></div></div><div class="caption">Safety centre</div></div>
       <div><div class="phone"><div class="screen"><img src="assets/screens/en-15-driver-offer.png" alt="Driver receiving a trip request"></div></div><div class="caption">Driver trip request</div></div>
-      <div><div class="phone"><div class="screen"><img src="assets/screens/en-24-driver-earnings.png" alt="Driver earnings and ₹10 day fee"></div></div><div class="caption">₹10 day fee, no commission</div></div>
+      <div><div class="phone"><div class="screen"><img src="assets/screens/en-24-driver-earnings.png" alt="Driver earnings and ₹10 day fee"></div></div><div class="caption">Driver earnings records</div></div>
       <div><div class="phone"><div class="screen"><img src="assets/screens/en-31-meter-running.png" alt="Digital meter running"></div></div><div class="caption">Street-hail meter</div></div>
       <div><div class="phone"><div class="screen"><img src="assets/screens/en-08-choose-vehicle.png" alt="Vehicle choice with fares"></div></div><div class="caption">Autos, bikes, cabs, parcels</div></div>
     </div>
@@ -520,14 +524,6 @@ function fare() {
   $('total').textContent = $('total2').textContent = inr(total);
 }
 
-function driver() {
-  const earn = +$('earn').value, days = +$('days').value, comm = +$('comm').value;
-  $('earnO').textContent = inr(earn); $('daysO').textContent = days; $('commO').textContent = comm + '%';
-  const bad = earn * days * comm / 100, good = 10 * days;
-  $('cBad').textContent = inr(bad); $('cGood').textContent = inr(good);
-  $('cSave').textContent = inr(Math.max(0, bad - good));
-}
-
 function revenue() {
   const d = +$('drv').value, pd = +$('pd').value, sh = +$('share').value;
   $('drvO').textContent = d.toLocaleString('en-IN'); $('pdO').textContent = pd; $('shareO').textContent = sh + '%';
@@ -537,9 +533,8 @@ function revenue() {
 }
 
 ['km', 'wait', 'night'].forEach((id) => $(id).addEventListener('input', fare));
-['earn', 'days', 'comm'].forEach((id) => $(id).addEventListener('input', driver));
 ['drv', 'pd', 'share'].forEach((id) => $(id).addEventListener('input', revenue));
-fare(); driver(); revenue();
+fare(); revenue();
 
 // Benefit tabs
 const tabs = document.querySelectorAll('.tab');
